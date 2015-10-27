@@ -1,4 +1,11 @@
-#ignore Eclipse files
-/.metadata/
-/.recommenders/
+#ignore ide project files
+.classpath
+.idea
+*.iml
+.settings
+.project
+
+#ignore binaries
+/bin/
+/out/
 
