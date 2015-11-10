@@ -1,4 +1,4 @@
-package test;
+//:package test;
 
 import java.lang.System;
 import java.net.DatagramSocket;
@@ -22,7 +22,7 @@ public class SendEcho {
 	    InetAddress theIPAddress = null;
 	    try {
 	      System.out.println("Get the IP address of our destination...");
-	      theIPAddress = InetAddress.getByName( "192.168.2.103" );
+	      theIPAddress = InetAddress.getByName( "localhost" );
 	    } catch (UnknownHostException e) {
 	      System.out.println("Host not found: " + e);
 	      System.exit(1);

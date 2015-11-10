@@ -13,7 +13,7 @@ int main(void)
 	int server_addr_len, client_addr_len;
 	struct sockaddr_in local_addr;
 	struct sockaddr_in remote_addr;
-	char ch='A';
+	char c_buff[256];
 
 
 	server_sock = socket( AF_INET, SOCK_DGRAM, 0 );
@@ -22,7 +22,7 @@ int main(void)
 
 	local_addr.sin_family = AF_INET;
 	local_addr.sin_addr.s_addr = inet_addr( "127.0.0.1" );
-	local_addr.sin_port = htons(10000);
+	local_addr.sin_port = htons(1234);
 
 	server_addr_len = sizeof( local_addr );
 
@@ -40,16 +40,17 @@ int main(void)
 		printf( "Server ceka na data\n" );
 		
 		client_addr_len = sizeof( remote_addr );
-		n = recvfrom(server_sock, &ch, 1, 0, (struct sockaddr*)&remote_addr, &client_addr_len );
+		n = recvfrom(server_sock, c_buff, 256, 0, (struct sockaddr*)&remote_addr, &client_addr_len );
 	
-		printf( "Pripojil se klient\n" );
-		printf( "Klient poslal = %c\n", &ch );
+		c_buff[n] = 0;			
 
-		ch++;
+		printf( "Pripojil se klient\n" );
+		printf( "Klient poslal = %s\n", c_buff );
+
 		sleep(5);
 
-		printf( "Server odesila = %c\n", ch );
-		n = sendto( server_sock, &ch, 1, 0, (struct sockaddr*)&remote_addr, client_addr_len );
+		printf( "Server odesila = %c\n", c_buff );
+		n = sendto( server_sock, c_buff, 256, 0, (struct sockaddr*)&remote_addr, client_addr_len );
 
 		close( client_sock );
 
