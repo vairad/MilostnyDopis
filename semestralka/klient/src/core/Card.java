@@ -1,5 +1,7 @@
 package core;
 
-public class Card {
+public interface Card {
+
+    public void playCard();
 
 }
