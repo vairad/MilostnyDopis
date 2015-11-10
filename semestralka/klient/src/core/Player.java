@@ -13,9 +13,9 @@ public class Player {
     /** in game id of player */
     private int player_id;
     /** list of played cards */
-    private List<Card> played_cards;
+    private List<ICard> played_cards;
     /** actual card in hand */
-    private Card actual_card;
+    private ICard actual_card;
 
 
     /**
@@ -26,7 +26,7 @@ public class Player {
      */
     public Player(int player_id) {
         this.player_id = player_id;
-        this.played_cards = new LinkedList<Card>();
+        this.played_cards = new LinkedList<ICard>();
         this.actual_card = null;
     }
 
@@ -45,7 +45,7 @@ public class Player {
      * Returns list of used cards lying on the bord in front of player.
      * @return list of used cards by this player
      */
-    public List<Card> getPlayed_cards() {
+    public List<ICard> getPlayed_cards() {
         return played_cards;
     }
 
@@ -53,7 +53,7 @@ public class Player {
      * Returns card which player holds in his hand.
      * @return card in players hand
      */
-    public Card getActual_card() {
+    public ICard getActual_card() {
         return actual_card;
     }
 }
