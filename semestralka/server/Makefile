@@ -1,14 +1,10 @@
 CC=gcc
 
-all:	clean client server
-
-client:	client.c
-	${CC} -o client client.c
+all:	clean server
 
 server: server.c
 	${CC} -o server server.c
 
 clean: 
-	rm -f client
 	rm -f server
 
