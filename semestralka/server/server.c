@@ -1,13 +1,14 @@
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <stdio.h>
 #include <sys/un.h>
 #include <unistd.h>
 #include <netinet/in.h>
-#include <unistd.h>
 #include <stdlib.h>
 
-int prepare_socket(int port, char *listen_addr, int *server_sock){
+#include "log.h"
+#include <stdio.h>
+
+int prepare_socket(int port, int *server_sock){
 	int server_addr_len;
 	struct sockaddr_in local_addr;
 
@@ -25,13 +26,27 @@ int prepare_socket(int port, char *listen_addr, int *server_sock){
 
 	if( bind( (*server_sock), ((struct sockaddr *)&local_addr), server_addr_len ) != 0 )
 	{
-		printf("Bind ERR\n");
+		log_error("Bind ERR");
                 return -1;
 	} 
 	else {
-		printf("Bind OK\n");
+		log_info("Bind OK");
 		return 1;
 	}	
+}
+
+/*****************************************
+* Check if port number is from range 1 - 65535. 
+* If number is not correct change port number to 1234.
+* return 1 or -1  1 if number is correct
+*/
+int check_port_number(int * port){
+	if(*port > 0 && *port < 65535){
+	return 1;
+	}
+	*port = 1234; //setup default value
+	log_warn("Default port 1234 set");
+	return -1;
 }
 
 int main(void)
@@ -41,21 +56,20 @@ int main(void)
 	struct sockaddr_in remote_addr;
 	char c_buff[256];
 
-	char *str = "127.0.0.1";
 	int port = 1234;
 
-	prepare_socket(port, str, &server_sock);
+	prepare_socket(port, &server_sock);
 
 	while( 1 )
 	{
-		printf( "Server ceka na data\n" );
+		log_info("Server ceka na data.");
 		
 		client_addr_len = sizeof( remote_addr );
 		n = recvfrom(server_sock, c_buff, 256, 0, (struct sockaddr*)&remote_addr, &client_addr_len );
 	
 		c_buff[n] = 0;			
 
-		printf( "Pripojil se klient\n" );
+		log_info( "Pripojil se klient" );
 		printf( "Klient poslal = %s\n", c_buff );
 
 		sleep(5);
