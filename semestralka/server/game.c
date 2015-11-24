@@ -3,6 +3,6 @@
 
 struct game{
 	//deck
-		
+	//players		
 
 }
