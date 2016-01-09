@@ -1,5 +1,7 @@
 package gui;
 
+import net.NetService;
+
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
@@ -8,7 +10,6 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 
 import javax.swing.AbstractAction;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -32,8 +33,10 @@ public class GUIInter {
  
  private Locale jazyk = new Locale("cs","CZ") ;
  
- private ResourceBundle zpravy = ResourceBundle.getBundle("Texts",jazyk);
- 
+ private ResourceBundle textyAplikace = ResourceBundle.getBundle("Texts",jazyk);
+
+	/** sťové komunikační rozhraní*/
+ private NetService netService;
 //############################################################################
 
  
@@ -41,10 +44,13 @@ public class GUIInter {
   * Konstruktor vytvoří
   *  
   */
- public GUIInter(){
+ public GUIInter( NetService netService){
+
+	 this.netService = netService;
+
 	 okno.setLocationRelativeTo(null); // okno na stred
 	 okno.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // krizek ukonci program
-	 okno.setTitle(zpravy.getString("windowTitle")); // nastavi titulek okna
+	 okno.setTitle(textyAplikace.getString("windowTitle")); // nastavi titulek okna
 	 okno.setPreferredSize(new Dimension(300, 200)); // nastaví výchozí rozmer
 	 
 	 generujMenu(); //pripravi vodorovne menu
@@ -57,16 +63,16 @@ public class GUIInter {
  
  
  /**
-  * Vygeneruje obsah okna p�id� ho do okna
+  * Vygeneruje obsah okna prida ho do okna
   */
  private void generujObsah(){
 	 
 	 JPanel panel = new JPanel(new FlowLayout());
 	 
-	 	lang = new JButton(new AkceSwitch());
+	 	lang = new JButton(new AkceSend());
 	 	lang.setPreferredSize(new Dimension(200,20));
 	 panel.add(lang);
-	 	content = new JLabel(zpravy.getString("content"));
+	 	content = new JLabel(textyAplikace.getString("content"));
 	 panel.add(content);
 	 
 	 okno.add(panel);
@@ -96,11 +102,11 @@ public class GUIInter {
   * @return JMenu Soubor
   */
  private JMenu menuSoubor(){
-	 menuFile = new JMenu(zpravy.getString("menuFile"));
+	 menuFile = new JMenu(textyAplikace.getString("menuFile"));
 	 	
-	    save = new JMenuItem(zpravy.getString("save"));
-		open = new JMenuItem(zpravy.getString("open"));
-		novy = new JMenuItem(zpravy.getString("new"));
+	    save = new JMenuItem(textyAplikace.getString("save"));
+		open = new JMenuItem(textyAplikace.getString("open"));
+		novy = new JMenuItem(textyAplikace.getString("new"));
 		
 	 menuFile.add(save);
 	 menuFile.add(open);
@@ -121,10 +127,10 @@ public class GUIInter {
   * @return JMenu �pravy
   */
  private JMenu menuUpravy(){
-	 menuEdit = new JMenu(zpravy.getString("menuEdit"));
+	 menuEdit = new JMenu(textyAplikace.getString("menuEdit"));
 	 
-	        copy = new JMenuItem(zpravy.getString("copy"));
-			paste = new JMenuItem(zpravy.getString("paste"));
+	        copy = new JMenuItem(textyAplikace.getString("copy"));
+			paste = new JMenuItem(textyAplikace.getString("paste"));
 			
 	 menuEdit.add(copy);
 	 menuEdit.add(paste);
@@ -138,7 +144,7 @@ public class GUIInter {
   * @return JMenu N�pov�da
   */
  private JMenu menuNapoveda(){
-	 menuHelp = new JMenu(zpravy.getString("menuHelp"));
+	 menuHelp = new JMenu(textyAplikace.getString("menuHelp"));
 
 	 	about = new JMenuItem(new AkceNapoveda());
 	 menuHelp.add(about);
@@ -154,38 +160,35 @@ public class GUIInter {
   * Metoda p�epne jazyk
   * Pokud nen� nastaven na �e�tinu nastav� ji, jinak nastav� angli�tinu
   */
- private void prepniJazyk(){
-
-	 if(jazyk.getCountry()!="CZ"){
-		 jazyk = new Locale("cs","CZ");
-	 }
-	 else
-		 jazyk = new Locale("en","UK");
+ private void posliZpravu(){
+	 String msg = JOptionPane.showInputDialog("Zadej zprávu");
+ 	 netService.addMsg(msg);
  }
- 
+
+
  /**
-  * Metoda nastav� v�echny texty v aplikace dle st�vaj�c�ho jazyka
+  * Metoda nastaví všechny texty v aplikace dle stávajíího jazyka
   */
  private void nastavTexty(){
-	zpravy = ResourceBundle.getBundle("Texts",jazyk);
+	textyAplikace = ResourceBundle.getBundle("Texts",jazyk);
 	
-	 okno.setTitle(zpravy.getString("windowTitle"));
+	 okno.setTitle(textyAplikace.getString("windowTitle"));
 	 
-	 menuEdit.setText(zpravy.getString("menuEdit"));
-	 menuFile.setText(zpravy.getString("menuFile"));
-	 menuHelp.setText(zpravy.getString("menuHelp"));
+	 menuEdit.setText(textyAplikace.getString("menuEdit"));
+	 menuFile.setText(textyAplikace.getString("menuFile"));
+	 menuHelp.setText(textyAplikace.getString("menuHelp"));
 	 
-	 save.setText(zpravy.getString("save"));
-	 copy.setText(zpravy.getString("copy"));
-	 paste.setText(zpravy.getString("paste"));
-	 open.setText(zpravy.getString("open"));
-	 novy.setText(zpravy.getString("new"));
-	 exit.setText(zpravy.getString("exit"));
-	 about.setText(zpravy.getString("about"));
+	 save.setText(textyAplikace.getString("save"));
+	 copy.setText(textyAplikace.getString("copy"));
+	 paste.setText(textyAplikace.getString("paste"));
+	 open.setText(textyAplikace.getString("open"));
+	 novy.setText(textyAplikace.getString("new"));
+	 exit.setText(textyAplikace.getString("exit"));
+	 about.setText(textyAplikace.getString("about"));
 	 
 	 // ImageIcon icon = new ImageIcon(getClass().getResource("/images/"+jazyk.getCountry()+".gif"));
 	 //lang.setIcon(icon);
-	 content.setText(zpravy.getString("content"));
+	 content.setText(textyAplikace.getString("content"));
 	 
 	 
  }
@@ -206,7 +209,7 @@ public class GUIInter {
 
 		public AkceNapoveda() {
 
-	            putValue(NAME, zpravy.getString("about"));
+	            putValue(NAME, textyAplikace.getString("about"));
 	            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_A, ActionEvent.CTRL_MASK));
 	        }
 		
@@ -214,10 +217,10 @@ public class GUIInter {
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
 			
-			JOptionPane.showMessageDialog(okno, 
-										zpravy.getString("aboutText"),
-										zpravy.getString("about"), 
-										JOptionPane.INFORMATION_MESSAGE);
+			JOptionPane.showMessageDialog(okno,
+					textyAplikace.getString("aboutText"),
+					textyAplikace.getString("about"),
+					JOptionPane.INFORMATION_MESSAGE);
 			
 		}  
 	}
@@ -235,7 +238,7 @@ public class GUIInter {
 
 
 		public AkceVypnout() {
-	            putValue(NAME, zpravy.getString("exit"));
+	            putValue(NAME, textyAplikace.getString("exit"));
 	            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_E, ActionEvent.CTRL_MASK));
 	        }
 		@Override
@@ -249,36 +252,28 @@ public class GUIInter {
 
 
 	/***
-	 * Akce p�epnut� jazyka
+	 * Odeslání zprávy
 	 *
 	 */
-	class AkceSwitch extends AbstractAction {
+	class AkceSend extends AbstractAction {
 		private static final long serialVersionUID = 11L;
 
 
-		public AkceSwitch() {
+		public AkceSend() {
 	          // ImageIcon icon = new ImageIcon(getClass().getResource("/images/"+jazyk.getCountry()+".gif"));
 	           // putValue(SMALL_ICON, icon);
-	            putValue(NAME, "Akce switch language;");
+	            putValue(NAME, textyAplikace.getString("sendMessage"));
 				putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_A, ActionEvent.CTRL_MASK));
 	        }
 		
 		
 		@Override
-		public void actionPerformed(ActionEvent arg0) {
-			 
-			prepniJazyk();
-			nastavTexty();
-			
+		public void actionPerformed(ActionEvent arg0){
+			posliZpravu();
 		}  
 	}
 	
-//######################################################################x	
-	
-public static void main(String[] args)
-{
-	new GUIInter();
-}
+//######################################################################x
 	
 
 	

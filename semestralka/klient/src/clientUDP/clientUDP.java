@@ -40,7 +40,7 @@ public abstract class clientUDP
                    send = new DatagramPacket(buffer, buffer.length, address, port);
                    ds.send(send);
 
-                     DatagramPacket recv = new DatagramPacket(buffer, buffer.length );
+				DatagramPacket recv = new DatagramPacket(buffer, buffer.length );
                ds.receive( recv );
                data = new String( buffer );
                System.out.print( "Prijal sem data - "+data+"\n");
