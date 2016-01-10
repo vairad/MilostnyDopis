@@ -12,6 +12,12 @@
 #include <stdio.h>
 
 const int OFFSET = 4;
+const int BUFFER_SIZE = 256; 
+
+
+int run_flag_netservice = 1;
+
+/////////////////////////////////////////////////////////////////////// NETSERVICE FUNCTIONS
 
 int prepare_socket(int port, int *server_sock){
         int server_addr_len;
@@ -41,30 +47,31 @@ int prepare_socket(int port, int *server_sock){
 }
 
 void listen_netservice(int *server_sock){
+	/*fd_set read_set;
+	FD_SET( *server_sock, read_set )
+*/
 	int n;
         int client_addr_len;
         struct sockaddr_in *remote_addr = malloc(sizeof (struct sockaddr_in));
-        char c_buff[256];
+        char c_buff[BUFFER_SIZE];
 
 	client_addr_len = sizeof( *remote_addr );
 
-	while( 1 ) 
+	while( run_flag_netservice ) 
  	{
                 log_info("Cekam na data.");
                 
                 //look at first 10 bytes of msg on size of next msg
 		n = recvfrom(*server_sock, c_buff, 7, MSG_PEEK, (struct sockaddr*)remote_addr, &client_addr_len );
         	c_buff[n] = 0;                  
-		n = atoi( c_buff+OFFSET ); //read lengt of message
-		printf("BYTES TO READ: %d\n", n);
+		printf( "READED BYTES : %d\n", n);
 
+                int i = atoi( c_buff+OFFSET );
+		printf("Zjistena velikost %d\n", i);
 
-		n = recvfrom(*server_sock, c_buff, n, 0, (struct sockaddr*)remote_addr, &client_addr_len );
-        	c_buff[n] = 0;	
-		printf("READED BYTES: %d\n", n);
-
-
-                log_info( "Zprava z klienta:");
+		n = recvfrom(*server_sock, c_buff, i, 0, (struct sockaddr*)remote_addr, &client_addr_len );
+	
+		log_info( "Zprava z klienta:");
 		log_msg_in( c_buff );
 /*
                 log_info( "Server odesila:");
