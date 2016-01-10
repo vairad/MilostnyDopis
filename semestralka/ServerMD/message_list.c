@@ -10,43 +10,6 @@ void init_msg_queue(msg_queue *queue){
     queue->last = NULL;
 }
 
-/**
- * @brief push_back
- * @param queue
- * @param msg
- * @param addr
- * @param addr_len
- * @return true / false jestli operace byla úspěšná
- */
-int push_back(char *msg_in, struct sockaddr_in *addr,  socklen_t addr_len){
-    log_info("in push_back()");
-    if(queue == NULL){
-        log_error("Nebyl predan odkaz na frontu v push_back()");
-        return 0;
-    }
-    if(msg_in == NULL){
-        log_error("Nebyl predan odkaz na zpravu v push_back()");
-        return 0;
-    }
-    if(addr == NULL){
-        log_error("Nebyl predan odkaz na adresu v push_back()");
-        return 0;
-    }
-
-    //priprava noveho uzlu
-    msg new_msg;
-
-    strcpy(new_msg.msg, msg_in);
-
-    new_msg.addr = addr;
-    new_msg.addr_len = addr_len;
-
-    //razeni do fronty
-    msgs_in_list.push_back(new_msg);
-    log_info("OK out push_back()");
-    return 1;
-}
-
 int push_back(msg_queue *queue, char *msg_in, struct sockaddr_in *addr,  socklen_t addr_len){
     log_info("in push_back()");
     if(queue == NULL){
@@ -66,7 +29,7 @@ int push_back(msg_queue *queue, char *msg_in, struct sockaddr_in *addr,  socklen
     msg *new_msg;
     new_msg = malloc(sizeof (struct MSG));
 
-    new_msg->msg = malloc(strlen(msg_in));
+    new_msg->msg = malloc(strlen(msg_in)+1);
     strcpy(new_msg->msg, msg_in);
 
     new_msg->addr = addr;
@@ -87,35 +50,6 @@ int push_back(msg_queue *queue, char *msg_in, struct sockaddr_in *addr,  socklen
         queue->last = new_msg; // konec fronty ukazuje na novy konec
     }
     log_info("OK out push_back()");
-    return 1;
-}
-
-int pop_front(char **msg_out, struct sockaddr_in **addr,  socklen_t *addr_len){
-    log_info("in pop_front()");
-    if(queue == NULL){
-        log_error("Nebyl predan odkaz na frontu v pop_front()");
-        return 0;
-    }
-    if(msg_out == NULL){
-        log_error("Nebyl predan odkaz na zpravu v pop_front()");
-        return 0;
-    }
-    if(addr == NULL){
-        log_error("Nebyl predan odkaz na adresu v pop_front()");
-        return 0;
-    }
-    if(addr == NULL){
-        log_error("Nebyl predan odkaz na delku adresy v pop_front()");
-        return 0;
-    }
-
-    msg msg_pop = msgs_in_list.pop_front(); //zachovej si odkaz
-
-    *msg_out = msg_pop.msg;
-    *addr = msg_pop.addr;
-    *addr_len = msg_pop.addr_len;
-
-    log_info("OK out pop_front()");
     return 1;
 }
 
@@ -151,7 +85,7 @@ int pop_front(msg_queue *queue, char **msg_out, struct sockaddr_in **addr,  sock
     *addr = msg_pop->addr;
     *addr_len = msg_pop->addr_len;
 
-    my_free(msg_pop);
+    free(msg_pop);
 
     log_info("OK out pop_front()");
     return 1;
@@ -162,7 +96,7 @@ void pop(msg_queue *queue){
     log_info("in pop()");
     if(queue == NULL){
         log_error("Nebyl predan odkaz na frontu v pop()");
-        return 0;
+        return;
     }
 
     if(queue->first == queue->last){ // pokud ukazuje na stejny prvek je posledni nebo je fronta prazdna

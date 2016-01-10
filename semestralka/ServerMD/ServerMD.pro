@@ -5,12 +5,12 @@ CONFIG -= qt
 
 LIBS += -lpthread
 
-SOURCES +=  server.cpp \
-            log.cpp \
-            netservice.cpp \
-            game.cpp \
-            synchonize.cpp \
-            message_list.cpp
+SOURCES +=  server.c \
+            log.c \
+            netservice.c \
+            game.c \
+            synchonize.c \
+            message_list.c
 
 HEADERS += log.h \
             netservice.h \

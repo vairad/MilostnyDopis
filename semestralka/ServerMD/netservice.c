@@ -62,7 +62,7 @@ void listen_netservice(int *server_sock){
     log_info("RECV: Prijimaci vlakno bezi");
 	while( run_flag_netservice ) 
  	{
-        remote_addr = (sockaddr_in *)malloc(sizeof (struct sockaddr_in));
+        remote_addr = malloc(sizeof (struct sockaddr_in));
         log_info("RECV: Cekam na data.");
 
         //look at first 10 bytes of msg on size of next msg
@@ -81,7 +81,7 @@ void listen_netservice(int *server_sock){
 
         //start kriticka sekce zapisu do bufferu
         sem_wait(&rcv_cs);
-            if(push_back(c_buff, remote_addr, client_addr_len)){
+            if(push_back(&msgs_in, c_buff, remote_addr, client_addr_len)){
                 sem_post(&msgs_in_count);
             }
         sem_post(&rcv_cs);
@@ -96,6 +96,7 @@ void send_netservice(int *server_sock){
     socklen_t client_addr_len;
     struct sockaddr_in *remote_addr;
     char *c_buff;
+    int logic = 0;
 
     log_info("SEND: Odesilaci vlakno bezi");
     while (run_flag_netservice){
@@ -103,23 +104,23 @@ void send_netservice(int *server_sock){
         sem_wait(&msgs_in_count);
         log_info("SEND: Pripravuji odeslani dat.");
 
-        int logic = 0;
-
         sem_wait(&rcv_cs);
             log_info("SEND: KS seznamu zprav.");
-            logic = pop_front(&c_buff, &remote_addr, &client_addr_len);
-            printf("fuck");
-            printf("%d", logic);
+            logic = pop_front(&msgs_in, &c_buff, &remote_addr, &client_addr_len);
+
+            printf("VYBRANO = %d \n", logic);
             if(logic == 1){
-                printf("%s", c_buff);
-                sem_wait(&msgs_in_count);
+                printf("%s \n", c_buff);
+            }else{
+                sem_post(&msgs_in_count); // pokud zpráva nebyla vybraná opet zvys semafor
             }
         sem_post(&rcv_cs);
 
-        log_info("SEND: Server odesila");
-        log_msg_out( c_buff );
-
-        n = sendto( *server_sock, c_buff, n, 0, (struct sockaddr*)remote_addr, client_addr_len );
+       log_info("SEND: Server odesila");
+       log_msg_out( c_buff );
+       n = strlen(c_buff) + 1;
+       n = sendto( *server_sock, c_buff, n, 0, (struct sockaddr*)remote_addr, client_addr_len );
+       printf("odeslano: %d \n", n);
     }
 
 }
@@ -129,8 +130,8 @@ void start_netservice(int *server_sock){
     pthread_create(&sender, NULL, &send_netservice, server_sock);
     sleep(100); // wait until threads create
 
-    pthread_join(&reciever, NULL);
-    pthread_join(&sender, NULL);
+    pthread_join(reciever, NULL);
+    pthread_join(sender, NULL);
 }
 
 

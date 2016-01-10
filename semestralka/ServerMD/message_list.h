@@ -11,7 +11,7 @@
 #include <stddef.h>
 
 typedef struct MSG{
-    char msg[128];
+    char *msg;
     struct sockaddr_in *addr;
     socklen_t addr_len;
 
@@ -32,9 +32,6 @@ void init_msg_queue(msg_queue *queue);
 void pop(msg_queue *queue);
 int push_back(msg_queue *queue, char *msg, struct sockaddr_in *addr,  socklen_t addr_len);
 int pop_front(msg_queue *queue, char **msg, struct sockaddr_in **addr,  socklen_t *addr_len);
-
-int push_back(char *msg, struct sockaddr_in *addr,  socklen_t addr_len);
-int pop_front(char **msg, struct sockaddr_in **addr,  socklen_t *addr_len);
 
 
 #endif // MESSAGE_LIST_H
