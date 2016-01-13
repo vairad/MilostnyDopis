@@ -1,4 +1,4 @@
-//:package test;
+package clientUDP;//:package test;
 
 import java.lang.System;
 import java.net.DatagramSocket;

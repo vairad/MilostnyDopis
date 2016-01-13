@@ -1,4 +1,4 @@
-package test;
+package log;
 
 import java.util.logging.Formatter;
 import java.util.logging.LogRecord;
@@ -19,10 +19,10 @@ public class LogFormater extends Formatter {
     }
 
     /** instance třídy formátovač */
-    private static test.LogFormater INSTANCE = new test.LogFormater();
+    private static LogFormater INSTANCE = new LogFormater();
 
     /** getter instance */
-    public static test.LogFormater getInstance(){
+    public static LogFormater getInstance(){
         return INSTANCE;
     }
 

@@ -1,14 +1,14 @@
 package net;
 
 import java.util.logging.Logger;
-import java.util.logging.LogManager;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.util.concurrent.BlockingQueue;
 
 /**
- * Created by XXXXXXXXXXXXXXXX on 9.1.16.
+ * Třída předsatvuje vlákno přijímání zpráv
+ * Created by Radek VAIS on 9.1.16.
  */
 public class Receiver implements Runnable {
 
@@ -28,7 +28,7 @@ public class Receiver implements Runnable {
         DatagramPacket recv = new DatagramPacket(buffer, buffer.length );
         String data;
 
-        while(true) {
+        while(netService.isRunning()) {
             try {
                 netService.getDatagramSocket().receive(recv);       //poslouchej na soketu
 

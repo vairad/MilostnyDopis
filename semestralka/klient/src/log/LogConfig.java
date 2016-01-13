@@ -1,5 +1,6 @@
-package test;
+package log;
 
+import gui.GUIInter;
 import gui.Main;
 import net.NetService;
 import net.Receiver;
@@ -50,6 +51,8 @@ public class LogConfig {
         Receiver.logger = Logger.getLogger(Receiver.class.getName());
         Sender.logger = Logger.getLogger(Sender.class.getName());
 
+        GUIInter.logger = Logger.getLogger(GUIInter.class.getName());
+
         //nastavení úrovně výpisů loggeru
         Level level = Level.ALL;
 
@@ -57,6 +60,7 @@ public class LogConfig {
         NetService.logger.setLevel(level);
         Receiver.logger.setLevel(level);
         Sender.logger.setLevel(level);
+        GUIInter.logger.setLevel(level);
 
         //připojení handlerů
 
@@ -64,6 +68,7 @@ public class LogConfig {
         NetService.logger.addHandler(consoleHandler);
         Receiver.logger.addHandler(consoleHandler);
         Sender.logger.addHandler(consoleHandler);
+        GUIInter.logger.addHandler(consoleHandler);
 
       /*  Hlavni.hlavniLogger.addHandler(fileHandler);
         Generator.generatorLogger.addHandler(fileHandler);

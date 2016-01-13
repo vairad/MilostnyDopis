@@ -13,7 +13,7 @@ public class Main {
 
     /*Statický inicializační blok nastavující odkaz (proměnnou) na konfiguraci loggeru*/
     static {
-        System.setProperty("java.util.logging.config.class","test.LogConfig");
+        System.setProperty("java.util.logging.config.class","log.LogConfig");
     }
 
     /** instance loggeru hlavni tridy */
@@ -24,6 +24,12 @@ public class Main {
         NetService nt = null;
         int port = 1234;
         String address = "127.0.0.1";
+
+        if(args.length == 2){
+            port = Integer.parseInt(args[1]);
+            address = args[0];
+        }
+
         try {
             nt = new NetService(1234, address);
             logger.info("NetService je pripraveny na "+address+":"+port);

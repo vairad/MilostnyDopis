@@ -1,5 +1,6 @@
 package gui;
 
+import net.MessageFactory;
 import net.NetService;
 
 import java.awt.Dimension;
@@ -8,6 +9,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.logging.Logger;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
@@ -22,12 +24,14 @@ import javax.swing.KeyStroke;
 
 public class GUIInter {
 
+	public static Logger logger; // inicializace probíhá v konfiguraci logovani
+
  private JFrame okno = new JFrame();
  
  private JMenuBar menu = new JMenuBar();
  private JMenu menuEdit, menuFile, menuHelp;
  private JMenuItem save,copy,paste,open,novy,exit,about;
- private JButton lang;
+ private JButton button1, button2, button3;
  private JLabel content;
  
  
@@ -69,9 +73,18 @@ public class GUIInter {
 	 
 	 JPanel panel = new JPanel(new FlowLayout());
 	 
-	 	lang = new JButton(new AkceSend());
-	 	lang.setPreferredSize(new Dimension(200,20));
-	 panel.add(lang);
+	 	button1 = new JButton(new AkceSend());
+	 	button1.setPreferredSize(new Dimension(200, 20));
+	 panel.add(button1);
+
+	 button2 = new JButton(new AkceSendTemplate());
+	 button2.setPreferredSize(new Dimension(200, 20));
+	 	panel.add(button2);
+
+	 button3 = new JButton(new AkceSendServer());
+	 button3.setPreferredSize(new Dimension(200, 20));
+	 panel.add(button3);
+
 	 	content = new JLabel(textyAplikace.getString("content"));
 	 panel.add(content);
 	 
@@ -160,8 +173,7 @@ public class GUIInter {
   * Metoda p�epne jazyk
   * Pokud nen� nastaven na �e�tinu nastav� ji, jinak nastav� angli�tinu
   */
- private void posliZpravu(){
-	 String msg = JOptionPane.showInputDialog("Zadej zprávu");
+ private void posliZpravu(String msg){
  	 netService.addMsg(msg);
  }
 
@@ -187,7 +199,7 @@ public class GUIInter {
 	 about.setText(textyAplikace.getString("about"));
 	 
 	 // ImageIcon icon = new ImageIcon(getClass().getResource("/images/"+jazyk.getCountry()+".gif"));
-	 //lang.setIcon(icon);
+	 //button1.setIcon(icon);
 	 content.setText(textyAplikace.getString("content"));
 	 
 	 
@@ -269,8 +281,60 @@ public class GUIInter {
 		
 		@Override
 		public void actionPerformed(ActionEvent arg0){
-			posliZpravu();
+			String msg = JOptionPane.showInputDialog("Zadej zprávu");
+			posliZpravu(msg);
 		}  
+	}
+
+	//########
+
+
+	/***
+	 * Odeslání zprávy
+	 *
+	 */
+	class AkceSendTemplate extends AbstractAction {
+		private static final long serialVersionUID = 11L;
+
+
+		public AkceSendTemplate() {
+			// ImageIcon icon = new ImageIcon(getClass().getResource("/images/"+jazyk.getCountry()+".gif"));
+			// putValue(SMALL_ICON, icon);
+			putValue(NAME, textyAplikace.getString("sendMessageT"));
+			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_A, ActionEvent.CTRL_MASK));
+		}
+
+
+		@Override
+		public void actionPerformed(ActionEvent arg0){
+			String msg = "ACK#121#123456654321#KCA#";
+			posliZpravu(msg);
+		}
+	}
+
+
+	/***
+	 * Odeslání zprávy
+	 *
+	 */
+	class AkceSendServer extends AbstractAction {
+		private static final long serialVersionUID = 11L;
+
+
+		public AkceSendServer() {
+			// ImageIcon icon = new ImageIcon(getClass().getResource("/images/"+jazyk.getCountry()+".gif"));
+			// putValue(SMALL_ICON, icon);
+			putValue(NAME, textyAplikace.getString("sendMessageT"));
+			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_A, ActionEvent.CTRL_MASK));
+		}
+
+
+		@Override
+		public void actionPerformed(ActionEvent arg0){
+			String msg = MessageFactory.serverMessage("list");
+			logger.info("odesilam: "+msg);
+			posliZpravu(msg);
+		}
 	}
 	
 //######################################################################x

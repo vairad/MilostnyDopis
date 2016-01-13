@@ -1,7 +1,6 @@
 package net;
 
 import java.util.logging.Logger;
-import java.util.logging.LogManager;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -9,7 +8,8 @@ import java.net.InetAddress;
 import java.util.concurrent.BlockingQueue;
 
 /**
- * Created by XXXXXXXXXXXXXXXX on 9.1.16.
+ * Třída predstavuje vlákno odesílání zpráv...
+ * Created by Radek VAIS on 9.1.16.
  */
 public class Sender implements Runnable {
 
@@ -29,7 +29,7 @@ public class Sender implements Runnable {
 
     @Override
     public void run(){
-        while(true){
+        while(netservice.isRunning()){
             try {
                 send(toSend.take());
             } catch (InterruptedException e) {
@@ -42,9 +42,10 @@ public class Sender implements Runnable {
     private void send(String msg){
         byte buffer[] = msg.getBytes(); // připrav data do bufferu
 
-        logger.info("Data k odeslani = " + msg + "\n");
-        DatagramPacket send;
-        send = new DatagramPacket(buffer, buffer.length, address, port);
+        logger.info("Data k odeslani = " + msg );
+        DatagramPacket send = new DatagramPacket(buffer, buffer.length, address, port);
+        NetService.send_bytes += buffer.length;
+        logger.info("Pocet odeslanych bytu: " + NetService.send_bytes);
         try {
             netservice.getDatagramSocket().send(send);
             logger.info("Data odeslana.");
