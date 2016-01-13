@@ -1,5 +1,5 @@
-#include "log.h"
-#include "netservice.h"
+#include "test/log.h"
+#include "netservice/netservice.h"
 
 
 ///////////////////////////////////////////////////////////// ARGUMENT CHECK
@@ -27,8 +27,9 @@ int main(int argc, const char* argv[])
     if(prepare_socket(port, &server_sock)){
 
         init_synchronize(); //inicializace semaforuu
+        start_netservice(&server_sock); // spusteni komunikacni sluzby
 
-        start_netservice(&server_sock);
+        join_netservice(); // cekani na dokonceni komunikacnich sluzeb (korektni ukonceni)
         return 0;
     }
 

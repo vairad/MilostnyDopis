@@ -6,14 +6,14 @@ CONFIG -= qt
 LIBS += -lpthread
 
 SOURCES +=  server.c \
-            log.c \
-            netservice.c \
-            game.c \
-            synchonize.c \
-            message_list.c
+            test/log.c \
+            netservice/netservice.c \
+            game/game.c \
+            core/synchonize.c \
+            netservice/message_list.c
 
-HEADERS += log.h \
-            netservice.h \
-            game.h \
-            synchonize.h \
-            message_list.h
+HEADERS += test/log.h \
+            netservice/netservice.h \
+            game/game.h \
+            core/synchonize.h \
+            netservice/message_list.h

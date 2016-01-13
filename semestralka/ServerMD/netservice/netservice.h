@@ -4,13 +4,16 @@
 
 #include <pthread.h>
 
-#include "synchonize.h"
+#include "core/synchonize.h"
 
 pthread_t reciever, sender;
 
 int prepare_socket(int port, int *server_sock);
-void listen_netservice(int *server_sock);
+int listen_netservice(int *server_sock);
+int send_netservice(int *server_sock);
+
 void start_netservice(int *server_sock);
+void join_netservice();
 
 #endif
 

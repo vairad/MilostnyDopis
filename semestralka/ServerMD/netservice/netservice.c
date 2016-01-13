@@ -8,9 +8,9 @@
 
 #include <pthread.h>
 
-#include "log.h"
-#include "netservice.h"
-#include "synchonize.h"
+#include "test/log.h"
+#include "netservice/netservice.h"
+#include "core/synchonize.h"
 
 
 #include <stdio.h>
@@ -50,8 +50,8 @@ int prepare_socket(int port, int *server_sock){
         }
 }
 
-
-void listen_netservice(int *server_sock){
+///////////////////////////////THREAD FUNCTION LISTEN
+int listen_netservice(int *server_sock){
         int n;
         socklen_t client_addr_len;
         struct sockaddr_in *remote_addr;
@@ -75,9 +75,10 @@ void listen_netservice(int *server_sock){
         //printf("Zjistena velikost %d\n", i);
 
 		n = recvfrom(*server_sock, c_buff, i, 0, (struct sockaddr*)remote_addr, &client_addr_len );
-	
+        c_buff[n] = 0; //nastav konec retezce
+
         log_info("RECV: Prijata zprava:");
-        log_msg_in( c_buff );
+        log_msg_in(c_buff);
 
         //start kriticka sekce zapisu do bufferu
         sem_wait(&rcv_cs);
@@ -90,9 +91,10 @@ void listen_netservice(int *server_sock){
     }
 }
 
-void send_netservice(int *server_sock){
+//////////////////////////////////THREAD FUNCTION SEND
+int send_netservice(int *server_sock){
 
-    int n;
+    size_t n;
     socklen_t client_addr_len;
     struct sockaddr_in *remote_addr;
     char *c_buff;
@@ -104,32 +106,43 @@ void send_netservice(int *server_sock){
         sem_wait(&msgs_in_count);
         log_info("SEND: Pripravuji odeslani dat.");
 
-        sem_wait(&rcv_cs);
+        sem_wait(&send_cs);//////////////////////////////
             log_info("SEND: KS seznamu zprav.");
-            logic = pop_front(&msgs_in, &c_buff, &remote_addr, &client_addr_len);
+            logic = pop_front(&msgs_out, &c_buff, &remote_addr, &client_addr_len);
 
-            printf("VYBRANO = %d \n", logic);
-            if(logic == 1){
-                printf("%s \n", c_buff);
-            }else{
-                sem_post(&msgs_in_count); // pokud zpráva nebyla vybraná opet zvys semafor
+            if(logic != 1){
+                sem_post(&msgs_out_count); // pokud zpráva nebyla vybraná opet zvys semafor
             }
-        sem_post(&rcv_cs);
+        sem_post(&send_cs);/////////////////////////////
 
        log_info("SEND: Server odesila");
        log_msg_out( c_buff );
-       n = strlen(c_buff) + 1;
-       n = sendto( *server_sock, c_buff, n, 0, (struct sockaddr*)remote_addr, client_addr_len );
-       printf("odeslano: %d \n", n);
-    }
 
+       n = strlen(c_buff);
+
+       printf("INFO  : SEND: strlen: %u \n", n);
+
+       c_buff[n] = 0;
+       n++;
+       c_buff[n] = 0;
+
+       n = sendto( *server_sock, c_buff, n, 0, (struct sockaddr*)remote_addr, client_addr_len );
+
+       printf("INFO   : SEND: sendto: %u \n", n);
+
+       log_info("SEND: Server odeslal zpravu");
+    }
 }
 
+
+//////////////////////////////////////////////START THREADS OF NETSERVICE
 void start_netservice(int *server_sock){
     pthread_create(&reciever, NULL, &listen_netservice, server_sock);
     pthread_create(&sender, NULL, &send_netservice, server_sock);
-    sleep(100); // wait until threads create
 
+}
+
+void join_netservice(){
     pthread_join(reciever, NULL);
     pthread_join(sender, NULL);
 }

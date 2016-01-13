@@ -3,7 +3,7 @@
 
 #include <semaphore.h>
 
-#include "message_list.h"
+#include "netservice/message_list.h"
 //semafory kritickych sekci v netservice
 sem_t rcv_cs, send_cs, free_cs;
 sem_t msgs_in_count, msgs_out_count;

@@ -1,7 +1,7 @@
 #include <semaphore.h>
 
-#include "synchonize.h"
-#include "message_list.h"
+#include "core/synchonize.h"
+#include "netservice/message_list.h"
 
 void init_synchronize(){
     //inicializace semaforu v netservice

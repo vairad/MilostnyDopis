@@ -1,8 +1,8 @@
 #include <stddef.h>
 
-#include "log.h"
-#include "message_list.h"
-#include "synchonize.h"
+#include "test/log.h"
+#include "netservice/message_list.h"
+#include "core/synchonize.h"
 
 
 void init_msg_queue(msg_queue *queue){
@@ -11,7 +11,7 @@ void init_msg_queue(msg_queue *queue){
 }
 
 int push_back(msg_queue *queue, char *msg_in, struct sockaddr_in *addr,  socklen_t addr_len){
-    log_info("in push_back()");
+    log_trace("in push_back()");
     if(queue == NULL){
         log_error("Nebyl predan odkaz na frontu v push_back()");
         return 0;
@@ -29,7 +29,7 @@ int push_back(msg_queue *queue, char *msg_in, struct sockaddr_in *addr,  socklen
     msg *new_msg;
     new_msg = malloc(sizeof (struct MSG));
 
-    new_msg->msg = malloc(strlen(msg_in)+1);
+    new_msg->msg = malloc(strlen(msg_in));
     strcpy(new_msg->msg, msg_in);
 
     new_msg->addr = addr;
@@ -49,12 +49,12 @@ int push_back(msg_queue *queue, char *msg_in, struct sockaddr_in *addr,  socklen
         new_msg->next = NULL;   // novy ukazije Nikam
         queue->last = new_msg; // konec fronty ukazuje na novy konec
     }
-    log_info("OK out push_back()");
+    log_trace("OK out push_back()");
     return 1;
 }
 
 int pop_front(msg_queue *queue, char **msg_out, struct sockaddr_in **addr,  socklen_t *addr_len){
-    log_info("in pop_front()");
+    log_trace("in pop_front()");
     if(queue == NULL){
         log_error("Nebyl predan odkaz na frontu v pop_front()");
         return 0;
@@ -87,13 +87,13 @@ int pop_front(msg_queue *queue, char **msg_out, struct sockaddr_in **addr,  sock
 
     free(msg_pop);
 
-    log_info("OK out pop_front()");
+    log_trace("OK out pop_front()");
     return 1;
 }
 
 
 void pop(msg_queue *queue){
-    log_info("in pop()");
+    log_trace("in pop()");
     if(queue == NULL){
         log_error("Nebyl predan odkaz na frontu v pop()");
         return;
@@ -106,5 +106,5 @@ void pop(msg_queue *queue){
         queue->first = queue->first->prev;
         queue->first->next = NULL;
     }
-    log_info("OK out pop()");
+    log_trace("OK out pop()");
 }
