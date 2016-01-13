@@ -9,3 +9,5 @@
 /bin/
 /out/
 
+#ignore log files
+*.log*
