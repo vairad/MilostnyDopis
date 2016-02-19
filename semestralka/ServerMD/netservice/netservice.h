@@ -9,8 +9,9 @@
 pthread_t reciever, sender;
 
 int prepare_socket(int port, int *server_sock);
-int listen_netservice(int *server_sock);
-int send_netservice(int *server_sock);
+void *listen_netservice(void *server_sock_p);
+void *send_netservice(void *server_sock_p);
+void stop_netservice();
 
 void start_netservice(int *server_sock);
 void join_netservice();

@@ -10,10 +10,12 @@ SOURCES +=  server.c \
             netservice/netservice.c \
             game/game.c \
             core/synchonize.c \
-            netservice/message_list.c
+    core/service.c \
+    netservice/messages.c
 
 HEADERS += test/log.h \
             netservice/netservice.h \
             game/game.h \
             core/synchonize.h \
-            netservice/message_list.h
+    core/service.h \
+    netservice/messages.h
