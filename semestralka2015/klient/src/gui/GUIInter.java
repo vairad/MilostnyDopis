@@ -5,8 +5,7 @@ import net.NetService;
 
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
+import java.awt.event.*;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
@@ -53,9 +52,26 @@ public class GUIInter {
 	 this.netService = netService;
 
 	 okno.setLocationRelativeTo(null); // okno na stred
-	 okno.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // krizek ukonci program
-	 okno.setTitle(textyAplikace.getString("windowTitle")); // nastavi titulek okna
+
+	 okno.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE); // krizek nic nedela
+	 okno.addWindowListener(new WindowAdapter() {
+		 @Override
+		 public void windowClosing(WindowEvent e) {
+
+			 // dotaz, zda chci opravdu ukončit aplikaci
+			 if (JOptionPane.showConfirmDialog(okno,
+					 textyAplikace.getString("askQuit"), textyAplikace.getString("titleQuit"),
+					 JOptionPane.YES_NO_OPTION,
+					 JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+				 System.exit(0);
+			 }
+		 }
+	 });
+
+     okno.setTitle(textyAplikace.getString("windowTitle")); // nastavi titulek okna
+
 	 okno.setPreferredSize(new Dimension(300, 200)); // nastaví výchozí rozmer
+	 okno.setMinimumSize(new Dimension(300, 200)); //nastavi minimalni
 	 
 	 generujMenu(); //pripravi vodorovne menu
 	 
@@ -64,8 +80,14 @@ public class GUIInter {
 	 okno.pack(); // idealizuj rozmery okna
 	 okno.setVisible(true); // zobraz
  }
- 
- 
+
+	/**
+	 *
+	 */
+public void closeApp(){
+	 System.exit(0);
+ }
+
  /**
   * Vygeneruje obsah okna prida ho do okna
   */
