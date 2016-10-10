@@ -4,6 +4,8 @@ CONFIG -= app_bundle
 CONFIG -= qt
 
 SOURCES += main.cpp \
-    log/log.cpp
+    log/log.cpp \
+    netservice/netservice.cpp
 
-HEADERS += log/log.h
+HEADERS += log/log.h \
+    netservice/netservice.h

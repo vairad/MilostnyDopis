@@ -1,5 +1,9 @@
 #include <stdio.h>
 
+#ifndef LOG_H_123456
+#define LOG_H_123456
+
+
 #define LOG_TRACE(a)                LOG("TRACE", a)
 #define LOG_TRACE_P1(a, num)        LOG_P1("TRACE", a, num)
 #define LOG_TRACE_PS(a, num)        LOG_PS("TRACE", a, num)
@@ -31,3 +35,6 @@
 #define MSG_PD(a, b) printf(">%s %d\n", a, b);
 
 void test_log_macros();
+
+
+#endif
