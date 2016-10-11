@@ -1,6 +1,7 @@
 #include <iostream>
 #include "log/log.h"
-#include "netservice/netservice.h"
+#include "netservice/netstructure.h"
+#include "netservice/reciever.h"
 
 //=====================================================================================
 
@@ -104,7 +105,8 @@ int read_args(int argc, char** argv)
  * @return
  */
 int start_server(){
-    Netservice service();
+    NetStructure netStructure(port_number);
+    Reciever service(&netStructure);
     return 0;
 }
 

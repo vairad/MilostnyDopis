@@ -9,7 +9,9 @@ LIBS += -pthread
 
 SOURCES += main.cpp \
     log/log.cpp \
-    netservice/netservice.cpp
+    netservice/netstructure.cpp \
+    netservice/reciever.cpp
 
 HEADERS += log/log.h \
-    netservice/netservice.h
+    netservice/netstructure.h \
+    netservice/reciever.h
