@@ -1,5 +1,6 @@
 #include <iostream>
 #include "log/log.h"
+#include "netservice/netservice.h"
 
 //=====================================================================================
 
@@ -103,6 +104,7 @@ int read_args(int argc, char** argv)
  * @return
  */
 int start_server(){
+    Netservice service();
     return 0;
 }
 
