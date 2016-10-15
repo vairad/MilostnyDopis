@@ -1,0 +1,9 @@
+download java
+place it to /opt/java
+use update-alternatives --install usr/bin/exec exec <pathTo>/exec
+use update-alternatives --config (to setup which one should be used)
+
+setup system variables
+# export JAVA_HOME=/opt/java/jdk1.8.0_45/	
+# export JRE_HOME=/opt/java/jdk1.8.0._45/jre 	
+# export PATH=$PATH:/opt/java/jdk1.8.0_45/bin:/opt/java/jdk1.8.0_45/jre/bin
