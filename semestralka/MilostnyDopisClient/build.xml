@@ -4,63 +4,74 @@
 	<property name="out.dir" value="out/ant" />
 	<property name="src.dir" value="src" />
 	<property name="bin.dir" value="${out.dir}/bin" />
-	<property name="doc.dir" value="${out.dir}/doc" />
+	<property name="doc.dir" value="doc" />
 	<property name="res.dir" value="${out.dir}/res" />
-	<property name="date.name" value="date.txt" />
+	<property name="signatureFile.name" value="signature.txt" />
 	<property name="main.class" value="gui.App" />
 	<property name="jar.name" value="client.jar" />
 	
 
-	<target name="compile">
+	<target name="compile">  <!-- Compile all *.java files -->
 		<mkdir dir="${bin.dir}" />
 		<javac srcdir="./" destdir="${bin.dir}" />
 	</target>
 
-	<target name="resources">
+	<target name="resources"> <!-- Copy all resources to compiled files -->
 		<copy todir="${bin.dir}">
 			<fileset dir="${src.dir}" includes="**/*.fxml,**/*.properties,**/*.css,**/*.ico" />
 		</copy>
 	</target>
 
-	<target name="run" depends="compile, resources">
-	    <java classname="${main.class}" fork="true" dir="${bin.dir}" />
+	<target name="run" depends="compile, resources"> <!-- Run program from compiled files -->
+		<java classname="${main.class}" fork="true" dir="${bin.dir}" />
 	</target>
 	
-	<target name="javadoc">
-	    <mkdir dir="${doc.dir}" />
+	<target name="javadoc"> <!-- Create developer documentation from sources -->
+	    <mkdir dir="${out.dir}/${doc.dir}" />
 	    <javadoc sourcepath="${src.dir}" destdir="${doc.dir}" />
 	</target>
 	
-	<target name="timestamp">
-	    <tstamp>
+	<target name="signature"> <!-- create file with timestamp -->
+		<echo>Vytvářím informační soubor${line.separator}</echo>
+		<tstamp>
 	        <format property="TODAY" pattern="d. MMMM yyyy HH:mm" />
 	    </tstamp>
 
-	    <echo file="${out.dir}/${date.name}">Datum a čas překladu: ${TODAY}${line.separator}</echo>
+	    <echo file="${out.dir}/${signatureFile.name}">Datum a čas překladu: ${TODAY}${line.separator}Vytvořeno automaticky pomocí ANT scriptu${line.separator}Radek VAIS - A13B0457P${line.separator}</echo>
 	</target>
-	
-	<target name="distjar" depends="compile, javadoc, timestamp">
+
+	<!-- Create distribution jar with program docs, resources and .class files -->
+	<target name="distjar" depends="compile, resources, javadoc, signature">
 	    <jar destfile="${out.dir}/${jar.name}">
 	        <manifest>
 	            <attribute name="Main-Class" value="${main.class}" />
 	        </manifest>
 
-	        <fileset dir="${bin.dir}" />
-	        <fileset dir="." includes="${res.dir}/**" />
+	        <fileset dir="${bin.dir}" includes="**" />
 	        <fileset dir="." includes="${doc.dir}/**" />
-	        <fileset file="${date.name}" />
+	        <fileset file="${out.dir}/${signatureFile.name}" />
 	    </jar>
 	</target>
-	
+
+	<!-- Append source files to jar -->
 	<target name="srcjar" depends="distjar">
 	    <jar update="true" destfile="${out.dir}/${jar.name}">
 	        <fileset dir="." includes="${src.dir}/**" />
 	    </jar>
 	</target>
-	
+
+
+	<!-- Clean build folder -->
 	<target name="clean">
 	    <delete dir="${bin.dir}" />
-	    <delete dir="${doc.dir}" />
+	    <delete dir="${out.dir}/${doc.dir}" />
+		<delete file="${out.dir}/${signatureFile.name}" />
+	</target>
+
+	<!-- Delete all files created by this script -->
+	<target name="cleanAll" depends="clean">
+		<delete file="${out.dir}/${jar.name}" />
+		<delete dir="${out.dir}" />
 	</target>
 	
 </project>
