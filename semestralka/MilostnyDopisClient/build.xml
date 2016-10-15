@@ -22,10 +22,14 @@
 		</copy>
 	</target>
 
-	<target name="run" depends="compile, resources"> <!-- Run program from compiled files -->
+	<target name="run" depends="distjar"> <!-- Run program from compiled files -->
 		<java classname="${main.class}" fork="true" dir="${bin.dir}" />
 	</target>
-	
+
+	<target name="runJar" depends="compile, resources"> <!-- Run program from compiled files -->
+		<java jar="${out.dir}/${jar.name}" fork="true" dir="${bin.dir}" />
+	</target>
+
 	<target name="javadoc"> <!-- Create developer documentation from sources -->
 	    <mkdir dir="${out.dir}/${doc.dir}" />
 	    <javadoc sourcepath="${src.dir}" destdir="${out.dir}/${doc.dir}" />
