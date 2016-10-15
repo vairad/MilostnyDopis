@@ -48,7 +48,7 @@
 	        </manifest>
 
 	        <fileset dir="${bin.dir}" includes="**" />
-	        <fileset dir="." includes="${doc.dir}/**" />
+	        <fileset dir="${out.dir}" includes="${doc.dir}/**" />
 	        <fileset file="${out.dir}/${signatureFile.name}" />
 	    </jar>
 	</target>
