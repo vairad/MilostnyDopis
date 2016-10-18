@@ -6,6 +6,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
+import netservice.NetService;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -32,13 +33,18 @@ public class Controller implements Initializable {
     }
 
     @FXML
-    public void handleSubmitButtonAction(ActionEvent actionEvent) {
-        System.out.println("Handle button");
+    public void onConnect(ActionEvent actionEvent) {
+        NetService.checkIpOctet(ip1.getText());
+        NetService.checkIpOctet(ip2.getText());
+        NetService.checkIpOctet(ip3.getText());
+        NetService.checkIpOctet(ip4.getText());
+
+
         statusText.setText("Pokus o připojení k serveru");
     }
 
     @FXML
-    public void  handleLocallhost(ActionEvent actionEvent){
+    public void onDefaultConnection(ActionEvent actionEvent){
         ip1.setText("127");
         ip2.setText("12");
         ip3.setText("34");

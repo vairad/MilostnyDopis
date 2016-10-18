@@ -14,7 +14,7 @@
           GridPane.columnIndex="0"
           GridPane.rowIndex="0"
           GridPane.columnSpan="2">
-        <Text text="Welcome"
+        <Text text="%headline"
               fx:id="labelTitle"
                 />
     </VBox>
@@ -42,7 +42,7 @@
                 />
     </HBox>
 
-    <Label text="Přezdívka:"
+    <Label text="%nickName"
            GridPane.columnIndex="0" GridPane.rowIndex="2"/>
     <TextField fx:id="nickField"
                    GridPane.columnIndex="1" GridPane.rowIndex="2"/>
@@ -54,11 +54,16 @@
           GridPane.columnSpan="2"
             >
         <Button text="Nastav výchozí připojení"
-                onAction="#handleLocallhost"/>
+                onAction="#onDefaultConnection"/>
         <Button text="Připojit"
-                onAction="#handleSubmitButtonAction"/>
+                onAction="#onConnect"/>
     </VBox>
-    <Text fx:id="statusText"
-          GridPane.columnIndex="1" GridPane.rowIndex="6"/>
-
+    <VBox   spacing="10"
+            alignment="top_center"
+            GridPane.columnIndex="0"
+            GridPane.rowIndex="6"
+            GridPane.columnSpan="2"
+            >
+        <Text fx:id="statusText"/>
+    </VBox>
 </GridPane>
