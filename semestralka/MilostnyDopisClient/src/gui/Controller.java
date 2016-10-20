@@ -1,5 +1,8 @@
 package gui;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -12,6 +15,9 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 public class Controller implements Initializable {
+    /** instance loggeru hlavni tridy */
+    public static Logger Logger =	LogManager.getLogger(Controller.class.getName());
+
     public TextField port;
     public TextField ip4;
     public TextField ip3;
@@ -34,12 +40,31 @@ public class Controller implements Initializable {
 
     @FXML
     public void onConnect(ActionEvent actionEvent) {
-        NetService.checkIpOctet(ip1.getText());
-        NetService.checkIpOctet(ip2.getText());
-        NetService.checkIpOctet(ip3.getText());
-        NetService.checkIpOctet(ip4.getText());
+        boolean resultIP = true, resultPort = false;
+        try {
+            resultIP &= NetService.checkIpOctet(ip1.getText());
+            resultIP &= NetService.checkIpOctet(ip2.getText());
+            resultIP &= NetService.checkIpOctet(ip3.getText());
+            resultIP &= NetService.checkIpOctet(ip4.getText());
+            resultPort = NetService.checkPort(port.getText());
+        }catch (NumberFormatException e){
+            Controller.Logger.error("Ip or port parsing error", e);
+            //todo err window that shows number format exception
+        }
 
+        if(!resultIP){
+            Controller.Logger.error("Wrong range of ip");
+            //todo err window that shows wrong IP was set
+            return;
+        }
 
+        if(!resultPort){
+            Controller.Logger.error("Wrong range of port");
+            //todo err window that shows wrong Port
+            return;
+        }
+
+        // todo run message list
         statusText.setText("Pokus o připojení k serveru");
     }
 

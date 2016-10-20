@@ -53,9 +53,9 @@
           GridPane.rowIndex="4"
           GridPane.columnSpan="2"
             >
-        <Button text="Nastav výchozí připojení"
+        <Button text="%defaultConnection"
                 onAction="#onDefaultConnection"/>
-        <Button text="Připojit"
+        <Button text="%connect"
                 onAction="#onConnect"/>
     </VBox>
     <VBox   spacing="10"
