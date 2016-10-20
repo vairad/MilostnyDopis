@@ -1,14 +1,14 @@
 #include "netstructure.h"
 
-
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <sys/types.h>
 #include <errno.h>
-#include "log/log.h"
 
+#include "log/log.h"
+#include "errornumber.h"
 
 NetStructure::NetStructure(int port):
                                 port_number(port)
@@ -26,7 +26,7 @@ void NetStructure::setServer_socket(int value)
 }
 
 void NetStructure::check_socket_creation(int error_val){
-        LOG_ERROR("NetStructure::bind_socet() - nelze vytvořit socket")
+        LOG_ERROR("NetStructure::check_socket_creation() - nelze vytvořit socket")
         switch (error_val){
             case ENFILE:
                 LOG_ERROR("Systém nepřipoští vytváření dalších socketů");
@@ -39,17 +39,32 @@ void NetStructure::check_socket_creation(int error_val){
         }
 }
 
-int NetStructure::bind_socet()
+void NetStructure::check_socket_bind(int error_val){
+        LOG_ERROR("NetStructure::check_socket_bind() - nelze vytvořit bind")
+        switch (error_val){
+            case EACCES:
+                LOG_ERROR("Socket je vyhrazen superuživateli");
+                break;
+            case EADDRINUSE:
+                LOG_ERROR("Socket je již využíván");
+                break;
+            default:
+                LOG_ERROR("Nefiltrovaná příčina");
+        }
+}
+
+int NetStructure::bind_socket()
 {
-    LOG_DEBUG("NetStructure::bind_socet()");
+    LOG_DEBUG("NetStructure::bind_socket()");
     int len_addr = sizeof(struct sockaddr_in);
 
     server_socket = socket(AF_INET, SOCK_STREAM, 0);
 
     if (server_socket == -1) {
         check_socket_creation(errno);
-        exit(51);
+        exit(SOCKET_ERROR);
     }
+    LOG_INFO("Socket vytvořen");
 
     memset(&my_addr, 0, len_addr);
 
@@ -58,6 +73,15 @@ int NetStructure::bind_socet()
     my_addr.sin_addr.s_addr = INADDR_ANY;
 
     int return_value = bind(server_socket, (struct sockaddr *) &my_addr, len_addr);
+
+    if(return_value == -1){
+        check_socket_bind(errno);
+        exit(BIND_ERROR);
+    }
+    LOG_INFO("Socket navázán");
+
+    return_value = listen(server_socket, 20);
+
     return return_value;
 }
 

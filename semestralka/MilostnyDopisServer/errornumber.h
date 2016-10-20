@@ -1,0 +1,14 @@
+#ifndef ERRORNUMBER_H
+#define ERRORNUMBER_H
+
+//NETSERVICE
+#define SOCKET_ERROR 51
+#define BIND_ERROR 52
+//RECIEVER
+
+#define SELECT_REPEAT_ERROR 61
+
+//MAIN
+
+
+#endif // ERRORNUMBER_H

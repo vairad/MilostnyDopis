@@ -107,6 +107,20 @@ int read_args(int argc, char** argv)
 int start_server(){
     NetStructure netStructure(port_number);
     Reciever service(&netStructure);
+
+    Reciever::listen_thread_p = (pthread_t *) malloc(sizeof(pthread_t));
+
+    if(Reciever::listen_thread_p == NULL){
+        MSG("Nedostatek paměti pro vytvoření serverového vlákna, ukončuji program");
+        LOG_ERROR("Nedostatek paměti pro vytvoření Reciever::listen_thread_p")
+    }
+
+    pthread_create(Reciever::listen_thread_p, NULL, Reciever::listenerStart, &service);
+
+
+    void *retval;
+    pthread_join(*Reciever::listen_thread_p, &retval);
+
     return 0;
 }
 
