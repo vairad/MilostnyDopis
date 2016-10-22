@@ -1,4 +1,7 @@
 #include <iostream>
+#include <csignal>
+
+#include "errornumber.h"
 #include "log/log.h"
 #include "netservice/netstructure.h"
 #include "netservice/reciever.h"
@@ -28,7 +31,7 @@ int setup_port(char* portArg){
     }else{
         LOG_ERROR_PS("Nezname označení portu: ", portArg);
         MSG_PS("Nezname označení portu: ", portArg);
-        return 15;
+        return PORT_RANGE_ERROR;
     }
 }
 
@@ -100,6 +103,14 @@ int read_args(int argc, char** argv)
 }
 
 
+void signal_handler (int sig){
+    if (sig == SIGINT){
+        MSG("Ukončuji server");
+        exit(9999); // todo clean up and correct and
+    }
+
+}
+
 /**
  * @brief start_server
  * @return
@@ -147,6 +158,11 @@ int main(int argc, char *argv[])
     if(run)
     {
        MSG("Spoustim server");
+
+       if (signal(SIGINT, signal_handler) == SIG_ERR){
+           LOG_ERROR("Není možné se navázat na signál");
+       }
+
        result =  start_server();
        LOG_INFO_P1("Navratova hodnota serveru:", result);
 
