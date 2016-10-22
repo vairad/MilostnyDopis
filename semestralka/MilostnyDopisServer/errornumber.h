@@ -10,5 +10,6 @@
 
 //MAIN
 
+#define PORT_RANGE_ERROR 15
 
 #endif // ERRORNUMBER_H
