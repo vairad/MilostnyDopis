@@ -3,18 +3,18 @@
 
 #include <pthread.h>
 
+#include "message/messagequeue.h"
+
 class MessageHandler
 {
-   int run_flag;
+    static bool workFlag;
 public:
-    MessageHandler(int worker_count);
 
-    static pthread_t *handler_threads_p;
 
+    static void stop();
     static void initThreads();
-    static void *handlerStart(void *service_ptr);
-private:
-
+    static void *messageHandlerStart(void *arg_ptr);
+    MessageHandler();
 };
 
 #endif // MESSAGEHANDLER_H
