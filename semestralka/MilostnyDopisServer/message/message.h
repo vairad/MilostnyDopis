@@ -4,11 +4,17 @@
 #include <string>
 
 enum MessageType{
-    servis, game, login
+    unknown,
+    servis,
+    game,
+    login,
+    message
 };
 
 enum Event{
-    ACK, NAK
+    UNK,
+    ACK,
+    NAK
 };
 
 class Message

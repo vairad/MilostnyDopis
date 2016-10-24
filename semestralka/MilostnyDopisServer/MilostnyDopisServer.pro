@@ -12,11 +12,13 @@ SOURCES += main.cpp \
     netservice/netstructure.cpp \
     netservice/reciever.cpp \
     message/messagequeue.cpp \
-    message/message.cpp
+    message/message.cpp \
+    messagehandler.cpp
 
 HEADERS += log/log.h \
     netservice/netstructure.h \
     netservice/reciever.h \
     errornumber.h \
     message/messagequeue.h \
-    message/message.h
+    message/message.h \
+    messagehandler.h

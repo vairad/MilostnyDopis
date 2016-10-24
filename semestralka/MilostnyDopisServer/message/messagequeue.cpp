@@ -2,7 +2,15 @@
 
 #include "log/log.h"
 
-const MessageQueue *MessageQueue::INSTANCE = new MessageQueue();
+//====================================================================================================
+MessageQueue *MessageQueue::INSTANCE = new MessageQueue();
+
+MessageQueue *MessageQueue::instance()
+{
+    return INSTANCE;
+}
+
+//====================================================================================================
 
 MessageQueue::MessageQueue()
 {
@@ -32,6 +40,8 @@ MessageQueue::MessageQueue()
     LOG_TRACE("pocitadlo volných polozek ve fronte inicializovano");
 
 }
+
+
 
 bool MessageQueue::push_msg(Message *msg){
     LOG_INFO("MessageQueue::push_msg()");

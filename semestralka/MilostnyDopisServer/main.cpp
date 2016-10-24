@@ -6,10 +6,15 @@
 #include "netservice/netstructure.h"
 #include "netservice/reciever.h"
 
+#include "message/messagequeue.h"
+
 //=====================================================================================
 
 bool run = false;
 int port_number = 2525;
+
+NetStructure *netStructure;
+Reciever *service;
 
 //=====================================================================================
 /**
@@ -19,9 +24,11 @@ int port_number = 2525;
  * @param portArg
  * @return
  */
-int setup_port(char* portArg){
+int setup_port(char* portArg)
+{
     int read_port = strtol(portArg, NULL , 10);
-    if(read_port > 0 && read_port < 65536){
+    if(read_port > 0 && read_port < 65536)
+    {
         port_number = read_port;
         MSG_PD("Server bude spuštěn na portu: ", port_number)
         if(port_number < 1024){
@@ -39,7 +46,8 @@ int setup_port(char* portArg){
  * Funkce slouží k otestování funkčnosti maker z log.h
  * @brief test
  */
-void test(){
+void test()
+{
     test_log_macros();
 }
 
@@ -65,7 +73,8 @@ void help(){
 int read_args(int argc, char** argv)
 {
     //zpracovani prepinacu
-    for (int i = 1; i < argc; i++) {
+    for (int i = 1; i < argc; i++)
+    {
         if (argv[i][0] == '-' || argv[i][0] == '/') {
             switch (argv[i][1]) {
                 case 'h': // zobrazení nápovědy ==================
@@ -103,10 +112,20 @@ int read_args(int argc, char** argv)
 }
 
 
-void signal_handler (int sig){
-    if (sig == SIGINT){
+void signal_handler (int sig)
+{
+    if (sig == SIGINT
+            ){
         MSG("Ukončuji server");
-        exit(9999); // todo clean up and correct and
+        service->stop();
+        void *retval;
+        MSG("Čekám na ukončení vláken");
+        pthread_join(*Reciever::listen_thread_p, &retval);
+
+        MSG("Konec");
+        delete service;
+        delete netStructure;
+        exit(99); // todo clean up and correct and
     }
 
 }
@@ -116,8 +135,8 @@ void signal_handler (int sig){
  * @return
  */
 int start_server(){
-    NetStructure netStructure(port_number);
-    Reciever service(&netStructure);
+    netStructure = new NetStructure(port_number);
+    service = new Reciever(netStructure);
 
     Reciever::listen_thread_p = (pthread_t *) malloc(sizeof(pthread_t));
 
@@ -126,10 +145,11 @@ int start_server(){
         LOG_ERROR("Nedostatek paměti pro vytvoření Reciever::listen_thread_p")
     }
 
-    pthread_create(Reciever::listen_thread_p, NULL, Reciever::listenerStart, &service);
+    pthread_create(Reciever::listen_thread_p, NULL, Reciever::listenerStart, service);
 
 
     void *retval;
+
     pthread_join(*Reciever::listen_thread_p, &retval);
 
     return 0;

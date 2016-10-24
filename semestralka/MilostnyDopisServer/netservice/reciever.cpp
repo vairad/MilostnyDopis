@@ -23,6 +23,11 @@ Reciever::Reciever(NetStructure *net):
     LOG_INFO("Reciever::Reciever()");
 }
 
+void Reciever::stop()
+{
+    run_flag = false;
+}
+
 void Reciever::initThreads(Reciever *service)
 {
    LOG_INFO("Reciever::initThreads()");
@@ -131,7 +136,7 @@ void Reciever::handle_socket_activity(fd_set* sockets)
                 ioctl( fd, FIONREAD, &bytes_to_read );
                 // mame co cist
                if (bytes_to_read > 0){
-                    handle_message();
+                    handle_message(fd);
                 }
                 // na socketu se stalo neco spatneho
                 else {
@@ -146,7 +151,87 @@ void Reciever::handle_socket_activity(fd_set* sockets)
     }
 }
 
-void Reciever::handle_message()
+void Reciever::handle_message(int socket)
 {
     LOG_INFO("Reciever::handle_message()");
+    memset (message_buffer, 0, MESSAGE_BUFFER_SIZE);
+    int recv_bytes;
+    recv_bytes = recv(socket, message_buffer, 7, MSG_PEEK);
+
+    message_buffer[recv_bytes] = 0;
+
+    //check message start
+    if(!(message_buffer[0] == '#') && !(message_buffer[1] == '#') && !(message_buffer[2] == '#')){
+        recv(socket, message_buffer, 1, 0);
+        LOG_DEBUG("Zpráva bez záhlaví byla ignorována");
+        return;
+    }
+
+    int n = atoi(message_buffer+MSG_LEN_OFFSET);
+    if(n < 1){
+        LOG_ERROR("Nesymslná zpráva ... délka MENŠÍ než 1 byte");
+        n = 1;
+    }
+    if(n > 2047){
+        LOG_ERROR("Nesymslná zpráva ... délka větší než 2047 bytů");
+    }
+
+    recv_bytes = recv(socket, message_buffer, n, 0);
+
+    if(recv_bytes > 0)
+    {
+        message_buffer[recv_bytes] = 0;
+        LOG_DEBUG_PS("Obdržel jsem zprávu:", message_buffer);
+
+        create_message();
+
+        return;
+    }
+    LOG_DEBUG("Prázdná zpráva byla ignorována");
+}
+
+void Reciever::create_message(){
+    MessageType type;
+    Event event;
+
+    char opt[OPT_SIZE + 1];
+    memset(opt, 0, OPT_SIZE + 1);
+    memcpy(opt, message_buffer + TYPE_OFFSET , OPT_SIZE);
+    //opt[OPT_SIZE + 1] = 0;
+
+    type = choose_type(opt);
+
+    memset(opt, 0, OPT_SIZE + 1);
+    memcpy(opt, message_buffer + EVENT_OFFSET, OPT_SIZE);
+    //opt[OPT_SIZE + 1] = 0;
+
+    event = choose_event(opt);
+
+    if(event == Event::UNK || type == MessageType::unknown){
+        LOG_DEBUG("Neznámé OPT kódy. Ignoruji zprávu.");
+        return;
+    }
+
+    Message *message = new Message(type, event, std::string(message_buffer + CONTENT_OFFSET));
+    MessageQueue::instance()->push_msg(message);
+}
+
+MessageType Reciever::choose_type(char *opt){
+    if(strcmp(opt, "MSG") == 0){
+        return  MessageType::message;
+    }else if(strcmp(opt, "GAM") == 0){
+        return  MessageType::game;
+    }else{
+        return MessageType::unknown;
+    }
+}
+
+Event Reciever::choose_event(char *opt){
+    if(strcmp(opt, "ACK") == 0){
+        return  Event::ACK;
+    }else if(strcmp(opt, "NAK") == 0){
+        return  Event::NAK;
+    }else{
+        return Event::UNK;
+    }
 }

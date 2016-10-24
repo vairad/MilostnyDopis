@@ -18,10 +18,12 @@ class MessageQueue
     MessageQueue();
 
     std::queue<Message *> message_queue;
+    static MessageQueue *INSTANCE;
+
 
 public:
 
-    static const MessageQueue *INSTANCE;
+    static MessageQueue *instance();
     Message *pop_msg();
     bool push_msg(Message *msg);
 };
