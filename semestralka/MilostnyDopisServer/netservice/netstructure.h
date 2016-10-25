@@ -14,6 +14,7 @@ class NetStructure
 
 public:
     NetStructure(int port);
+    ~NetStructure();
 
     fd_set sockets_to_serve;
 

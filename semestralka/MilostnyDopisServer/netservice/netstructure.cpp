@@ -15,6 +15,19 @@ NetStructure::NetStructure(int port):
 {
 }
 
+NetStructure::~NetStructure()
+{
+    LOG_DEBUG("NetStructure::~NetStructure()");
+    fd_set to_close = this->sockets_to_serve;
+    for( int fd = 3; fd < FD_SETSIZE; fd++ ){
+        if( FD_ISSET( fd, &to_close ) ){
+            close(fd);
+            LOG_TRACE("Soket uzavřen");
+        }
+    }
+}
+
+
 int NetStructure::getServer_socket() const
 {
     return server_socket;
@@ -62,6 +75,7 @@ int NetStructure::bind_socket()
 
     if (server_socket == -1) {
         check_socket_creation(errno);
+        MSG("Chyba při vytváření soketu. Ukončuji program.");
         exit(SOCKET_ERROR);
     }
     LOG_INFO("Socket vytvořen");
@@ -76,6 +90,7 @@ int NetStructure::bind_socket()
 
     if(return_value == -1){
         check_socket_bind(errno);
+        MSG("Chyba při vytváření soketu. Ukončuji program.");
         exit(BIND_ERROR);
     }
     LOG_INFO("Socket navázán");

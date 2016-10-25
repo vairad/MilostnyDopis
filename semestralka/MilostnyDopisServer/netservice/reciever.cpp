@@ -35,14 +35,16 @@ void Reciever::initThreads(Reciever *service)
    if(listen_thread_p == NULL)
    {
         LOG_ERROR("Vlákno netservice nebylo vytvořeno.");
-        exit(61);
+        MSG("Chyba při startování programu. Ukončuji program.");
+        exit(THREAD_MEMORY_ERROR_REC);
    }
 
     int result = pthread_create(listen_thread_p, NULL, &Reciever::listenerStart, service);
     if(result)
     { // 0 = success
           LOG_ERROR_P1("Vlákno netservice nebylo inicialiováno. chybová hodnota", result);
-          exit(62);
+          MSG("Chyba při startování programu. Ukončuji program.");
+          exit(THREAD_CREATION_ERROR_REC);
     }
 }
 
@@ -67,6 +69,7 @@ void *Reciever::listenerStart(void *service_ptr)
     FD_ZERO( &(netS_p->sockets_to_serve) );
     FD_SET( netS_p->getServer_socket(), &(netS_p->sockets_to_serve) );
 
+    MSG("Server naslouchá");
     //serve incoming messages
     service->serve_messages();
 
@@ -213,7 +216,7 @@ void Reciever::create_message(){
     }
 
     Message *message = new Message(type, event, std::string(message_buffer + CONTENT_OFFSET));
-    MessageQueue::instance()->push_msg(message);
+    MessageQueue::recieveInstance()->push_msg(message);
 }
 
 MessageType Reciever::choose_type(char *opt){

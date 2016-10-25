@@ -1,6 +1,68 @@
 #include "messagehandler.h"
 
-MessageHandler::MessageHandler()
-{
+#include "errornumber.h"
+#include "log/log.h"
 
+bool MessageHandler::workFlag;
+pthread_t *MessageHandler::workers;
+int MessageHandler::worker_count;
+
+void MessageHandler::initialize(int worker_count)
+{
+    MessageHandler::workFlag = true;
+    MessageHandler::worker_count = worker_count;
+    workers = (pthread_t *) malloc(sizeof(pthread_t) * worker_count);
+    if(workers == NULL)
+    {
+        MSG("Nedostatek paměti pro vyvtoření pracovních vláken.... Ukončuji program.")
+        LOG_ERROR("Nedostatek paměti pro vytvoření pracovních vláken");
+        exit(THREAD_MEMORY_ERROR_REC);
+    }
 }
+
+void MessageHandler::stop()
+{
+    MessageHandler::workFlag = false;
+}
+
+void MessageHandler::startThreads()
+{
+    LOG_INFO("MessageHandler::startThreads()");
+    for(int thread_index = 0; thread_index < MessageHandler::worker_count; thread_index++){
+        int result = pthread_create(workers + thread_index, NULL, &MessageHandler::messageHandlerStart, NULL); // NULL neni třeba parametr
+        if(result)
+        { // 0 = success
+            LOG_ERROR_P1("Vlákno zpracování zprávn nebylo inicialiováno. chybová hodnota", result);
+            MSG("Chyba při startování programu. Ukončuji program.");
+            exit(THREAD_CREATION_ERROR_MSG);
+        }
+    }
+}
+
+void MessageHandler::joinThreads()
+{
+    LOG_INFO("MessageHandler::joinThreads()");
+    for(int thread_index = 0; thread_index < MessageHandler::worker_count; thread_index++){
+        int result = pthread_create(workers + thread_index, NULL, &MessageHandler::messageHandlerStart, NULL); // NULL neni třeba parametr
+        if(result)
+        { // 0 = success
+            MSG("Chyba při startování programu. Ukončuji program.");
+            LOG_ERROR_P1("Vlákno zpracování zprávn nebylo inicialiováno. chybová hodnota", result);
+            exit(THREAD_CREATION_ERROR_MSG);
+        }
+    }
+}
+
+void MessageHandler::handleMessage(Message *msg)
+{
+    MSG(msg->getMsg().c_str());
+}
+
+void *MessageHandler::messageHandlerStart(void *arg_ptr)
+{
+    while(workFlag){
+        Message *msg = MessageQueue::recieveInstance()->pop_msg();
+        handleMessage(msg);
+    }
+}
+

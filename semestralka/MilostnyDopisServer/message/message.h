@@ -25,6 +25,9 @@ class Message
 public:
     Message(MessageType type, Event event, std::string msg);
     void print();
+    MessageType getType();
+    Event getEvent();
+    std::string getMsg();
 };
 
 #endif // MESSAGE_H

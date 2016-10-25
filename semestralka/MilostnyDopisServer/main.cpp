@@ -7,6 +7,7 @@
 #include "netservice/reciever.h"
 
 #include "message/messagequeue.h"
+#include "message/messagehandler.h"
 
 //=====================================================================================
 
@@ -118,14 +119,16 @@ void signal_handler (int sig)
             ){
         MSG("Ukončuji server");
         service->stop();
+        MessageHandler::stop();
         void *retval;
         MSG("Čekám na ukončení vláken");
         pthread_join(*Reciever::listen_thread_p, &retval);
+        MessageHandler::joinThreads();
 
-        MSG("Konec");
         delete service;
         delete netStructure;
-        exit(99); // todo clean up and correct and
+        MSG("Konec");
+        exit(99); // todo clean up and correct and až to bude hotové můžeš sem nastavit nulu :)
     }
 
 }
@@ -138,6 +141,9 @@ int start_server(){
     netStructure = new NetStructure(port_number);
     service = new Reciever(netStructure);
 
+    MessageHandler::initialize(5);
+    MessageHandler::startThreads();
+
     Reciever::listen_thread_p = (pthread_t *) malloc(sizeof(pthread_t));
 
     if(Reciever::listen_thread_p == NULL){
@@ -147,10 +153,10 @@ int start_server(){
 
     pthread_create(Reciever::listen_thread_p, NULL, Reciever::listenerStart, service);
 
-
     void *retval;
 
     pthread_join(*Reciever::listen_thread_p, &retval);
+    MessageHandler::joinThreads();
 
     return 0;
 }

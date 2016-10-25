@@ -8,13 +8,18 @@
 class MessageHandler
 {
     static bool workFlag;
+    static pthread_t *workers;
+    static int worker_count;
 public:
+
+    static void initialize(int worker_count);
 
 
     static void stop();
-    static void initThreads();
     static void *messageHandlerStart(void *arg_ptr);
-    MessageHandler();
+    static void startThreads();
+    static void joinThreads();
+    static void handleMessage(Message *msg);
 };
 
 #endif // MESSAGEHANDLER_H

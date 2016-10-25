@@ -3,11 +3,18 @@
 #include "log/log.h"
 
 //====================================================================================================
-MessageQueue *MessageQueue::INSTANCE = new MessageQueue();
+MessageQueue *MessageQueue::INSTANCE_RECV = new MessageQueue();
 
-MessageQueue *MessageQueue::instance()
+MessageQueue *MessageQueue::recieveInstance()
 {
-    return INSTANCE;
+    return INSTANCE_RECV;
+}
+
+MessageQueue *MessageQueue::INSTANCE_SEND = new MessageQueue();
+
+MessageQueue *MessageQueue::sendInstance()
+{
+    return INSTANCE_SEND;
 }
 
 //====================================================================================================
