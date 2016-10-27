@@ -17,8 +17,13 @@ std::string Message::getMsg()
     return msg;
 }
 
-Message::Message(MessageType type, Event event, std::string msg):
-    type(type), event(event), msg(msg)
+int Message::getSocket()
+{
+    return socket;
+}
+
+Message::Message(int socket, MessageType type, Event event, std::string msg):
+    socket(socket), type(type), event(event), msg(msg)
 {
     
 }

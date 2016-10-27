@@ -14,16 +14,15 @@ class MessageQueue
     pthread_mutex_t queue_lock;
     sem_t counter_sem_toServe;
     sem_t counter_sem_Size;
-
     MessageQueue();
-
     std::queue<Message *> message_queue;
+
+
+
+
     static MessageQueue *INSTANCE_RECV;
     static MessageQueue *INSTANCE_SEND;
-
-
 public:
-
     static MessageQueue *recieveInstance();
     static MessageQueue *sendInstance();
 

@@ -14,7 +14,8 @@ enum MessageType{
 enum Event{
     UNK,
     ACK,
-    NAK
+    NAK,
+    ECH
 };
 
 class Message
@@ -22,12 +23,14 @@ class Message
     MessageType type;
     Event event;
     std::string msg;
+    int socket;
 public:
-    Message(MessageType type, Event event, std::string msg);
+    Message(int socket, MessageType type, Event event, std::string msg);
     void print();
     MessageType getType();
     Event getEvent();
     std::string getMsg();
+    int getSocket();
 };
 
 #endif // MESSAGE_H

@@ -12,15 +12,27 @@
 
 
 #include "log/log.h"
+#include "netservice/optcode.h"
 #include "errornumber.h"
 
 
 pthread_t *Reciever::listen_thread_p;
+unsigned long Reciever::recieved_bytes = 0;
+unsigned long Reciever::recieved_bytes_overflow = 0;
 
 Reciever::Reciever(NetStructure *net):
                             netStructure_p(net)
 {
     LOG_INFO("Reciever::Reciever()");
+}
+
+void Reciever::recv_bytes(unsigned int byte_count)
+{
+    unsigned long old_val = recieved_bytes;
+    recieved_bytes += byte_count;
+    if (old_val < recieved_bytes){
+        recieved_bytes_overflow ++;
+    }
 }
 
 void Reciever::stop()
@@ -86,7 +98,7 @@ void Reciever::serve_messages()
         //select( velikost množiny , změna ke čtení, změna pro zápis, změna výjimka, timeout (NULL = infinity));
         int return_value = select( FD_SETSIZE, &tmp_sockets, NULL, NULL, NULL);
         if(return_value == -1){
-            MSG("Chyba při akceptvání spojení");
+            MSG("Chyba při akceptování spojení");
             check_select_error(errno);
             if(error_counter == REPEATED_ERRORS_LIMIT){
                 MSG("Opakovaná chyba při akceptování spojení, nelze se zotavit ukončuji program");
@@ -161,6 +173,8 @@ void Reciever::handle_message(int socket)
     int recv_bytes;
     recv_bytes = recv(socket, message_buffer, 7, MSG_PEEK);
 
+    Reciever::recv_bytes(recv_bytes);
+
     message_buffer[recv_bytes] = 0;
 
     //check message start
@@ -186,14 +200,14 @@ void Reciever::handle_message(int socket)
         message_buffer[recv_bytes] = 0;
         LOG_DEBUG_PS("Obdržel jsem zprávu:", message_buffer);
 
-        create_message();
+        create_message(socket);
 
         return;
     }
     LOG_DEBUG("Prázdná zpráva byla ignorována");
 }
 
-void Reciever::create_message(){
+void Reciever::create_message(int fd){
     MessageType type;
     Event event;
 
@@ -215,14 +229,14 @@ void Reciever::create_message(){
         return;
     }
 
-    Message *message = new Message(type, event, std::string(message_buffer + CONTENT_OFFSET));
+    Message *message = new Message(fd, type, event, std::string(message_buffer + CONTENT_OFFSET));
     MessageQueue::recieveInstance()->push_msg(message);
 }
 
 MessageType Reciever::choose_type(char *opt){
-    if(strcmp(opt, "MSG") == 0){
+    if(strcmp(opt, OPT_MSG) == 0){
         return  MessageType::message;
-    }else if(strcmp(opt, "GAM") == 0){
+    }else if(strcmp(opt, OPT_GAM) == 0){
         return  MessageType::game;
     }else{
         return MessageType::unknown;
@@ -230,10 +244,12 @@ MessageType Reciever::choose_type(char *opt){
 }
 
 Event Reciever::choose_event(char *opt){
-    if(strcmp(opt, "ACK") == 0){
+    if(strcmp(opt, OPT_ACK) == 0){
         return  Event::ACK;
-    }else if(strcmp(opt, "NAK") == 0){
+    }else if(strcmp(opt, OPT_NAK) == 0){
         return  Event::NAK;
+    }else if(strcmp(opt, OPT_ECH) == 0){
+        return  Event::ECH;
     }else{
         return Event::UNK;
     }

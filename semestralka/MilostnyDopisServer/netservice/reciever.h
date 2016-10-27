@@ -3,17 +3,13 @@
 
 #include <pthread.h>
 
+#include "optcode.h"
 #include "message/messagequeue.h"
 #include "netservice/netstructure.h"
 
 #define REPEATED_ERRORS_LIMIT 4
 #define MSG_LEN_OFFSET 3
 #define MESSAGE_BUFFER_SIZE 2048
-
-#define OPT_SIZE 3
-#define TYPE_OFFSET 7
-#define EVENT_OFFSET 10
-#define CONTENT_OFFSET 14
 
 
 class Reciever
@@ -25,9 +21,11 @@ class Reciever
 
     NetStructure *netStructure_p;
 
-
+    static unsigned long recieved_bytes_overflow;
+    static unsigned long recieved_bytes;
 
 public:
+    static void recv_bytes(unsigned int byte_count);
     Reciever(NetStructure *net);
 
 
@@ -42,7 +40,7 @@ private:
     void check_select_error(int error_val);
     void handle_socket_activity(fd_set *sockets);
     void handle_message(int socket);
-    void create_message();
+    void create_message(int fd);
     MessageType choose_type(char *opt);
     Event choose_event(char *opt);
 };

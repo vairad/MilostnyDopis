@@ -7,6 +7,11 @@ bool MessageHandler::workFlag;
 pthread_t *MessageHandler::workers;
 int MessageHandler::worker_count;
 
+MessageHandler::MessageHandler()
+{
+    // no code here
+}
+
 void MessageHandler::initialize(int worker_count)
 {
     MessageHandler::workFlag = true;
@@ -55,7 +60,40 @@ void MessageHandler::joinThreads()
 
 void MessageHandler::handleMessage(Message *msg)
 {
-    MSG(msg->getMsg().c_str());
+    MessageType type = msg->getType();
+    switch (type){
+    case MessageType::message :
+        handleTypeMessage(msg);
+        break;
+    case MessageType::login :
+        //todo impl
+        break;
+    case MessageType::game :
+        //todo impl
+        break;
+    case MessageType::servis :
+        //todo impl
+        break;
+    case MessageType::unknown :
+    default:
+        break;
+    };
+}
+
+void MessageHandler::handleTypeMessage(Message *msg)
+{
+   Event type = msg->getEvent();
+    switch (type){
+    case Event::ECH : //echo event
+        MSG(msg->getMsg().c_str());
+        MessageQueue::sendInstance()->push_msg(msg);
+        break;
+    case Event::UNK :
+    default:
+        //todo impl
+
+        break;
+    }
 }
 
 void *MessageHandler::messageHandlerStart(void *arg_ptr)

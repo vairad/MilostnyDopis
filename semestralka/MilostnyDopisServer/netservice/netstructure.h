@@ -9,11 +9,12 @@ class NetStructure
 {
     int port_number;
     int server_socket;
+    int max_waitng_connections;
 
     struct sockaddr_in my_addr;
 
 public:
-    NetStructure(int port);
+    NetStructure(int port, int wait_queue_len);
     ~NetStructure();
 
     fd_set sockets_to_serve;

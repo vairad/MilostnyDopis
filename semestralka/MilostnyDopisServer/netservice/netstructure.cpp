@@ -10,8 +10,9 @@
 #include "log/log.h"
 #include "errornumber.h"
 
-NetStructure::NetStructure(int port):
+NetStructure::NetStructure(int port, int wait_queue_len):
                                 port_number(port)
+                              , max_waitng_connections(wait_queue_len)
 {
 }
 
@@ -95,7 +96,7 @@ int NetStructure::bind_socket()
     }
     LOG_INFO("Socket navázán");
 
-    return_value = listen(server_socket, 20);
+    return_value = listen(server_socket, max_waitng_connections);
 
     return return_value;
 }

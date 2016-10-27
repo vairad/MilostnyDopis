@@ -23,4 +23,5 @@ HEADERS += log/log.h \
     errornumber.h \
     message/messagequeue.h \
     message/message.h \
-    message/messagehandler.h
+    message/messagehandler.h \
+    netservice/optcode.h

@@ -1,16 +1,22 @@
-#ifndef MESSAGEHANDLER_H
-#define MESSAGEHANDLER_H
+#ifndef SENDER_H
+#define SENDER_H
 
 #include <pthread.h>
 
+#include "optcode.h"
 #include "message/messagequeue.h"
 
 class Sender
 {
     static bool workFlag;
     static pthread_t *send_thread;
+
+    static unsigned long sended_bytes_overflow;
+    static unsigned long sended_bytes;
+
 public:
 
+    static void send_bytes(unsigned int byte_count);
     static void initialize();
 
 
@@ -19,6 +25,9 @@ public:
     static void startThread();
     static void joinThread();
     static void sendMessage(Message *msg);
+private:
+    static void fillType(char *msg, MessageType type);
+    static void fillEvent(char *msg, Event event);
 };
 
-#endif // MESSAGEHANDLER_H
+#endif // SENDER_H

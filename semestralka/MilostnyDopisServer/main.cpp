@@ -5,6 +5,7 @@
 #include "log/log.h"
 #include "netservice/netstructure.h"
 #include "netservice/reciever.h"
+#include "netservice/sender.h"
 
 #include "message/messagequeue.h"
 #include "message/messagehandler.h"
@@ -13,6 +14,7 @@
 
 bool run = false;
 int port_number = 2525;
+int wait_que_len = 20;
 
 NetStructure *netStructure;
 Reciever *service;
@@ -44,6 +46,26 @@ int setup_port(char* portArg)
 }
 
 /**
+ * Funkce zkontroluje validitu a nastaví číslo z rozsahu integer,
+ * @param portArg
+ * @return
+ */
+int setup_int(char* portArg)
+{
+    int read_int = strtol(portArg, NULL , 10);
+    if(read_int > 0 && read_int < INT32_MAX)
+    {
+        port_number = read_int;
+        MSG_PD("Rozpoznáno korektní číslo: ", port_number)
+        return 0;
+    }else{
+        LOG_ERROR_PS("Nezname označení kladného čísla: ", portArg);
+        MSG_PS("Nezname označení kladného čísla: ", portArg);
+        return INT_RANGE_ERROR;
+    }
+}
+
+/**
  * Funkce slouží k otestování funkčnosti maker z log.h
  * @brief test
  */
@@ -61,6 +83,7 @@ void help(){
     MSG("  -h          ... zobrazí nápovědu pro spuštění");
     MSG("  -r          ... bude provedeno spuštění serveru")
     MSG("  -p [1-65535]... nastaví port pro naslouchání");
+    MSG("  -q [1-...]  ... nastaví délku fronty spojení čekajících na vyřízení");
 }
 
 /**
@@ -97,10 +120,22 @@ int read_args(int argc, char** argv)
                       {
                            int result = setup_port(argv[i+1]);
                            if(!result){
-                                MSG("Port nebyl nastaven");
+                                MSG_PD("Port nebyl nastaven používám výchozí:", port_number);
                            }
                       }
                       break;
+
+            case 'q': // nastavení portu =====================
+            case 'Q':
+                  LOG_TRACE("Case nastaveni fronty čekajících");
+                  if(argc > (i+1))
+                  {
+                       int result = setup_int(argv[i+1]);
+                       if(!result){
+                            MSG_PD("Velikost fronty nebyla nastavena používám výchozí:", wait_que_len);
+                       }
+                  }
+                  break;
 
                 default : MSG_PS("Ignoruji neznámý přepínač", argv[i]);
             }
@@ -138,8 +173,11 @@ void signal_handler (int sig)
  * @return
  */
 int start_server(){
-    netStructure = new NetStructure(port_number);
+    netStructure = new NetStructure(port_number, wait_que_len);
     service = new Reciever(netStructure);
+
+    Sender::initialize();
+    Sender::startThread();
 
     MessageHandler::initialize(5);
     MessageHandler::startThreads();
@@ -157,6 +195,7 @@ int start_server(){
 
     pthread_join(*Reciever::listen_thread_p, &retval);
     MessageHandler::joinThreads();
+    Sender::joinThread();
 
     return 0;
 }
