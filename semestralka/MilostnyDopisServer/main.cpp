@@ -1,5 +1,6 @@
 #include <iostream>
 #include <csignal>
+#include <cstring>
 
 #include "errornumber.h"
 #include "log/log.h"
@@ -15,6 +16,8 @@
 bool run = false;
 int port_number = 2525;
 int wait_que_len = 20;
+char ADDR_ALL[] = {"ALL"};
+char *addr = ADDR_ALL;
 
 NetStructure *netStructure;
 Reciever *service;
@@ -50,17 +53,17 @@ int setup_port(char* portArg)
  * @param portArg
  * @return
  */
-int setup_int(char* portArg)
+int setup_que_len(char* portArg)
 {
     int read_int = strtol(portArg, NULL , 10);
     if(read_int > 0 && read_int < INT32_MAX)
     {
-        port_number = read_int;
-        MSG_PD("Rozpoznáno korektní číslo: ", port_number)
+        wait_que_len = read_int;
+        MSG_PD("Délku fronty čekajících připojení bude: ", wait_que_len)
         return 0;
     }else{
-        LOG_ERROR_PS("Nezname označení kladného čísla: ", portArg);
-        MSG_PS("Nezname označení kladného čísla: ", portArg);
+        LOG_ERROR_PS("Neznámé označení kladného čísla: ", portArg);
+        MSG_PS("Neznámé označení kladného čísla: ", portArg);
         return INT_RANGE_ERROR;
     }
 }
@@ -119,19 +122,31 @@ int read_args(int argc, char** argv)
                       if(argc > (i+1))
                       {
                            int result = setup_port(argv[i+1]);
-                           if(!result){
+                           if(result != 0){
                                 MSG_PD("Port nebyl nastaven používám výchozí:", port_number);
                            }
                       }
                       break;
+
+            case 'a': // nastavení portu =====================
+            case 'A':
+                  LOG_TRACE("Case nastaveni adresy naslouchani");
+                  if(argc > (i+1))
+                  {
+                       addr = argv[i+1];
+                       if(strcmp(addr, "ALL") != 0){
+                            MSG_PS("Server bude naslouchat na adrese:", addr);
+                       }
+                  }
+                  break;
 
             case 'q': // nastavení portu =====================
             case 'Q':
                   LOG_TRACE("Case nastaveni fronty čekajících");
                   if(argc > (i+1))
                   {
-                       int result = setup_int(argv[i+1]);
-                       if(!result){
+                       int result = setup_que_len(argv[i+1]);
+                       if(result != 0){
                             MSG_PD("Velikost fronty nebyla nastavena používám výchozí:", wait_que_len);
                        }
                   }
@@ -173,7 +188,7 @@ void signal_handler (int sig)
  * @return
  */
 int start_server(){
-    netStructure = new NetStructure(port_number, wait_que_len);
+    netStructure = new NetStructure(port_number, wait_que_len, addr);
     service = new Reciever(netStructure);
 
     Sender::initialize();
