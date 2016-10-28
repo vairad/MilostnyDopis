@@ -11,7 +11,7 @@ public enum Event {
 
     private final String name;
 
-    private Event(String name){
+    Event(String name){
         this.name = name;
     }
 
