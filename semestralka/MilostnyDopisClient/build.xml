@@ -56,8 +56,7 @@
 
 	<target name="javadoc"> <!-- Create developer documentation from sources -->
 	    <mkdir dir="${out.dir}/${doc.dir}" />
-	    <javadoc sourcepath="${src.dir}/gui" destdir="${out.dir}/${doc.dir}" />
-	    <javadoc sourcepath="${src.dir}/netservice" destdir="${out.dir}/${doc.dir}" />
+	    <javadoc sourcepath="${src.dir}" destdir="${out.dir}/${doc.dir}" />
 	</target>
 	
 	<target name="signature"> <!-- create file with timestamp -->
