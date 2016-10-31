@@ -102,11 +102,13 @@ int NetStructure::bind_socket()
 
     my_addr.sin_addr.s_addr = resolve_address();
 
-    if(my_addr.sin_addr.s_addr == 0){
+    my_addr.sin_addr.s_addr = INADDR_ANY;
+
+    /*if(my_addr.sin_addr.s_addr == 0){
         MSG_PS("Nesprávný formát adresy", c_addr);
         LOG_ERROR_PS("Neprovedl se překlad adresy do binární podoby", c_addr);
         exit(ADDRESS_ERROR);
-    }
+    }*/
 
 
     int return_value = bind(server_socket, (struct sockaddr *) &my_addr, len_addr);
