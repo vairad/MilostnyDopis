@@ -5,7 +5,8 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-        NetServiceStaticTests.class
+        NetServiceStaticTests.class,
+	MessageTest.class
 })
 
 public class AllTests {

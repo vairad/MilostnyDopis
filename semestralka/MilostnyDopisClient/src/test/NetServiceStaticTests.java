@@ -78,58 +78,58 @@ public class NetServiceStaticTests {
 
     @Test
     public void testPortLowBound1() {
-        boolean result = NetService.checkPort("1");
+        int result = NetService.checkPort("1");
 
-        assertEquals("Chybně NEakceptována 1", true, result);
+        assertEquals("Chybně NEakceptována 1", 1, result);
     }
 
     @Test
     public void testPortLowBound2() {
-        boolean result = NetService.checkPort("0");
+        int result = NetService.checkPort("0");
 
-        assertEquals("Chybně akceptována 0", false, result);
+        assertEquals("Chybně akceptována 0", -1, result);
     }
 
     @Test
     public void testPortHighBound1() {
-        boolean result = NetService.checkPort("65535");
+        int result = NetService.checkPort("65535");
 
-        assertEquals("Chybně NEakceptováno 65535", true, result);
+        assertEquals("Chybně NEakceptováno 65535", 65535, result);
     }
 
     @Test
     public void testPortHighBound2() {
-        boolean result = NetService.checkPort("65536");
+        int result = NetService.checkPort("65536");
 
-        assertEquals("Chybně akceptováno 65536", false, result);
+        assertEquals("Chybně akceptováno 65536", -1, result);
     }
 
     @Test
     public void testPortInBounds1() {
-        boolean result = NetService.checkPort("25");
+        int result = NetService.checkPort("25");
 
-        assertEquals("Chybně NEakceptováno 25", true, result);
+        assertEquals("Chybně NEakceptováno 25", 25, result);
     }
 
     @Test
     public void testPortInBounds2() {
-        boolean result = NetService.checkPort("2127");
+        int result = NetService.checkPort("2127");
 
-        assertEquals("Chybně NEakceptováno 2127", true, result);
+        assertEquals("Chybně NEakceptováno 2127", 2127, result);
     }
 
     @Test
     public void testPortOutBounds1() {
-        boolean result = NetService.checkPort("-26");
+        int result = NetService.checkPort("-26");
 
-        assertEquals("Chybně akceptováno -26", false, result);
+        assertEquals("Chybně akceptováno -26", -1, result);
     }
 
     @Test
     public void testPortOutBounds2() {
-        boolean result = NetService.checkPort("75568");
+        int result = NetService.checkPort("75568");
 
-        assertEquals("Chybně NEakceptováno 75568", false, result);
+        assertEquals("Chybně akceptováno 75568", -1, result);
     }
 }
 
