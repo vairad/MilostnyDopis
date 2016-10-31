@@ -22,19 +22,7 @@
            GridPane.columnIndex="0" GridPane.rowIndex="1"/>
     <HBox spacing="2" alignment="bottom_left" GridPane.columnIndex="1" GridPane.rowIndex="1">
         <TextField
-                fx:id="ip1"
-                />
-        <Label text="."/>
-        <TextField
-                fx:id="ip2"
-                />
-        <Label text="."/>
-        <TextField
-                fx:id="ip3"
-                />
-        <Label text="."/>
-        <TextField
-                fx:id="ip4"
+                fx:id="address"
                 />
         <Label text=":"/>
         <TextField
@@ -57,6 +45,8 @@
                 onAction="#onDefaultConnection"/>
         <Button text="%connect"
                 onAction="#onConnect"/>
+        <Button text="%sendEcho"
+                onAction="#onEcho"/>
     </VBox>
     <VBox   spacing="10"
             alignment="top_center"
