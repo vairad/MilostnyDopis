@@ -20,4 +20,13 @@ public enum MessageType {
     public String toString(){
         return name;
     }
+
+    public static MessageType getTypeFromOpt(String substring) {
+        for( MessageType t : MessageType.values()){
+            if(t.toString().equals(substring)){
+                return t;
+            }
+        }
+        return unknown;
+    }
 }

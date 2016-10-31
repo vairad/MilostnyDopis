@@ -19,4 +19,13 @@ public enum Event {
     public String toString(){
         return name;
     }
+
+    public static Event getEventFromOpt(String substring) {
+        for( Event e : Event.values()){
+            if(e.toString().equals(substring)){
+                return e;
+            }
+        }
+        return UNK;
+    }
 }
