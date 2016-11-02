@@ -4,7 +4,7 @@
 <?import javafx.scene.text.Text?>
 
 
-<GridPane fx:controller="gui.Controller"
+<GridPane fx:controller="gui.GameController"
           xmlns:fx="http://javafx.com/fxml" alignment="center" hgap="10" vgap="10">
 
     <padding><Insets top="25" right="25" bottom="10" left="25"/></padding>
@@ -42,13 +42,8 @@
           GridPane.columnSpan="2"
             >
         <Button text="%defaultConnection"
-                onAction="#onDefaultConnection"/>
-        <Button text="%connect"
-                onAction="#onConnect"/>
-        <Button text="%sendEcho"
-                onAction="#onEcho"/>
-        <Button text="přihlaš mě s přezdivkou"
-                onAction="#onSend"/>
+                onAction="#onClose"/>
+
     </VBox>
     <VBox   spacing="10"
             alignment="top_center"

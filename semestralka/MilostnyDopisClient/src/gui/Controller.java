@@ -1,20 +1,20 @@
 package gui;
 
-import javafx.scene.control.Alert;
-import message.Event;
-import message.Message;
-import message.MessageType;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
+import constants.Constants;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
+import message.Event;
+import message.Message;
+import message.MessageType;
 import netservice.NetService;
-import sun.nio.ch.Net;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.net.URL;
@@ -36,6 +36,8 @@ public class Controller implements Initializable {
 
     private ResourceBundle bundle;
 
+    public GameWindow gameWindow;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         bundle = resources;
@@ -56,11 +58,9 @@ public class Controller implements Initializable {
         if(resultPort == -1){
             Controller.Logger.error("Wrong range of port");
 
-            Alert alert  = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle(bundle.getString("portErrorTitle"));
-            alert.setHeaderText(bundle.getString("portErrorHeadline"));
-            alert.setContentText(bundle.getString("portErrorText"));
-            alert.showAndWait();
+            DialogFactory.alertError( bundle.getString("portErrorTitle")
+                                    , bundle.getString("portErrorHeadline")
+                                    , bundle.getString("portErrorText"));
             return;
         }
 
@@ -89,5 +89,42 @@ public class Controller implements Initializable {
     public void onEcho(ActionEvent actionEvent) {
         Message msg = new Message(Event.ECH, MessageType.message, "Ahoj");
         NetService.getInstance().sender.addItem(msg);
+    }
+
+    public void onSend(ActionEvent actionEvent){
+        String messageS = checkNickname();
+        if(messageS == null){
+            return;
+        }
+
+        Message msg = new Message(Event.ECH, MessageType.login,messageS);
+        NetService.getInstance().sender.addItem(msg);
+    }
+
+    public void onGame(ActionEvent actionEvent){
+        gameWindow = new GameWindow();
+        gameWindow.show();
+        ((Node)actionEvent.getSource()).getScene().getWindow().hide();
+    }
+
+
+    private String checkNickname(){
+        String messageS = nickField.getText().trim();
+
+        if(messageS.length() < Constants.NICKNAME_MIN_LENGTH){
+            DialogFactory.alertError( bundle.getString("nickErrTitle")
+                    , bundle.getString("nickErrHeadline")
+                    , bundle.getString("nickErrTextShort"));
+            return null;
+        }
+
+        if(messageS.length() > Constants.NICKNAME_MAX_LENGTH){
+            DialogFactory.alertError( bundle.getString("nickErrTitle")
+                    , bundle.getString("nickErrHeadline")
+                    , bundle.getString("nickErrTextLong"));
+            return null;
+        }
+
+        return messageS;
     }
 }

@@ -225,7 +225,7 @@ void Reciever::create_message(int fd){
     event = choose_event(opt);
 
     if(event == Event::UNK || type == MessageType::unknown){
-        LOG_DEBUG("Neznámé OPT kódy. Ignoruji zprávu.");
+        LOG_DEBUG("Reciever::createMessage() - Neznámé OPT kódy. Ignoruji zprávu.");
         return;
     }
 
@@ -238,6 +238,8 @@ MessageType Reciever::choose_type(char *opt){
         return  MessageType::message;
     }else if(strcmp(opt, OPT_GAM) == 0){
         return  MessageType::game;
+    }else if(strcmp(opt, OPT_LOG) == 0){
+        return  MessageType::login;
     }else{
         return MessageType::unknown;
     }

@@ -1,16 +1,13 @@
 package netservice;
 
-import gui.App;
 import message.Event;
 import message.Message;
 import message.MessageType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import sun.nio.ch.Net;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Type;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -42,6 +39,10 @@ public class Reciever extends Thread {
                 recvBytes = in.read(buffer, 0, NetService.MAX_MSG_LENGTH);
             } catch (IOException e) {
                 logger.error("IO ERROR", e);
+                return;
+            }
+            if (recvBytes == -1){
+                logger.debug("IO disconnect");
                 return;
             }
 

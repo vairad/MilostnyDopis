@@ -86,6 +86,7 @@ void MessageHandler::handleTypeMessage(Message *msg)
     switch (type){
     case Event::ECH : //echo event
         MSG(msg->getMsg().c_str());
+        msg->setEvent(Event::ACK);
         MessageQueue::sendInstance()->push_msg(msg);
         break;
     case Event::UNK :

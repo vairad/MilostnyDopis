@@ -1,10 +1,9 @@
 package test;
 
-import com.sun.xml.internal.ws.api.model.MEP;
+
 import message.Event;
 import message.Message;
 import message.MessageType;
-import netservice.NetService;
 import org.junit.Before;
 import org.junit.Test;
 

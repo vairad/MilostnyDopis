@@ -1,14 +1,11 @@
 package netservice;
 
-import message.Event;
-import message.Message;
-import message.MessageType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.appender.db.jpa.converter.MessageAttributeConverter;
 
-
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 
@@ -55,6 +52,10 @@ public class NetService {
             return port;
         }
         return -1;
+    }
+
+    public String getServerName() {
+        return address.getHostName();
     }
 
     public void initialize() throws IOException {
@@ -104,17 +105,19 @@ public class NetService {
         socket = null;
     }
 
-    private void joinThreads() {
+    public void joinThreads() {
         try {
             sender.join();
             reciever.join();
         } catch (InterruptedException e) {
             logger.error("nějakej bordel ve vláknech", e);
+        } catch (NullPointerException e){
+            logger.error("vlákna nebyla inicializovaná", e);
         }
 
     }
 
-    public static void stop(){
+    public void stop(){
         runFlag = false;
     }
 
