@@ -3,6 +3,10 @@
 #include "errornumber.h"
 #include "log/log.h"
 
+#include "netservice/netstructure.h"
+
+#include "users/userdatabase.h"
+
 bool MessageHandler::workFlag;
 pthread_t *MessageHandler::workers;
 int MessageHandler::worker_count;
@@ -66,7 +70,7 @@ void MessageHandler::handleMessage(Message *msg)
         handleTypeMessage(msg);
         break;
     case MessageType::login :
-        //todo impl
+        handleTypeLogin(msg);
         break;
     case MessageType::game :
         //todo impl
@@ -97,6 +101,21 @@ void MessageHandler::handleTypeMessage(Message *msg)
     }
 }
 
+void MessageHandler::handleTypeLogin(Message *msg)
+{
+   Event type = msg->getEvent();
+    switch (type){
+    case Event::ECH : //echo event
+        handleLoginECH(msg);
+        break;
+    case Event::UNK :
+    default:
+        //todo impl
+
+        break;
+    }
+}
+
 void *MessageHandler::messageHandlerStart(void *arg_ptr)
 {
     while(workFlag){
@@ -105,3 +124,16 @@ void *MessageHandler::messageHandlerStart(void *arg_ptr)
     }
 }
 
+
+void MessageHandler::handleLoginECH(Message *msg)
+{
+    LOG_DEBUG("MessageHandler::handleLoginECH() - start");
+    MSG_PS("Přihlašuji uživatele", msg->getMsg().c_str());
+    User *user = new User(new std::string(msg->getMsg()), msg->getSocket());
+    std::string id = UserDatabase::getInstance()->addUser(user);
+    msg->setEvent(Event::ACK);
+    id += "&&";
+    id += msg->getMsg();
+    msg->setMsg(id);
+    MessageQueue::sendInstance()->push_msg(msg);
+}

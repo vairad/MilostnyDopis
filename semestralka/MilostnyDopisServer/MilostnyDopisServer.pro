@@ -14,7 +14,9 @@ SOURCES += main.cpp \
     netservice/sender.cpp \
     message/messagequeue.cpp \
     message/message.cpp \
-    message/messagehandler.cpp
+    message/messagehandler.cpp \
+    users/user.cpp \
+    users/userdatabase.cpp
 
 HEADERS += log/log.h \
     netservice/netstructure.h \
@@ -24,4 +26,6 @@ HEADERS += log/log.h \
     message/messagequeue.h \
     message/message.h \
     message/messagehandler.h \
-    netservice/optcode.h
+    netservice/optcode.h \
+    users/user.h \
+    users/userdatabase.h

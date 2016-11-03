@@ -19,7 +19,12 @@ public:
     static void startThreads();
     static void joinThreads();
     static void handleMessage(Message *msg);
+private:
     static void handleTypeMessage(Message *msg);
+    static void handleTypeLogin(Message *msg);
+
+    static void handleLoginECH(Message *msg);
+
 };
 
 #endif // MESSAGEHANDLER_H
