@@ -1,8 +1,7 @@
 #include "userdatabase.h"
-/** ****************************************************************************
- * UserDatabase class implementation.
- *
- */
+
+#include "log/log.h"
+#include "errornumber.h"
 
 //==========================INIT SINGLETON=============================================
 
@@ -10,6 +9,15 @@ UserDatabase *UserDatabase::INSTANCE = new UserDatabase();
 
 UserDatabase::UserDatabase()
 {
+    LOG_INFO("UserDatabase::UserDatabase()");
+    int result = pthread_mutex_init(&map_lock, NULL);    // inicializuj zámek
+    if(result != 0){
+        //todo handle errors
+        LOG_ERROR("NEOŠETŘENÁ CHYBA PŘI VYTVÁŘENÍ MUTEXU");
+        MSG("Chyba při inicializaci... Ukončuji program");
+        exit(MUTEX_NOT_INIT_USRS);
+    }
+    LOG_TRACE("mutex inicializovan");
 
 }
 
@@ -26,12 +34,68 @@ UserDatabase *UserDatabase::getInstance()
  * @param user User to add into collection
  * @return uid of added user
  */
-std::string UserDatabase::addUser(User *user)
+std::string UserDatabase::addUser(User *user, int socket)
 {
+    pthread_mutex_lock(&map_lock);
     std::string id = getNextID();
     user->setUID(id);
-    users[id] = user;
+    users_by_id[id] = user;
+    keys_by_socket[socket] = id;
+    pthread_mutex_unlock(&map_lock);
     return id;
+}
+
+/** **********************************************************************************
+ * Vrátí ukazatel na uživatele, dle zadaného klíče
+ * @brief UserDatabase::getUserById
+ * @param key
+ * @return
+ */
+User *UserDatabase::getUserById(std::string key)
+{
+    if (users_by_id.find(key) == users_by_id.end()){
+        return NULL;
+    }
+    return users_by_id[key];
+}
+
+/** **********************************************************************************
+ * @brief UserDatabase::getUserBySocket
+ * @param socket
+ * @return
+ */
+User *UserDatabase::getUserBySocket(int socket)
+{
+    if (keys_by_socket.find(socket) == keys_by_socket.end()){
+       return NULL;
+    }
+    return getUserById(keys_by_socket[socket]);
+}
+
+/** *********************************************************************************
+ * @brief UserDatabase::hasSocketUser
+ * @param socket
+ * @return
+ */
+bool UserDatabase::hasSocketUser(int socket)
+{
+    if(getUserBySocket(socket) == NULL){
+        return false;
+    }
+    return true;
+}
+
+/** *****************************************************************************
+ * @brief UserDatabase::existUserID
+ * @param key
+ * @return
+ */
+bool UserDatabase::existUserID(string key)
+{
+    if(getUserById(key) == NULL){
+        return false;
+    }
+    return true;
 }
 
 /** **********************************************************************************
@@ -42,7 +106,7 @@ std::string UserDatabase::addUser(User *user)
  */
 std::string UserDatabase::getNextID(){
     std::string id = genRandomUid();
-    while (users.find(id) != users.end()){
+    while (users_by_id.find(id) != users_by_id.end()){
         id = genRandomUid();
     }
     return id;

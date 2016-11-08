@@ -16,17 +16,26 @@
 
 #define UID_LEN 5
 
+using namespace std;
+
 class UserDatabase
 {
     static UserDatabase *INSTANCE;
-    std::map<std::string, User *> users;
+
+    pthread_mutex_t map_lock;
+    map<string, User *> users_by_id;
+    map<int, string> keys_by_socket;
 public:
     static UserDatabase *getInstance();
-    std::string addUser(User *user);
+    string addUser(User *user, int socket);
+    User *getUserById(string key);
+    User *getUserBySocket(int socket);
+    bool hasSocketUser(int socket);
+    bool existUserID(string key);
 private:
     UserDatabase();
-    std::string getNextID();
-    std::string genRandomUid();
+    string getNextID();
+    static inline string genRandomUid();
 };
 
 #endif // USERDATABASE_H
