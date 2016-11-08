@@ -159,6 +159,5 @@ void *Sender::sendingStart(void *arg_ptr)
         Message *msg = MessageQueue::sendInstance()->pop_msg();
         sendMessage(msg);
     }
-    return NULL;
 }
 
