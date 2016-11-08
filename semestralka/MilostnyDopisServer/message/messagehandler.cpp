@@ -129,9 +129,21 @@ void MessageHandler::handleLoginECH(Message *msg)
 {
     LOG_DEBUG("MessageHandler::handleLoginECH() - start");
     MSG_PS("Přihlašuji uživatele", msg->getMsg().c_str());
-    User *user = new User(new std::string(msg->getMsg()), msg->getSocket());
-    std::string id = UserDatabase::getInstance()->addUser(user);
-    msg->setEvent(Event::ACK);
+
+    User *user;
+    std::string id;
+    if(UserDatabase::getInstance()->hasSocketUser(msg->getSocket())){
+        MSG_PD("Na tomto socketu je již vytvořen uživaltel", msg->getSocket());
+        user = UserDatabase::getInstance()->getUserBySocket(msg->getSocket());
+        id = user->getUID();
+        msg->setMsg(*user->getNickname());
+        msg->setEvent(Event::NAK);
+    } else {
+        user = new User(new std::string(msg->getMsg()), msg->getSocket());
+        id = UserDatabase::getInstance()->addUser(user, msg->getSocket());
+        msg->setEvent(Event::ACK);
+    }
+
     id += "&&";
     id += msg->getMsg();
     msg->setMsg(id);
