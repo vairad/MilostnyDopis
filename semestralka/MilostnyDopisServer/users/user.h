@@ -12,6 +12,9 @@ class User
 public:
     User(std::string *nickname, int socket);
     void setUID(std::string uid);
+    std::string getUID() const;
+    int getSocket() const;
+    std::string *getNickname() const;
 };
 
 #endif // USER_H
