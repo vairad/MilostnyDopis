@@ -16,7 +16,11 @@ SOURCES += main.cpp \
     message/message.cpp \
     message/messagehandler.cpp \
     users/user.cpp \
-    users/userdatabase.cpp
+    users/userdatabase.cpp \
+    game/game.cpp \
+    game/package.cpp \
+    game/gameservices.cpp \
+    game/player.cpp
 
 HEADERS += log/log.h \
     netservice/netstructure.h \
@@ -28,4 +32,8 @@ HEADERS += log/log.h \
     message/messagehandler.h \
     netservice/optcode.h \
     users/user.h \
-    users/userdatabase.h
+    users/userdatabase.h \
+    game/game.h \
+    game/package.h \
+    game/gameservices.h \
+    game/player.h
