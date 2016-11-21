@@ -11,6 +11,8 @@
 #include "message/messagequeue.h"
 #include "message/messagehandler.h"
 
+#include "users/userdatabase.h"
+
 //=====================================================================================
 
 bool run = false;
@@ -163,6 +165,8 @@ int read_args(int argc, char** argv)
 }
 
 
+
+
 void signal_handler (int sig)
 {
     if (sig == SIGINT
@@ -173,6 +177,7 @@ void signal_handler (int sig)
         void *retval;
         MSG("Čekám na ukončení vláken");
         pthread_join(*Reciever::listen_thread_p, &retval);
+
         MessageHandler::joinThreads();
 
         delete service;
@@ -181,6 +186,31 @@ void signal_handler (int sig)
         exit(99); // todo clean up and correct and až to bude hotové můžeš sem nastavit nulu :)
     }
 
+}
+
+void printUsers(){
+    std::cout.flush();
+    std::cout << std::endl;
+    std::cout << "Registrovaní uživatelé" << std::endl;
+    for(auto iterator = UserDatabase::getInstance()->begin();
+            iterator != UserDatabase::getInstance()->end();
+        iterator++)
+    {
+        std::cout << "user: ";
+        std::cout << *((User *)iterator->second)->getNickname();
+        std::cout << " id: ";
+        std::cout << iterator->first;
+        std::cout << std::endl;
+    }
+    std::cout << std::endl;
+    std::cout << ">";
+    std::cout.flush();
+}
+
+void handleCommand(std::string command){
+    if(command.compare("users") == 0){
+        printUsers();
+    }
 }
 
 /**
@@ -207,6 +237,14 @@ int start_server(){
     pthread_create(Reciever::listen_thread_p, NULL, Reciever::listenerStart, service);
 
     void *retval;
+
+    std::string command;
+
+    while( command.compare("konec") != 0 ){
+        std::getline(std::cin, command);
+        std::cout << "> " << command;
+        handleCommand(command);
+    }
 
     pthread_join(*Reciever::listen_thread_p, &retval);
     MessageHandler::joinThreads();

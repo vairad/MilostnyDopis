@@ -32,6 +32,10 @@ public:
     User *getUserBySocket(int socket);
     bool hasSocketUser(int socket);
     bool existUserID(string key);
+    void removeSocketUser(int socket);
+    void setSocketUser(string key, int socket);
+    map<string, User *>::iterator begin();
+    map<string, User *>::iterator end();
 private:
     UserDatabase();
     string getNextID();

@@ -15,6 +15,7 @@ enum Event{
     UNK,
     ACK,
     NAK,
+    COD,
     ECH
 };
 

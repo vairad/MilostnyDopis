@@ -35,11 +35,12 @@ public:
     bool effectGuardian(Player *who, Player *whom, GameCards tip);
     GameCards effectPriest(Player *who, Player *whom);
     bool effectBaron(Player *who, Player *whom);
-    bool effectKomorna(Player *who);
+    bool effectMaid(Player *who);
     bool effectPrince(Player *who, Player *whom);
     bool effectKing(Player *who, Player *whom);
     bool effectCountess(Player *who);
     bool effectPrincess(Player *who);
+    bool giveCard(Player *who);
 };
 
 #endif // GAME_H

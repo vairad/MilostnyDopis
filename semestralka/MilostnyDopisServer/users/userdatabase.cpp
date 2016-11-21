@@ -40,7 +40,7 @@ std::string UserDatabase::addUser(User *user, int socket)
     std::string id = getNextID();
     user->setUID(id);
     users_by_id[id] = user;
-    keys_by_socket[socket] = id;
+    setSocketUser(id, socket);
     pthread_mutex_unlock(&map_lock);
     return id;
 }
@@ -70,6 +70,37 @@ User *UserDatabase::getUserBySocket(int socket)
        return NULL;
     }
     return getUserById(keys_by_socket[socket]);
+}
+
+/** **********************************************************************************
+ * Odstraní vazbu soket uživatel po jeho odpojení
+ * @brief UserDatabase::removeSocketUser
+ * @param socket
+ * @return
+ */
+void UserDatabase::removeSocketUser(int socket)
+{
+    keys_by_socket.erase(socket);
+}
+
+/** ***********************************************************************************
+ * @brief UserDatabase::setSocketUser
+ * @param key
+ * @param socket
+ */
+void UserDatabase::setSocketUser(string key, int socket)
+{
+    keys_by_socket[socket] = key;
+}
+
+map<string, User *>::iterator UserDatabase::begin()
+{
+    return users_by_id.begin();
+}
+
+map<string, User *>::iterator UserDatabase::end()
+{
+    return users_by_id.end();
 }
 
 /** *********************************************************************************

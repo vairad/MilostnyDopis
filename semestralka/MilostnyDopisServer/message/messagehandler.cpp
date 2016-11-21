@@ -92,7 +92,7 @@ void MessageHandler::handleTypeMessage(Message *msg)
         MSG(msg->getMsg().c_str());
         msg->setEvent(Event::ACK);
         MessageQueue::sendInstance()->push_msg(msg);
-        break;
+        break;        
     case Event::UNK :
     default:
         //todo impl
@@ -108,6 +108,8 @@ void MessageHandler::handleTypeLogin(Message *msg)
     case Event::ECH : //echo event
         handleLoginECH(msg);
         break;
+    case Event::COD:
+        handleLoginCOD(msg);
     case Event::UNK :
     default:
         //todo impl
@@ -146,6 +148,31 @@ void MessageHandler::handleLoginECH(Message *msg)
 
     id += "&&";
     id += msg->getMsg();
+    msg->setMsg(id);
+    MessageQueue::sendInstance()->push_msg(msg);
+}
+
+void MessageHandler::handleLoginCOD(Message *msg)
+{
+    LOG_DEBUG("MessageHandler::handleLoginCOD() - start");
+    MSG_PS("Přihlašuji uživatele s id", msg->getMsg().c_str());
+
+    User *user;
+    std::string id = msg->getMsg();
+    if(UserDatabase::getInstance()->hasSocketUser(msg->getSocket())){
+        MSG_PD("Na tomto socketu je již vytvořen uživaltel", msg->getSocket());
+        user = UserDatabase::getInstance()->getUserBySocket(msg->getSocket());
+        id = user->getUID();
+        msg->setMsg(*user->getNickname());
+        msg->setEvent(Event::NAK);
+    } else {
+        user = UserDatabase::getInstance()->getUserById(id);
+        UserDatabase::getInstance()->setSocketUser(id, msg->getSocket());
+        msg->setEvent(Event::ACK);
+    }
+
+    id += "&&";
+    id += user->getNickname()->c_str();
     msg->setMsg(id);
     MessageQueue::sendInstance()->push_msg(msg);
 }

@@ -15,6 +15,8 @@
 #include "netservice/optcode.h"
 #include "errornumber.h"
 
+#include "users/userdatabase.h"
+
 
 pthread_t *Reciever::listen_thread_p;
 unsigned long Reciever::recieved_bytes = 0;
@@ -159,6 +161,8 @@ void Reciever::handle_socket_activity(fd_set* sockets)
                     LOG_TRACE("Socket uzavřen");
                     FD_CLR( fd, &(netStructure_p->sockets_to_serve) );
                     LOG_TRACE("Socket odstraněn ze skupiny");
+                    UserDatabase::getInstance()->removeSocketUser(fd);
+                    LOG_TRACE("Odstraněno spojení socket uživatel");
                     MSG("Bylo uzavřeno spojení s klientem");
                 }
             }
@@ -252,6 +256,8 @@ Event Reciever::choose_event(char *opt){
         return  Event::NAK;
     }else if(strcmp(opt, OPT_ECH) == 0){
         return  Event::ECH;
+    }else if(strcmp(opt, OPT_COD) == 0){
+        return  Event::COD;
     }else{
         return Event::UNK;
     }

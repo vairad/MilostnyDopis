@@ -29,5 +29,6 @@
 #define OPT_ACK "ACK"
 #define OPT_NAK "NAK"
 #define OPT_ECH "ECH"
+#define OPT_COD "COD"
 
 #endif // OPTCODE_H

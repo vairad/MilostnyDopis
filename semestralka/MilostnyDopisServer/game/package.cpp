@@ -1,7 +1,8 @@
 #include "package.h"
 
 #include <algorithm>
-#include <vector>
+
+const int GameDeck::size = 16;
 
 GameDeck::GameDeck()
 {
@@ -30,4 +31,11 @@ GameDeck::GameDeck()
     cards.push_back(GameCards::princess);
 
     std::random_shuffle (cards.begin(), cards.end());
+}
+
+GameCards GameDeck::getNextCard()
+{
+    GameCards nextCard = cards.front();
+    cards.pop_front();
+    return nextCard;
 }
