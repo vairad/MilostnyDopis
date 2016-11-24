@@ -30,5 +30,7 @@
 #define OPT_NAK "NAK"
 #define OPT_ECH "ECH"
 #define OPT_COD "COD"
+#define OPT_NEW "NEW"
+
 
 #endif // OPTCODE_H

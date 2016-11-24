@@ -73,14 +73,19 @@ User *UserDatabase::getUserBySocket(int socket)
 }
 
 /** **********************************************************************************
- * Odstraní vazbu soket uživatel po jeho odpojení
+ * Odstraní vazbu soket uživatel po korektní uzavření socketu
  * @brief UserDatabase::removeSocketUser
  * @param socket
  * @return
  */
 void UserDatabase::removeSocketUser(int socket)
 {
-    keys_by_socket.erase(socket);
+    User *u = getUserBySocket(socket);
+    if(u == NULL){
+        return;
+    }
+    u->setSocket(0); // odstraní odkaz z uživatele
+    keys_by_socket.erase(socket); // odstraní záznam z mapy
 }
 
 /** ***********************************************************************************

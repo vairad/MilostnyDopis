@@ -12,11 +12,12 @@ enum MessageType{
 };
 
 enum Event{
-    UNK,
-    ACK,
-    NAK,
-    COD,
-    ECH
+    UNK, //unknown
+    ACK, // accept
+    NAK, // negative accept ...
+    COD, // code resolve
+    NEW, // create
+    ECH // echo ... basic function
 };
 
 class Message

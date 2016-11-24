@@ -6,6 +6,9 @@
 #include "netservice/netstructure.h"
 
 #include "users/userdatabase.h"
+#include "game/gameservices.h"
+
+#include "util/utilities.h"
 
 bool MessageHandler::workFlag;
 pthread_t *MessageHandler::workers;
@@ -73,7 +76,7 @@ void MessageHandler::handleMessage(Message *msg)
         handleTypeLogin(msg);
         break;
     case MessageType::game :
-        //todo impl
+        handleTypeGame(msg);
         break;
     case MessageType::servis :
         //todo impl
@@ -82,6 +85,27 @@ void MessageHandler::handleMessage(Message *msg)
     default:
         break;
     };
+}
+
+void MessageHandler::handleTypeGame(Message *msg)
+{
+   Event type = msg->getEvent();
+    switch (type){
+    case Event::ECH : //echo event
+        handleGameECH(msg);
+        break;
+    case Event::COD : //echo event
+        handleGameCOD(msg);
+        break;
+    case Event::NEW:
+        handleGameNEW(msg);
+        break;
+    case Event::UNK :
+    default:
+        //todo impl
+
+        break;
+    }
 }
 
 void MessageHandler::handleTypeMessage(Message *msg)
@@ -110,6 +134,7 @@ void MessageHandler::handleTypeLogin(Message *msg)
         break;
     case Event::COD:
         handleLoginCOD(msg);
+        break;
     case Event::UNK :
     default:
         //todo impl
@@ -166,6 +191,14 @@ void MessageHandler::handleLoginCOD(Message *msg)
         msg->setMsg(*user->getNickname());
         msg->setEvent(Event::NAK);
     } else {
+        if(!UserDatabase::getInstance()->existUserID(id)){
+            MSG("Neexistujici ID");
+            LOG_DEBUG_PS("Neexistujici ID", id.c_str());
+            msg->setEvent(Event::NAK);
+            msg->setMsg("NO ID");
+            MessageQueue::sendInstance()->push_msg(msg);
+            return;
+        }
         user = UserDatabase::getInstance()->getUserById(id);
         UserDatabase::getInstance()->setSocketUser(id, msg->getSocket());
         msg->setEvent(Event::ACK);
@@ -174,5 +207,31 @@ void MessageHandler::handleLoginCOD(Message *msg)
     id += "&&";
     id += user->getNickname()->c_str();
     msg->setMsg(id);
+    MessageQueue::sendInstance()->push_msg(msg);
+}
+
+void MessageHandler::handleGameECH(Message *msg){
+    LOG_DEBUG("MessageHandler::handleGameECH() - start");
+    msg->setMsg(GameServices::getInst()->listGames());
+    msg->setEvent(Event::ACK);
+    MessageQueue::sendInstance()->push_msg(msg);
+}
+
+void MessageHandler::handleGameCOD(Message *msg){
+    LOG_DEBUG("MessageHandler::handleGameCOD() - start");
+
+}
+
+void MessageHandler::handleGameNEW(Message *msg){
+    LOG_DEBUG("MessageHandler::handleGameNEW() - start");
+    int round_count;
+    bool res = Utilities::readNumber(msg->getMsg(), &round_count);
+    if(res == false){
+        msg->setEvent(Event::NAK);
+        MessageQueue::sendInstance()->push_msg(msg);
+    }
+    Game *g = GameServices::getInst()->createNewGame(round_count);
+    msg->setEvent(Event::ACK);
+    msg->setMsg(g->getUid());
     MessageQueue::sendInstance()->push_msg(msg);
 }

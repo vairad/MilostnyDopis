@@ -37,8 +37,13 @@ std::string *User::getNickname() const
     return nickname;
 }
 
+void User::setSocket(int value)
+{
+    socket = value;
+}
+
 User::User(std::string *nickname, int socket) :
-                                      socket(socket)
+    socket(socket)
 {
     this->nickname = ltrim(rtrim(nickname));
 }

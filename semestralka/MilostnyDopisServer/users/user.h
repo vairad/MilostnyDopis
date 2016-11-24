@@ -15,6 +15,7 @@ public:
     std::string getUID() const;
     int getSocket() const;
     std::string *getNickname() const;
+    void setSocket(int value);
 };
 
 #endif // USER_H

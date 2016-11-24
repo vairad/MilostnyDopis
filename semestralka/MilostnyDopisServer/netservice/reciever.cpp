@@ -258,6 +258,8 @@ Event Reciever::choose_event(char *opt){
         return  Event::ECH;
     }else if(strcmp(opt, OPT_COD) == 0){
         return  Event::COD;
+    }else if(strcmp(opt, OPT_NEW) == 0){
+        return  Event::NEW;
     }else{
         return Event::UNK;
     }

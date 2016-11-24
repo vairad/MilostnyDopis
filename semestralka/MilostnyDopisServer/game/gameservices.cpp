@@ -77,6 +77,25 @@ bool GameServices::existGameByUid(std::string *uid)
     return true;
 }
 
+/**
+ * @brief GameServices::listGames
+ * @return
+ */
+std::string GameServices::listGames()
+{
+    std::string list;
+    list += std::to_string(games_by_id.size());
+    list += "=";
+    for(auto iterator = games_by_id.begin();
+            iterator != games_by_id.end();
+        iterator++)
+    {
+        list += ((Game *)iterator->second)->toString();
+        list += ";";
+    }
+    return list;
+}
+
 /** **********************************************************************************
  * Metoda nalezne další volné ID, které není použito v mapě vytvořených her.
  * Ke geneování používá metodu getRandomUID();
@@ -111,7 +130,7 @@ std::string GameServices::generateGameUID()
         "abcdefghijklmnopqrstuvwxyz";
 
         key += "GAME";
-    for (int i = 0; i < UID_LEN; ++i) {
+    for (int i = 0; i < GAME_UID_LEN; ++i) {
         key += alphanum[rand() % (sizeof(alphanum) - 1)];
     }
     return key;

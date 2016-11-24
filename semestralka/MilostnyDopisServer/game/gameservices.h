@@ -8,7 +8,7 @@
 
 class GameServices
 {
-    static const short UID_LEN = 2;
+    static const short GAME_UID_LEN = 2;
 
     GameServices();
     static GameServices *INSTANCE;
@@ -22,6 +22,8 @@ public:
     Game *createNewGame(int round_count);
     Game *getGameByUid(std::string *uid);
     bool existGameByUid(std::string *uid);
+
+    std::string listGames();
 
     ~GameServices();
 

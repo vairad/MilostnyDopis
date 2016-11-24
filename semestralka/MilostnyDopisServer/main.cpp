@@ -13,6 +13,9 @@
 
 #include "users/userdatabase.h"
 
+#include "game/gameservices.h"
+
+#include "util/utilities.h"
 //=====================================================================================
 
 bool run = false;
@@ -207,9 +210,24 @@ void printUsers(){
     std::cout.flush();
 }
 
+void printGames(){
+    std::cout << std::endl;
+    std::cout << "Aktivní hry:" << std::endl;
+
+    std::string games = GameServices::getInst()->listGames();
+    Utilities::replaceAll(games, ";", "\n");
+    std::cout << games;
+    std::cout << std::endl;
+}
+
 void handleCommand(std::string command){
     if(command.compare("users") == 0){
         printUsers();
+        return;
+    }
+    if(command.compare("games")  == 0){
+        printGames();
+        return;
     }
 }
 
@@ -244,6 +262,8 @@ int start_server(){
         std::getline(std::cin, command);
         std::cout << "> " << command;
         handleCommand(command);
+        std::cout << std::endl;
+        std::cout << ">";
     }
 
     pthread_join(*Reciever::listen_thread_p, &retval);

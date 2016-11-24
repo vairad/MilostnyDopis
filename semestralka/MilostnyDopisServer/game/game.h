@@ -41,6 +41,8 @@ public:
     bool effectCountess(Player *who);
     bool effectPrincess(Player *who);
     bool giveCard(Player *who);
+    std::string toString();
+    std::string getUid() const;
 };
 
 #endif // GAME_H

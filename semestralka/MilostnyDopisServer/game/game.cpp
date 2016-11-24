@@ -2,6 +2,11 @@
 
 #include "log/log.h"
 
+std::string Game::getUid() const
+{
+    return uid;
+}
+
 Game::Game(std::string uid, int round_count) : uid(uid), round_count(round_count)
 {
 }
@@ -89,7 +94,7 @@ bool Game::effectPrince(Player *who, Player *whom)
     if(whom->isInGame()){
         giveCard(whom);
     }
-
+    return true;
 }
 
 /**
@@ -107,6 +112,7 @@ bool Game::effectKing(Player *who, Player *whom)
     GameCards tmpCard = whom->showCard();
     whom->giveCard(who->showCard());
     who->giveCard(tmpCard);
+    return true;
 }
 
 /**
@@ -131,11 +137,31 @@ bool Game::effectCountess(Player *who)
 bool Game::effectPrincess(Player *who)
 {
     who->setInGame(false);
+    return true;
 }
 
+/**
+ * @brief Game::giveCard
+ * @param who
+ * @return
+ */
 bool Game::giveCard(Player *who)
 {
     who->setSecondCard(game_deck.getNextCard());
+    return true;
+}
+
+/**
+ * @brief Game::toString
+ * @return
+ */
+std::string Game::toString()
+{
+    std::string tmp;
+    tmp += uid;
+    tmp += "&&";
+    tmp += std::to_string(player_count);
+    return tmp;
 }
 
 

@@ -23,9 +23,15 @@ public:
 private:
     static void handleTypeMessage(Message *msg);
     static void handleTypeLogin(Message *msg);
+    static void handleTypeGame(Message *msg);
+
 
     static void handleLoginECH(Message *msg);
     static void handleLoginCOD(Message *msg);
+
+    static void handleGameECH(Message *msg);
+    static void handleGameCOD(Message *msg);
+    static void handleGameNEW(Message *msg);
 
 };
 
