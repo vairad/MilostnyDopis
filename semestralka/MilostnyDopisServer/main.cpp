@@ -5,7 +5,7 @@
 #include "errornumber.h"
 #include "log/log.h"
 #include "netservice/netstructure.h"
-#include "netservice/reciever.h"
+#include "netservice/receiver.h"
 #include "netservice/sender.h"
 
 #include "message/messagequeue.h"
@@ -25,7 +25,7 @@ char ADDR_ALL[] = {"ALL"};
 char *addr = ADDR_ALL;
 
 NetStructure *netStructure;
-Reciever *reciever;
+Receiver *receiver;
 
 //=====================================================================================
 /**
@@ -105,7 +105,7 @@ void helpProgram(){
 void printStats(){
     MSG("Statistiky běhu serveru");
     MSG_PL("Bylo odesláno [byte]:", Sender::getSendedBytes());
-    MSG_PL("Bylo přijato [byte]:", Reciever::getRecievedBytes());
+    MSG_PL("Bylo přijato [byte]:", Receiver::getReceivedBytes());
 }
 
 
@@ -194,7 +194,7 @@ int read_args(int argc, char** argv)
 
 void stopServer(void){
     MSG("Ukončuji server");
-    reciever->stop(); // Recieve thread
+    receiver->stop(); // Receive thread
     Sender::stop(); // Send thread
     MessageHandler::stop(); // All message handler threads
 }
@@ -202,13 +202,13 @@ void stopServer(void){
 void joinThreads(void){
 
     void *retval;
-    pthread_join(*Reciever::listen_thread_p, &retval);
+    pthread_join(*Receiver::listen_thread_p, &retval);
     MessageHandler::joinThreads();
     Sender::joinThread();
 }
 
 void freeMemory(){
-    delete reciever;
+    delete receiver;
     delete netStructure;
 }
 
@@ -288,7 +288,7 @@ void handleCommand(std::string command){
  */
 int start_server(){
     netStructure = new NetStructure(port_number, wait_que_len, addr);
-    reciever = new Reciever(netStructure);
+    receiver = new Receiver(netStructure);
 
     Sender::initialize();
     Sender::startThread();
@@ -296,14 +296,14 @@ int start_server(){
     MessageHandler::initialize(5);
     MessageHandler::startThreads();
 
-    Reciever::listen_thread_p = (pthread_t *) malloc(sizeof(pthread_t));
+    Receiver::listen_thread_p = (pthread_t *) malloc(sizeof(pthread_t));
 
-    if(Reciever::listen_thread_p == NULL){
+    if(Receiver::listen_thread_p == NULL){
         MSG("Nedostatek paměti pro vytvoření serverového vlákna, ukončuji program");
-        LOG_ERROR("Nedostatek paměti pro vytvoření Reciever::listen_thread_p")
+        LOG_ERROR("Nedostatek paměti pro vytvoření Receiver::listen_thread_p")
     }
 
-    pthread_create(Reciever::listen_thread_p, NULL, Reciever::listenerStart, reciever);
+    pthread_create(Receiver::listen_thread_p, NULL, Receiver::listenerStart, receiver);
 
     std::string command;
 

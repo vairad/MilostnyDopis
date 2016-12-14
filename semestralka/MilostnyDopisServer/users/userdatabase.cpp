@@ -83,11 +83,10 @@ void UserDatabase::removeSocketUser(int socket)
     pthread_mutex_lock(&map_lock);
 
     User *u = getUserBySocket(socket);
-    if(u == NULL){
-        return;
+    if(u != NULL){
+        u->setSocket(0); // odstraní odkaz z uživatele
+        keys_by_socket.erase(socket); // odstraní záznam z mapy
     }
-    u->setSocket(0); // odstraní odkaz z uživatele
-    keys_by_socket.erase(socket); // odstraní záznam z mapy
 
     pthread_mutex_unlock(&map_lock);
 }
@@ -102,11 +101,10 @@ bool UserDatabase::removeUser(string key)
     pthread_mutex_lock(&map_lock);
 
     User *u = getUserById(key);
-    if(u == NULL){
-        return false;
+    if(u != NULL){
+        keys_by_socket.erase(u->getSocket());
+        users_by_id.erase(key);
     }
-    keys_by_socket.erase(u->getSocket());
-    users_by_id.erase(key);
 
     pthread_mutex_unlock(&map_lock);
 

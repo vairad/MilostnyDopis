@@ -56,12 +56,12 @@ Game *GameServices::createNewGame(int round_count)
  * @param uid
  * @return
  */
-Game *GameServices::getGameByUid(std::string *uid)
+Game *GameServices::getGameByUid(std::string uid)
 {
-    if (games_by_id.find(*uid) == games_by_id.end()){
+    if (games_by_id.find(uid) == games_by_id.end()){
         return NULL;
     }
-    return games_by_id[*uid];
+    return games_by_id[uid];
 }
 
 /** **************************************************************************************
@@ -69,7 +69,7 @@ Game *GameServices::getGameByUid(std::string *uid)
  * @param uid
  * @return
  */
-bool GameServices::existGameByUid(std::string *uid)
+bool GameServices::existGameByUid(std::string uid)
 {
     if(getGameByUid(uid) == NULL){
         return false;

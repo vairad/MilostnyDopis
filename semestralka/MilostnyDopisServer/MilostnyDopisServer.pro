@@ -10,7 +10,7 @@ LIBS += -pthread
 SOURCES += main.cpp \
     log/log.cpp \
     netservice/netstructure.cpp \
-    netservice/reciever.cpp \
+    netservice/receiver.cpp \
     netservice/sender.cpp \
     message/messagequeue.cpp \
     message/message.cpp \
@@ -27,7 +27,7 @@ SOURCES += main.cpp \
 
 HEADERS += log/log.h \
     netservice/netstructure.h \
-    netservice/reciever.h \
+    netservice/receiver.h \
     netservice/sender.h \
     errornumber.h \
     message/messagequeue.h \

@@ -59,9 +59,9 @@ bool GameHandler::checkLogged(int socket){
  * @param uid
  * @return
  */
-bool GameHandler::checkGame(string uid){
+bool GameHandler::checkGame(std::string uid){
     LOG_DEBUG("GameHandler::checkGame() - start");
-    if(!GameServices::getInst()->existGameByUid(&uid)){
+    if(!GameServices::getInst()->existGameByUid(uid)){
         MSG("Neexistujici ID Hry, nelze připojit uživatele");
         LOG_DEBUG_PS("Neexistujici ID Hry", uid.c_str());
         return false;
@@ -82,6 +82,7 @@ void GameHandler::handleGameECH(Message *msg){
 }
 
 /**
+ * Oddešle stav celé hry na klienta
  * @brief GameHandler::handleGameSTA
  * @param msg
  */
@@ -92,7 +93,16 @@ void GameHandler::handleGameSTA(Message *msg){
         return;
     }
 
+    if(!checkGame(msg->getMsg())){
+        //todo negativní odpověď
+        return;
+    }
 
+
+    std::string gameStatus = GameServices::getInst()->getGameByUid(msg->getMsg())->getStatus();
+
+    msg->setMsg(gameStatus);
+    MessageQueue::sendInstance()->push_msg(msg);
 }
 
 /**
@@ -129,7 +139,7 @@ void GameHandler::handleGameCOD(Message *msg){
         return;
     }
 
-    Game *game = GameServices::getInst()->getGameByUid(&gameId);
+    Game *game = GameServices::getInst()->getGameByUid(gameId);
     user->setGame(game);
     bool result = game->addPlayer(user);
     if(!result){

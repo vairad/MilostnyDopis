@@ -113,7 +113,7 @@ void MessageHandler::handleTypeMessage(Message *msg)
 void *MessageHandler::messageHandlerStart(void *arg_ptr)
 {
     while(workFlag){
-        Message *msg = MessageQueue::recieveInstance()->pop_msg();
+        Message *msg = MessageQueue::receiveInstance()->pop_msg();
         handleMessage(msg);
     }
 }

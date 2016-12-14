@@ -21,8 +21,8 @@ public:
     static GameServices *getInst();
 
     Game *createNewGame(int round_count);
-    Game *getGameByUid(std::string *uid);
-    bool existGameByUid(std::string *uid);
+    Game *getGameByUid(std::string uid);
+    bool existGameByUid(std::string uid);
 
     std::string listGames();
 

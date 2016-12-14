@@ -183,6 +183,16 @@ bool Game::giveCard(Player *who)
     return true;
 }
 
+/** *************************************************************************
+ * Vrací aktuální stav hry pro možné zařazení uživatele do hry po výpadku atp
+ * @brief Game::getStatus
+ * @return
+ */
+std::string Game::getStatus()
+{
+    return "soinovnqwpoasnvpseonewvpo";
+}
+
 /**
  * @brief Game::toString
  * @return

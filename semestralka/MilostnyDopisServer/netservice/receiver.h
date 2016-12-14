@@ -1,5 +1,5 @@
-#ifndef RECIEVER_H
-#define RECIEVER_H
+#ifndef RECEIVER_H
+#define RECEIVER_H
 
 #include <pthread.h>
 
@@ -12,7 +12,7 @@
 #define MESSAGE_BUFFER_SIZE 2048
 
 
-class Reciever
+class Receiver
 {
     int run_flag;
     int error_counter;
@@ -21,21 +21,21 @@ class Reciever
 
     NetStructure *netStructure_p;
 
-    static unsigned long recieved_bytes_overflow;
-    static unsigned long recieved_bytes;
+    static unsigned long received_bytes_overflow;
+    static unsigned long received_bytes;
 
 public:
     static void recv_bytes(unsigned int byte_count);
-    Reciever(NetStructure *net);
+    Receiver(NetStructure *net);
 
 
     void stop();
 
     static pthread_t *listen_thread_p;
 
-    static void initThreads(Reciever *service);
+    static void initThreads(Receiver *service);
     static void *listenerStart(void *service_ptr);
-    static unsigned long getRecievedBytes();
+    static unsigned long getReceivedBytes();
 
 private:
     void serve_messages();
@@ -47,4 +47,4 @@ private:
     Event choose_event(char *opt);
 };
 
-#endif // RECIEVER_H
+#endif // RECEIVER_H

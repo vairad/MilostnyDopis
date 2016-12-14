@@ -23,7 +23,7 @@ class MessageQueue
     static MessageQueue *INSTANCE_RECV;
     static MessageQueue *INSTANCE_SEND;
 public:
-    static MessageQueue *recieveInstance();
+    static MessageQueue *receiveInstance();
     static MessageQueue *sendInstance();
 
     Message *pop_msg();

@@ -5,7 +5,7 @@
 //====================================================================================================
 MessageQueue *MessageQueue::INSTANCE_RECV = new MessageQueue();
 
-MessageQueue *MessageQueue::recieveInstance()
+MessageQueue *MessageQueue::receiveInstance()
 {
     return INSTANCE_RECV;
 }
