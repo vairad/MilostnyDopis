@@ -2,12 +2,12 @@ package gui;
 
 
 import constants.Constants;
-import game.User;
+import game.Player;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeView;
 import javafx.scene.text.Text;
@@ -22,8 +22,6 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
-
-import static java.lang.Thread.sleep;
 
 public class Controller implements Initializable {
     /** instance loggeru hlavni tridy */
@@ -48,13 +46,13 @@ public class Controller implements Initializable {
     @FXML
     public Button logoutButton;
     @FXML
+    public ProgressIndicator progressIndicator;
+    @FXML
     private Text statusText;
     @FXML
     private TreeView<GameRecord> treeWiew;
 
     private ResourceBundle bundle;
-
-    public GameWindow gameWindow;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -65,8 +63,12 @@ public class Controller implements Initializable {
     @FXML
     public void onConnect(ActionEvent actionEvent){
         disableForm();
-        connect(actionEvent);
-        sendLogin(actionEvent);
+
+        if(!NetService.isRunning()){
+            connect();
+        }
+
+        sendLogin();
     }
 
     @FXML
@@ -80,19 +82,35 @@ public class Controller implements Initializable {
     @FXML
     public void onLogout(ActionEvent actionEvent) {
         logger.debug("Start method");
-        if(!User.getInstance().isLogged()){
+        if(!Player.getInstance().isLogged()){
             return;
         }
-        Message msg = new Message(Event.OUT, MessageType.login, User.getInstance().getServerUid() );
-        NetService.getInstance().sender.addItem(msg);
+        Message msg = new Message(Event.OUT, MessageType.login, Player.getInstance().getServerUid() );
+        for(int i = 0; i < 10; i++) {
+            NetService.getInstance().sender.addItem(msg);
+        }
+        noLoggedForm();
+        NetService.getInstance().destroy();
     }
 
     @FXML
-    public void onGame(ActionEvent actionEvent){
-        logger.debug("Start method");
-        gameWindow = new GameWindow();
-        gameWindow.show();
-        ((Node)actionEvent.getSource()).getScene().getWindow().hide();
+    public void onRefresh(ActionEvent actionEvent) {
+        loadingGamesState();
+        Message msg = new Message(Event.ECH, MessageType.game, "");
+        NetService.getInstance().sender.addItem(msg);
+    }
+
+    private void loadingGamesState() {
+        logger.debug("start method");
+        treeWiew.setDisable(true);
+        progressIndicator.setDisable(false);
+        progressIndicator.setProgress(0);
+    }
+
+    @FXML
+    public void onNewGame(ActionEvent actionEvent) {
+        Message msg = new Message(Event.NEW, MessageType.game, "");
+        NetService.getInstance().sender.addItem(msg);
     }
 
 //=============================================================================================================
@@ -110,7 +128,9 @@ public class Controller implements Initializable {
         refreshButton.setDisable(false);
         newGameButton.setDisable(false);
         logoutButton.setDisable(false);
+        connectButton.setDisable(true);
         disableForm();
+        onRefresh(null);
     }
 
     /**
@@ -120,7 +140,6 @@ public class Controller implements Initializable {
         port.setDisable(true);
         address.setDisable(true);
         nickField.setDisable(true);
-        connectButton.setDisable(true);
         defaultConnectionButton.setDisable(true);
         statusText.setText(bundle.getString("loggedIn"));
     }
@@ -140,32 +159,16 @@ public class Controller implements Initializable {
 
     /**
      *
-     * @param actionEvent
      */
-    public void sendLogin(ActionEvent actionEvent){
+    public void sendLogin(){
         logger.debug("Start method");
         String messageS = checkNickname();
         if(messageS == null){
+            logger.trace("no nickname");
             return;
         }
-
-        boolean logged = false;
         Message msg = new Message(Event.ECH, MessageType.login, messageS);
         NetService.getInstance().sender.addItem(msg);
-        try {
-            sleep(500);
-        } catch (InterruptedException e) {
-            logger.error("Chyba ve při uspání vlákna");
-        }
-        logged = User.getInstance().isLogged();
-
-        if(logged) {
-            statusText.setText("Přihlášen: " + messageS);
-            loggedForm();
-        }else{
-            statusText.setText("Nepodařilo se připojit k serveru. Vypršel čas pro odpověď");
-            enableForm();
-        }
     }
 
     /**
@@ -195,9 +198,8 @@ public class Controller implements Initializable {
 
     /**
      *
-     * @param actionEvent
      */
-    private void connect(ActionEvent actionEvent) {
+    private void connect() {
         logger.debug("Start method");
 
         int resultPort;
@@ -241,13 +243,4 @@ public class Controller implements Initializable {
         return treeWiew;
     }
 
-    public void onRefresh(ActionEvent actionEvent) {
-        Message msg = new Message(Event.ECH, MessageType.game, "");
-        NetService.getInstance().sender.addItem(msg);
-    }
-
-    public void onNewGame(ActionEvent actionEvent) {
-        Message msg = new Message(Event.NEW, MessageType.game, "");
-        NetService.getInstance().sender.addItem(msg);
-    }
 }

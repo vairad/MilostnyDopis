@@ -5,7 +5,6 @@ import message.MessageHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.lang.model.element.NestingKind;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -14,13 +13,17 @@ import java.net.Socket;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import static java.lang.Thread.sleep;
+
 /**
  * Created by Radek VAIS on 16.10.16.
  */
 public class NetService {
     /** instance loggeru hlavni tridy */
     public static Logger logger =	LogManager.getLogger(NetService.class.getName());
-    public static boolean runFlag = true;
+
+
+    public static boolean runFlag = false;
     public static final int MAX_MSG_LENGTH = 2048;
     public static String serverName;
 
@@ -38,7 +41,7 @@ public class NetService {
     public BlockingQueue<Message> toServe = new LinkedBlockingQueue<>();
 
     public Sender sender;
-    public Reciever reciever;
+    public Receiver receiver;
     public static MessageHandler messageHandler;
 
     private NetService() {
@@ -63,6 +66,10 @@ public class NetService {
         return -1;
     }
 
+    public static boolean isRunning() {
+        return runFlag;
+    }
+
     public String getServerName() {
         return address.getHostName();
     }
@@ -77,6 +84,7 @@ public class NetService {
 
         socket = new Socket(address, port);
         NetService.logger.trace("initialize() - socket creation");
+        socket.setSoTimeout(1000);
 
         outputStream = socket.getOutputStream();
         NetService.logger.trace("initialize() - output stream");
@@ -84,8 +92,9 @@ public class NetService {
         inputStream = socket.getInputStream();
         NetService.logger.trace("initialize() - input stream");
 
-
+        runFlag = true;
         startThreads();
+
 
         NetService.logger.trace("initialize() - end");
     }
@@ -95,8 +104,8 @@ public class NetService {
 
         sender = new Sender();
         sender.start();
-        reciever = new Reciever();
-        reciever.start();
+        receiver = new Receiver();
+        receiver.start();
     }
 
     public void setup(String address, int port) {
@@ -104,12 +113,13 @@ public class NetService {
         this.port = port;
     }
 
-    public void release() throws IOException {
-        stop();
-        joinThreads();
+    private void closeStreams() throws IOException {
         outputStream.close();
         inputStream.close();
         socket.close();
+    }
+
+    private void nullStreams() {
         outputStream = null;
         inputStream = null;
         socket = null;
@@ -118,17 +128,14 @@ public class NetService {
     public void joinThreads() {
         try {
             sender.join();
-            reciever.join();
+            receiver.join();
+            messageHandler.join();
         } catch (InterruptedException e) {
-            logger.error("nějakej bordel ve vláknech", e);
+            logger.error("Snaha přerušit čekání na korektní ukončení vláken", e);
         } catch (NullPointerException e){
-            logger.error("vlákna nebyla inicializovaná", e);
+            logger.error("Vlákna nebyla inicializovaná", e);
         }
 
-    }
-
-    public void stop(){
-        runFlag = false;
     }
 
     public synchronized OutputStream getOutputStream() {
@@ -143,8 +150,32 @@ public class NetService {
         try {
             return toServe.take();
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            logger.debug("Čekání bylo přerušeno", e);
         }
         return null;
     }
+
+    public void destroy() {
+        runFlag = false;
+        try {
+            sender.interrupt();
+            receiver.interrupt();
+            messageHandler.interrupt();
+            try {
+                sleep(600);
+            } catch (InterruptedException e) {
+                logger.debug(e);
+            }
+            try {
+                closeStreams();
+            } catch (IOException e) {
+                logger.debug(e);
+            }
+        }catch (NullPointerException e){
+            logger.debug(e);
+        }
+        nullStreams();
+    }
+
+
 }

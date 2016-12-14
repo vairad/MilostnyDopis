@@ -60,6 +60,9 @@
             GridPane.columnSpan="2"
             >
         <Text fx:id="statusText"/>
+        <ProgressIndicator fx:id="progressIndicator"
+                            />
+
         <TreeView fx:id="treeWiew">
 
         </TreeView>

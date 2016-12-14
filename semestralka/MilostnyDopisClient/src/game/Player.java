@@ -3,14 +3,14 @@ package game;
 /**
  * Created by XXXXXXXXXXXXXXXX on 16.11.16.
  */
-public class User {
-    private static final User INSTANCE = new User();
+public class Player {
+    private static final Player INSTANCE = new Player();
 
-    public static User getInstance() {
+    public static Player getInstance() {
         return INSTANCE;
     }
 
-    private User() {
+    private Player() {
         nick = new String();
         serverUid = new String();
     }

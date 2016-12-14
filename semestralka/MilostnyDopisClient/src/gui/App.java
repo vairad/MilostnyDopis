@@ -1,6 +1,7 @@
 package gui;
 
-import game.User;
+import game.Game;
+import game.Player;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -14,6 +15,7 @@ import message.MessageType;
 import netservice.NetService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import sun.nio.ch.Net;
 
 import java.io.IOException;
 import java.util.List;
@@ -67,14 +69,10 @@ public class App extends Application {
 
     @Override
     public void stop() throws Exception{
-        NetService.getInstance().stop();
+        NetService.getInstance().destroy();
         NetService.getInstance().joinThreads();
 
         super.stop();
-    }
-
-    public static void userLogged(){
-        controller.disableForm();
     }
 
     public static void fillTree(List<GameRecord> gameRecords){
@@ -96,7 +94,7 @@ public class App extends Application {
                     logger.trace("Uživatel zrušil přihlašování do hry: " + item);
                     return;
                 }
-                if(!User.getInstance().isLogged()){
+                if(!Player.getInstance().isLogged()){
                     DialogFactory.alertError("Nejsi přihlášený", "Ne" , "Ne");
                     return;
                 }
@@ -110,6 +108,19 @@ public class App extends Application {
         });
     }
 
+    //======================== REMOTE EVENTS ================================
+
+    public static void newGame(GameRecord gameRecord) {
+        logger.debug("start method");
+        Game.initialize(gameRecord);
+        GameWindow win = new GameWindow();
+        win.show();
+    }
+
+    public static void userLogged(){
+        controller.loggedForm();
+    }
+
     //=====================================================================================================
     //=========================================================
     //===========================
@@ -120,4 +131,5 @@ public class App extends Application {
         App.launch(args);
         logger.info("Konec programu");
     }
+
 }

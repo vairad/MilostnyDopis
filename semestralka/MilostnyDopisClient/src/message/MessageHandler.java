@@ -12,12 +12,10 @@ public class MessageHandler extends Thread {
     /** instance loggeru hlavni tridy */
     public static Logger logger =	LogManager.getLogger(MessageHandler.class.getName());
 
-    private static boolean RunFlag = true;
-
     @Override
     public void run() {
         logger.debug("Start thread");
-        while (MessageHandler.RunFlag){
+        while (NetService.runFlag){
             Message msg = NetService.getInstance().getMessageToServe();
             if(msg == null){
                 logger.trace("null from queue");

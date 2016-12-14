@@ -1,5 +1,6 @@
 package message;
 
+import gui.GameController;
 import gui.GameRecord;
 import gui.App;
 import javafx.application.Platform;
@@ -55,11 +56,19 @@ public class GameHandler {
                 logger.debug("Wrong format of players count in message");
             }
         }
+        GameRecord.setAllGameRecords(gameRecords);
         Platform.runLater(() -> App.fillTree(gameRecords));
     }
 
     private static void handleGameACKResponse(String msg){
         logger.debug("Sart method");
 
+        GameRecord gameRecord = GameRecord.getGame(msg);
+        if(gameRecord == null){
+            logger.debug("Unknown game id returned from server");
+            return;
+        }
+
+        Platform.runLater(() -> App.newGame(gameRecord));
     }
 }

@@ -25,7 +25,8 @@ public class Sender extends Thread {
             try {
                 msg = toSend.take();
             } catch (InterruptedException e) {
-                logger.error("Chyba při práci s kolekcí." , e);
+                logger.error("Čekání bylo přerušeno." , e);
+                return;
             }
 
             if(msg == null){

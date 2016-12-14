@@ -32,6 +32,10 @@ public class GameRecord {
         return allGameRecords;
     }
 
+    public static void setAllGameRecords(List<GameRecord> allGameRecords) {
+        GameRecord.allGameRecords = allGameRecords;
+    }
+
     public String getUid() {
         return uid;
     }
@@ -43,4 +47,19 @@ public class GameRecord {
         }
         return "Hra: " + uid + " (" + playersCount + ")";
     }
+
+    public static GameRecord getGame(String msg) {
+        try
+        {
+            for (GameRecord gr : allGameRecords ) {
+                if(gr.getUid().equals(msg)){
+                    return gr;
+                }
+            }
+        }catch (NullPointerException e){
+            return null;
+        }
+        return null;
+    }
+
 }

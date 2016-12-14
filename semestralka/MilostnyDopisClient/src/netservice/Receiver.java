@@ -8,17 +8,16 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.net.SocketTimeoutException;
 
 /**
  * Created by Radek VAIS on 28.10.16.
  */
-public class Reciever extends Thread {
+public class Receiver extends Thread {
     private static final int MSG_HEADER_LEN = 14;
 
     /** instance loggeru hlavni tridy */
-    private static Logger logger =	LogManager.getLogger(Reciever.class.getName());
+    private static Logger logger =	LogManager.getLogger(Receiver.class.getName());
 
     private byte[] buffer;
 
@@ -35,7 +34,10 @@ public class Reciever extends Thread {
             int recvBytes = 0;
             try {
                 recvBytes = in.read(buffer, 0, NetService.MAX_MSG_LENGTH);
-            } catch (IOException e) {
+            }catch (SocketTimeoutException e){
+                continue;
+            }
+            catch (IOException e) {
                 logger.error("IO ERROR", e);
                 return;
             }

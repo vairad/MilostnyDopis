@@ -1,7 +1,8 @@
 package message;
 
-import game.User;
+import game.Player;
 import gui.App;
+import javafx.application.Platform;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -47,14 +48,16 @@ public class LoginHandler {
             return;
         }
 
-        if(User.getInstance().getServerUid().equals(messageParts[0])){
+        if(Player.getInstance().getServerUid().equals(messageParts[0])){
             logger.trace("stejný uživatel :"+message);
-            User.getInstance().setLogged(true);
-            App.userLogged();
+            Player.getInstance().setLogged(true);
+
+            // affect GUI
+            Platform.runLater(App::userLogged);
             return;
         }
 
-        User.getInstance().setServerUid(messageParts[0]);
+        Player.getInstance().setServerUid(messageParts[0]);
         String nick = "";
         if(messageParts.length > 2){
             //todo slepit string
@@ -62,10 +65,11 @@ public class LoginHandler {
             nick = messageParts[1];
         }
 
-        User.getInstance().setNick(nick);
+        Player.getInstance().setNick(nick);
+        Player.getInstance().setLogged(true);
 
-        User.getInstance().setLogged(true);
-        App.userLogged();
+        // affect GUI
+        Platform.runLater(App::userLogged);
     }
 
 
@@ -77,7 +81,7 @@ public class LoginHandler {
             return;
         }
 
-        User.getInstance().setServerUid(messageParts[0]);
+        Player.getInstance().setServerUid(messageParts[0]);
         String nick = "";
         if(messageParts.length > 2){
             //todo slepit string
@@ -86,9 +90,12 @@ public class LoginHandler {
             nick = messageParts[1];
         }
 
-        User.getInstance().setNick(nick);
+        // affect logic
+        Player.getInstance().setNick(nick);
+        Player.getInstance().setLogged(true);
 
-        User.getInstance().setLogged(true);
-        App.userLogged();
+        // affect GUI
+        Platform.runLater(App::userLogged);
+
     }
 }

@@ -9,13 +9,13 @@ import java.util.List;
  * Created by XXXXXXXXXXXXXXXX on 1.12.16.
  */
 public class Game {
-    private final GameRecord game;
-    private List<User> players;
+    private static GameRecord game;
+    private static List<Player> players;
     private static List<Game> allGameRecords;
 
-    public Game(GameRecord game){
-        players = new LinkedList<User>();
-        this.game = game;
+    public static void initialize(GameRecord game){
+        players = new LinkedList<Player>();
+        game = game;
     }
 
     public String getUid() {
