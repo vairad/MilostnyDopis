@@ -2,7 +2,6 @@ package gui;
 
 
 import constants.Constants;
-import game.Game;
 import game.User;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -51,7 +50,7 @@ public class Controller implements Initializable {
     @FXML
     private Text statusText;
     @FXML
-    private TreeView<Game> treeWiew;
+    private TreeView<GameRecord> treeWiew;
 
     private ResourceBundle bundle;
 
@@ -238,7 +237,7 @@ public class Controller implements Initializable {
         statusText.setText("Probíhá přihlášení");
     }
 
-    TreeView<Game> getTreeWiew() {
+    TreeView<GameRecord> getTreeWiew() {
         return treeWiew;
     }
 

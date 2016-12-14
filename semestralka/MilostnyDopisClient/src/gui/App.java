@@ -1,21 +1,17 @@
 package gui;
 
-import game.Game;
 import game.User;
 import javafx.application.Application;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
-import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import message.Event;
 import message.Message;
 import message.MessageType;
 import netservice.NetService;
-import netservice.Sender;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -81,19 +77,19 @@ public class App extends Application {
         controller.disableForm();
     }
 
-    public static void fillTree(List<Game> games){
-        TreeItem<Game> rootItem = new TreeItem<Game> (new Game(NetService.serverName, true));
+    public static void fillTree(List<GameRecord> gameRecords){
+        TreeItem<GameRecord> rootItem = new TreeItem<GameRecord> (new GameRecord(NetService.serverName, true));
         rootItem.setExpanded(true);
-        for (Game game : games ) {
-            TreeItem<Game> item = new TreeItem<Game> (game);
+        for (GameRecord gameRecord : gameRecords) {
+            TreeItem<GameRecord> item = new TreeItem<GameRecord> (gameRecord);
             rootItem.getChildren().add(item);
         }
-        TreeView<Game> tree = controller.getTreeWiew();
+        TreeView<GameRecord> tree = controller.getTreeWiew();
         tree.setRoot(rootItem);
         tree.setOnMouseClicked(mouseEvent -> {
             if(mouseEvent.getClickCount() == 2)
             {
-                Game item = tree.getSelectionModel().getSelectedItem().getValue();
+                GameRecord item = tree.getSelectionModel().getSelectedItem().getValue();
                 logger.debug("Byla zvolena hra pro přihlášení:" + item);
                 boolean result = DialogFactory.yesNoQuestion("title", "question"); //todo resources texts
                 if(!result){

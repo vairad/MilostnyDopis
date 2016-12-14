@@ -1,6 +1,6 @@
 package message;
 
-import game.Game;
+import gui.GameRecord;
 import gui.App;
 import javafx.application.Platform;
 import org.apache.logging.log4j.LogManager;
@@ -38,25 +38,24 @@ public class GameHandler {
 
         if(parts.length != 2){
             handleGameACKResponse(msg.getMessage());
-            return;
+        }else{
+            handleGameACKList(parts);
         }
-        handleGameACKList(parts);
-
 
     }
 
     private static void handleGameACKList(String[] parts){
         logger.debug("Sart method");
         String[] gamesS = parts[1].split(";");
-        List<Game> games  = new LinkedList<Game>();
+        List<GameRecord> gameRecords = new LinkedList<GameRecord>();
         for (String gameS : gamesS ) {
             try {
-                games.add(new Game(gameS));
+                gameRecords.add(new GameRecord(gameS));
             }catch (NumberFormatException e){
                 logger.debug("Wrong format of players count in message");
             }
         }
-        Platform.runLater(() -> App.fillTree(games));
+        Platform.runLater(() -> App.fillTree(gameRecords));
     }
 
     private static void handleGameACKResponse(String msg){
