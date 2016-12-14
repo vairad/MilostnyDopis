@@ -20,8 +20,6 @@ public class Reciever extends Thread {
     /** instance loggeru hlavni tridy */
     private static Logger logger =	LogManager.getLogger(Reciever.class.getName());
 
-    private BlockingQueue<Message> toServe = new LinkedBlockingQueue<>();
-
     private byte[] buffer;
 
     @Override
@@ -75,7 +73,7 @@ public class Reciever extends Thread {
         return true;
     }
 
-    public synchronized boolean addItem(Message msg){
-        return toServe.add(msg);
+    private boolean addItem(Message msg){
+        return NetService.getInstance().toServe.add(msg);
     }
 }

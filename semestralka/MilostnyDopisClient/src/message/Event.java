@@ -7,7 +7,10 @@ public enum Event {
     UNK ("UNK"),
     ACK ("ACK"),
     NAK ("NAK"),
-    ECH ("ECH");
+    ECH ("ECH"),
+    NEW ("NEW"),
+    OUT ("OUT"),
+    COD("COD");
 
     private final String name;
 

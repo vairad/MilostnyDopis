@@ -1,6 +1,9 @@
 package gui;
 
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+
+import java.util.Optional;
 
 /**
  * Created by XXXXXXXXXXXXXXXX on 1.11.16.
@@ -20,5 +23,19 @@ public class DialogFactory {
         alert.setHeaderText(headline);
         alert.setContentText(text);
         alert.showAndWait();
+    }
+
+    public static boolean yesNoQuestion(String title, String question) {
+        Alert alert  = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(question);
+
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.get() == ButtonType.OK){
+            return true;
+        } else {
+            return false;
+        }
     }
 }

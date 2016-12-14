@@ -1,13 +1,18 @@
 package netservice;
 
+import message.Message;
+import message.MessageHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.lang.model.element.NestingKind;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * Created by Radek VAIS on 16.10.16.
@@ -17,6 +22,7 @@ public class NetService {
     public static Logger logger =	LogManager.getLogger(NetService.class.getName());
     public static boolean runFlag = true;
     public static final int MAX_MSG_LENGTH = 2048;
+    public static String serverName;
 
     private String addressS;
     private int port;
@@ -29,8 +35,11 @@ public class NetService {
 
     private static NetService INSTANCE = new NetService();
 
+    public BlockingQueue<Message> toServe = new LinkedBlockingQueue<>();
+
     public Sender sender;
     public Reciever reciever;
+    public static MessageHandler messageHandler;
 
     private NetService() {
         // no code here
@@ -64,6 +73,7 @@ public class NetService {
         address = InetAddress.getByName(addressS);
         NetService.logger.trace("initialize() - get inet adress");
         NetService.logger.debug("Pripojuju se na : "+address.getHostAddress()+" se jmenem : "+address.getHostName()+"\n" );
+        NetService.serverName = address.getHostName();
 
         socket = new Socket(address, port);
         NetService.logger.trace("initialize() - socket creation");
@@ -127,5 +137,14 @@ public class NetService {
 
     public synchronized InputStream getInputStream() {
         return inputStream;
+    }
+
+    public Message getMessageToServe() {
+        try {
+            return toServe.take();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

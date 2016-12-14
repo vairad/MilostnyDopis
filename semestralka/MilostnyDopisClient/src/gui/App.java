@@ -1,15 +1,26 @@
 package gui;
 
+import game.Game;
+import game.User;
 import javafx.application.Application;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
+import message.Event;
+import message.Message;
+import message.MessageType;
 import netservice.NetService;
+import netservice.Sender;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -25,6 +36,7 @@ public class App extends Application {
 
     private Stage stage;
     ResourceBundle labels;
+    private static Controller controller;
 
     @Override
     public void start(Stage primaryStage) throws Exception{
@@ -35,7 +47,6 @@ public class App extends Application {
         stage.setMinHeight(300);
         stage.setMinWidth(500);
         stage.show();
-
     }
 
     private void loadView(Locale locale) {
@@ -45,6 +56,8 @@ public class App extends Application {
             fxmlLoader.setResources(labels);
 
             Parent root = fxmlLoader.load(App.class.getResource("startScreen.fxml").openStream());
+
+            controller = (Controller) fxmlLoader.getController();
 
             Scene scene = new Scene(root, 300, 500);
             scene.getStylesheets().add(App.class.getResource("app.css").toExternalForm());
@@ -64,9 +77,51 @@ public class App extends Application {
         super.stop();
     }
 
+    public static void userLogged(){
+        controller.disableForm();
+    }
+
+    public static void fillTree(List<Game> games){
+        TreeItem<Game> rootItem = new TreeItem<Game> (new Game(NetService.serverName, true));
+        rootItem.setExpanded(true);
+        for (Game game : games ) {
+            TreeItem<Game> item = new TreeItem<Game> (game);
+            rootItem.getChildren().add(item);
+        }
+        TreeView<Game> tree = controller.getTreeWiew();
+        tree.setRoot(rootItem);
+        tree.setOnMouseClicked(mouseEvent -> {
+            if(mouseEvent.getClickCount() == 2)
+            {
+                Game item = tree.getSelectionModel().getSelectedItem().getValue();
+                logger.debug("Byla zvolena hra pro přihlášení:" + item);
+                boolean result = DialogFactory.yesNoQuestion("title", "question"); //todo resources texts
+                if(!result){
+                    logger.trace("Uživatel zrušil přihlašování do hry: " + item);
+                    return;
+                }
+                if(!User.getInstance().isLogged()){
+                    DialogFactory.alertError("Nejsi přihlášený", "Ne" , "Ne");
+                    return;
+                }
+
+                Message msg = new Message(Event.COD, MessageType.game, item.getUid());
+                NetService.getInstance().sender.addItem(msg);
+                logger.trace("Proveden pokus o přihlášení do hry: " + item);
+
+                // todo disable controls
+            }
+        });
+    }
+
+    //=====================================================================================================
+    //=========================================================
+    //===========================
+    // MAIN METHOD
     public static void main(String[] args) {
         logger.info("Zacatek programu");
-        launch(args);
-        logger.info("Kone programu");
+
+        App.launch(args);
+        logger.info("Konec programu");
     }
 }

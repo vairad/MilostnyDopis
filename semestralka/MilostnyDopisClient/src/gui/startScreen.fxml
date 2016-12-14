@@ -41,14 +41,17 @@
           GridPane.rowIndex="4"
           GridPane.columnSpan="2"
             >
-        <Button text="%defaultConnection"
+        <Button fx:id="defaultConnectionButton"
+                text="%defaultConnection"
                 onAction="#onDefaultConnection"/>
-        <Button text="%connect"
+        <Button fx:id="connectButton"
+                text="%connect"
                 onAction="#onConnect"/>
-        <Button text="%sendEcho"
-                onAction="#onEcho"/>
-        <Button text="přihlaš mě s přezdivkou"
-                onAction="#onSend"/>
+        <Button fx:id="logoutButton"
+                text="%sendLogout"
+                onAction="#onLogout"/>
+        <!--<Button text="přihlaš mě s přezdivkou"
+                onAction="#onSend"/>-->
     </VBox>
     <VBox   spacing="10"
             alignment="top_center"
@@ -57,5 +60,16 @@
             GridPane.columnSpan="2"
             >
         <Text fx:id="statusText"/>
+        <TreeView fx:id="treeWiew">
+
+        </TreeView>
+        <HBox alignment="top_center">
+            <Button fx:id="refreshButton"
+                    text="%refresh"
+                    onAction="#onRefresh"/>
+            <Button fx:id="newGameButton"
+                    text="%newGame"
+                    onAction="#onNewGame"/>
+        </HBox>
     </VBox>
 </GridPane>
