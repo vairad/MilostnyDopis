@@ -1,8 +1,5 @@
 package gui;
 
-import game.User;
-
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -11,12 +8,10 @@ import java.util.List;
 public class GameRecord {
     private final boolean isRootNode;
     private String uid;
-    private List<User> players;
     private int playersCount;
     private static List<GameRecord> allGameRecords;
 
     public GameRecord(String uid, int playersCount, boolean isRootNode){
-        players = new LinkedList<User>();
         this.uid = uid;
         this.playersCount = playersCount;
         this.isRootNode = isRootNode;
