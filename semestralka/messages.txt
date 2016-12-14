@@ -1,0 +1,21 @@
+Žádost o přidělení ID
+
+	###0020LOGECH#Nick
+
+Přidělení ID:
+
+	Úspěšné prvotní přidělení:
+	###0000LOGACK#ajwoc&&Nick
+	Opětovná žádost během jednoho připojení
+	###0000LOGNAK#ajwoc&&Nick
+
+Žádost o hru
+	
+	Seznam her
+	###0000GAMECH#
+	Odpověď na žádost o seznam
+	###0000GAMACK#X=GAMEaj&&Y;GAMEad&&Z : kde X je počet her GAME-- je uid hry a Y,Z je počet hráču ve hře
+	Vytvoření nové hry
+	###0000GAMNEW#N : kde N je počet kol před uzavřením výsledků
+	Odpověď na vytvoření nové hry:
+	###0000GAMACK#GAMExx : kde GAMExx je uid hry
