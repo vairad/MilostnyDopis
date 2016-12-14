@@ -28,6 +28,11 @@ Reciever::Reciever(NetStructure *net):
     LOG_INFO("Reciever::Reciever()");
 }
 
+unsigned long Reciever::getRecievedBytes()
+{
+    return recieved_bytes;
+}
+
 void Reciever::recv_bytes(unsigned int byte_count)
 {
     unsigned long old_val = recieved_bytes;
@@ -40,6 +45,7 @@ void Reciever::recv_bytes(unsigned int byte_count)
 void Reciever::stop()
 {
     run_flag = false;
+    pthread_cancel(*listen_thread_p);
 }
 
 void Reciever::initThreads(Reciever *service)
@@ -260,6 +266,8 @@ Event Reciever::choose_event(char *opt){
         return  Event::COD;
     }else if(strcmp(opt, OPT_NEW) == 0){
         return  Event::NEW;
+    }else if(strcmp(opt, OPT_OUT) == 0){
+        return  Event::OUT;
     }else{
         return Event::UNK;
     }

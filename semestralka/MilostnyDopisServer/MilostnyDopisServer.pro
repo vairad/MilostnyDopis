@@ -21,7 +21,9 @@ SOURCES += main.cpp \
     game/package.cpp \
     game/gameservices.cpp \
     game/player.cpp \
-    util/utilities.cpp
+    util/utilities.cpp \
+    message/gamehandler.cpp \
+    message/loginhandler.cpp
 
 HEADERS += log/log.h \
     netservice/netstructure.h \
@@ -38,4 +40,6 @@ HEADERS += log/log.h \
     game/package.h \
     game/gameservices.h \
     game/player.h \
-    util/utilities.h
+    util/utilities.h \
+    message/gamehandler.h \
+    message/loginhandler.h

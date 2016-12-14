@@ -28,6 +28,7 @@ private:
 
     static void handleLoginECH(Message *msg);
     static void handleLoginCOD(Message *msg);
+    static void handleLoginOUT(Message *msg);
 
     static void handleGameECH(Message *msg);
     static void handleGameCOD(Message *msg);

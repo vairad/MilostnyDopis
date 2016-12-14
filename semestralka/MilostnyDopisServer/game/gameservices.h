@@ -6,6 +6,7 @@
 #include <map>
 #include <pthread.h>
 
+class Game;
 class GameServices
 {
     static const short GAME_UID_LEN = 2;

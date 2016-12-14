@@ -33,6 +33,7 @@
 #define MSG(a) printf(">%s\n", a);
 #define MSG_PS(a, b) printf(">%s %s\n", a, b);
 #define MSG_PD(a, b) printf(">%s %d\n", a, b);
+#define MSG_PL(a, b) printf(">%s %ld\n", a, b);
 
 void test_log_macros();
 

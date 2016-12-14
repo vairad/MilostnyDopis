@@ -35,6 +35,8 @@ public:
 
     static void initThreads(Reciever *service);
     static void *listenerStart(void *service_ptr);
+    static unsigned long getRecievedBytes();
+
 private:
     void serve_messages();
     void check_select_error(int error_val);

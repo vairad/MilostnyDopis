@@ -1,9 +1,12 @@
 #ifndef GAME_H
 #define GAME_H
 
+#include "users/user.h"
 #include "game/package.h"
 #include "game/player.h"
 
+class Player;
+class User;
 /**
  * Třída, která má na starost obsluhu všech herních událostí a interakcí s hráči.
  * @brief The Game class
@@ -30,7 +33,7 @@ class Game
 public:
     Game(std::string uid, int round_count = 5);
 
-    bool addPlayer(Player *who);
+    bool addPlayer(User *who);
 
     bool effectGuardian(Player *who, Player *whom, GameCards tip);
     GameCards effectPriest(Player *who, Player *whom);

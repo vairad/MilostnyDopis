@@ -5,6 +5,8 @@
 #include "game/package.h"
 #include <vector>
 
+class User;
+
 class Player
 {
     User *user;
@@ -21,7 +23,7 @@ class Player
     std::vector<GameCards> played_list;
 
 public:
-    Player( User *user);
+    Player(User *user);
 
     bool isInGame() const;
     void setInGame(bool value);
@@ -40,6 +42,7 @@ public:
     GameCards cardOnDesk();
     GameCards showCard();
 
+    User *getUser() const;
 };
 
 #endif // PLAYER_H

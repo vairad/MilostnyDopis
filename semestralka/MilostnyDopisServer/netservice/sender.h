@@ -25,6 +25,8 @@ public:
     static void startThread();
     static void joinThread();
     static void sendMessage(Message *msg);
+    static unsigned long getSendedBytes();
+
 private:
     static void fillType(char *msg, MessageType type);
     static void fillEvent(char *msg, Event event);

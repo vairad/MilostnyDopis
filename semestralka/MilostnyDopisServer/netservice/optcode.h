@@ -31,6 +31,6 @@
 #define OPT_ECH "ECH"
 #define OPT_COD "COD"
 #define OPT_NEW "NEW"
-
+#define OPT_OUT "OUT"
 
 #endif // OPTCODE_H

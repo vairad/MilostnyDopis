@@ -42,10 +42,31 @@ void User::setSocket(int value)
     socket = value;
 }
 
+const char *User::toString()
+{
+    std::string tmp;
+    tmp = "";
+    tmp += *nickname;
+    tmp += " ID: ";
+    tmp += uid;
+    return tmp.c_str();
+}
+
+Game *User::getGame() const
+{
+    return game;
+}
+
+void User::setGame(Game *value)
+{
+    game = value;
+}
+
 User::User(std::string *nickname, int socket) :
     socket(socket)
 {
     this->nickname = ltrim(rtrim(nickname));
+    this->game = NULL;
 }
 
 void User::setUID(std::string uid)

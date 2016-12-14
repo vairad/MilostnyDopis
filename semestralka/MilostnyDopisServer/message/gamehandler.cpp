@@ -1,0 +1,176 @@
+#include "gamehandler.h"
+
+#include "errornumber.h"
+#include "log/log.h"
+
+#include "message/messagequeue.h"
+
+#include "users/userdatabase.h"
+#include "game/gameservices.h"
+
+#include "util/utilities.h"
+
+/**
+ * @brief GameHandler::handleTypeGame
+ * @param msg
+ */
+void GameHandler::handleTypeGame(Message *msg)
+{
+   Event type = msg->getEvent();
+    switch (type){
+    case Event::ECH : //echo event
+        handleGameECH(msg);
+        break;
+    case Event::COD : //echo event
+        handleGameCOD(msg);
+        break;
+    case Event::NEW:
+        handleGameNEW(msg);
+        break;
+    case Event::STA:
+        handleGameSTA(msg);
+        break;
+    case Event::UNK :
+    default:
+        //todo impl
+
+        break;
+    }
+}
+
+// ============================================================================================
+/**
+ * @brief GameHandler::checkLogged
+ * @param socket
+ * @return
+ */
+bool GameHandler::checkLogged(int socket){
+    LOG_DEBUG("GameHandler::checkLogged() - start");
+    if(!UserDatabase::getInstance()->hasSocketUser(socket)){
+        MSG("Nepřihlášený uživatel se pokouší provést operaci");
+        LOG_TRACE("Nepřihlášený uživatel se pokouší provést operaci");
+        return false;
+    }
+    return true;
+}
+
+/**
+ * @brief GameHandler::checkGame
+ * @param uid
+ * @return
+ */
+bool GameHandler::checkGame(string uid){
+    LOG_DEBUG("GameHandler::checkGame() - start");
+    if(!GameServices::getInst()->existGameByUid(&uid)){
+        MSG("Neexistujici ID Hry, nelze připojit uživatele");
+        LOG_DEBUG_PS("Neexistujici ID Hry", uid.c_str());
+        return false;
+    }
+    return true;
+}
+
+// ===================================================================================================
+/**
+ * @brief GameHandler::handleGameECH
+ * @param msg
+ */
+void GameHandler::handleGameECH(Message *msg){
+    LOG_DEBUG("GameHandler::handleGameECH() - start");
+    msg->setMsg(GameServices::getInst()->listGames());
+    msg->setEvent(Event::ACK);
+    MessageQueue::sendInstance()->push_msg(msg);
+}
+
+/**
+ * @brief GameHandler::handleGameSTA
+ * @param msg
+ */
+void GameHandler::handleGameSTA(Message *msg){
+    LOG_DEBUG("GameHandler::handleGameSTA() - start");
+    if(!checkLogged(msg->getSocket())){
+        //todo negativní odpověď
+        return;
+    }
+
+
+}
+
+/**
+ * @brief GameHandler::handleGameCOD
+ * @param msg
+ */
+void GameHandler::handleGameCOD(Message *msg){
+    LOG_DEBUG("GameHandler::handleGameCOD() - start");
+
+    User *user;
+    std::string gameId = msg->getMsg();
+
+    if(!checkLogged(msg->getSocket())){
+        return;
+    }
+
+    user = UserDatabase::getInstance()->getUserBySocket(msg->getSocket());
+    MSG_PS("Připojuji se na žádost uživatele", user->toString());
+
+    if(!checkGame(gameId)){
+        msg->setEvent(Event::NAK);
+        msg->setMsg("NO ID");
+        MessageQueue::sendInstance()->push_msg(msg);
+        return;
+    }
+
+    if(user->getGame() != NULL){
+        Game *game = user->getGame();
+        MSG_PS("Uzivatel je jiz prihlasen do jine hry", game->toString().c_str());
+        LOG_DEBUG_PS("Uzivatel je jiz prihlasen do jine hry", game->toString().c_str());
+        msg->setEvent(Event::ACK);
+        msg->setMsg(user->getGame()->getUid());
+        MessageQueue::sendInstance()->push_msg(msg);
+        return;
+    }
+
+    Game *game = GameServices::getInst()->getGameByUid(&gameId);
+    user->setGame(game);
+    bool result = game->addPlayer(user);
+    if(!result){
+        MSG_PS("Hra je obsazena", game->toString().c_str());
+        LOG_DEBUG_PS("Hra je obsazena", game->toString().c_str());
+        msg->setEvent(Event::NAK);
+    } else {
+        MSG_PS("Přihlašuji do hry :", game->toString().c_str());
+        LOG_DEBUG_PS("Přihlašuji do hry :", game->toString().c_str());
+        msg->setEvent(Event::ACK);
+    }
+    MessageQueue::sendInstance()->push_msg(msg);
+}
+
+/**
+ * @brief GameHandler::handleGameNEW
+ * @param msg
+ */
+void GameHandler::handleGameNEW(Message *msg){
+    LOG_DEBUG("GameHandler::handleGameNEW() - start");
+
+    if(!checkLogged(msg->getSocket())){
+        msg->setEvent(Event::NAK);
+        MessageQueue::sendInstance()->push_msg(msg);
+        return;
+    }
+
+    User *user = UserDatabase::getInstance()->getUserBySocket(msg->getSocket());
+    MSG_PD("Vytvařím hru na žádost uživatele", user->toString());
+
+    int round_count;
+    bool res = Utilities::readNumber(msg->getMsg(), &round_count);
+    if(res == false && round_count <= 0){
+        msg->setEvent(Event::NAK);
+        MessageQueue::sendInstance()->push_msg(msg);
+    }
+    Game *g = GameServices::getInst()->createNewGame(round_count);
+    msg->setEvent(Event::ACK);
+    msg->setMsg(g->getUid());
+    MessageQueue::sendInstance()->push_msg(msg);
+}
+
+
+

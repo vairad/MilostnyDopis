@@ -25,7 +25,7 @@ char ADDR_ALL[] = {"ALL"};
 char *addr = ADDR_ALL;
 
 NetStructure *netStructure;
-Reciever *service;
+Reciever *reciever;
 
 //=====================================================================================
 /**
@@ -73,14 +73,7 @@ int setup_que_len(char* portArg)
     }
 }
 
-/**
- * Funkce slouží k otestování funkčnosti maker z log.h
- * @brief test
- */
-void test()
-{
-    test_log_macros();
-}
+
 
 /**
  * Funkce vypíše nápovědu na stdout pomocí makra MSG z log.h
@@ -93,6 +86,28 @@ void help(){
     MSG("  -p [1-65535]... nastaví port pro naslouchání");
     MSG("  -q [1-...]  ... nastaví délku fronty spojení čekajících na vyřízení");
 }
+
+/**
+ * Funkce vypíše nápovědu příkazů pro server na stdout pomocí makra MSG z log.h
+ * @brief help
+ */
+void helpProgram(){
+    MSG("Napoveda příkazů");
+    MSG("  help   ");
+    MSG("  games  ")
+    MSG("  users  ");
+    MSG("  konec  ");
+}
+
+/**
+ * @brief printStats
+ */
+void printStats(){
+    MSG("Statistiky běhu serveru");
+    MSG_PL("Bylo odesláno [byte]:", Sender::getSendedBytes());
+    MSG_PL("Bylo přijato [byte]:", Reciever::getRecievedBytes());
+}
+
 
 /**
  * Zpracuje hodnoty předané při spuštění serveru.
@@ -168,24 +183,43 @@ int read_args(int argc, char** argv)
 }
 
 
+//===========================================================================================================================
+//===========================================================================================================================
+//===========================================================================================================================
+// ^^ funkce pro zpracování argumentu
+// vv funkce pro server
+//===========================================================================================================================
+//===========================================================================================================================
+//===========================================================================================================================
 
+void stopServer(void){
+    MSG("Ukončuji server");
+    reciever->stop(); // Recieve thread
+    Sender::stop(); // Send thread
+    MessageHandler::stop(); // All message handler threads
+}
+
+void joinThreads(void){
+
+    void *retval;
+    pthread_join(*Reciever::listen_thread_p, &retval);
+    MessageHandler::joinThreads();
+    Sender::joinThread();
+}
+
+void freeMemory(){
+    delete reciever;
+    delete netStructure;
+}
 
 void signal_handler (int sig)
 {
-    if (sig == SIGINT
-            ){
-        MSG("Ukončuji server");
-        service->stop();
-        MessageHandler::stop();
-        void *retval;
-        MSG("Čekám na ukončení vláken");
-        pthread_join(*Reciever::listen_thread_p, &retval);
+    if (sig == SIGINT){
+        stopServer();
+        joinThreads();
+        freeMemory();
 
-        MessageHandler::joinThreads();
-
-        delete service;
-        delete netStructure;
-        MSG("Konec");
+        MSG("Konec (zpracovaný signál)");
         exit(99); // todo clean up and correct and až to bude hotové můžeš sem nastavit nulu :)
     }
 
@@ -210,6 +244,9 @@ void printUsers(){
     std::cout.flush();
 }
 
+/** ********************************************************************************
+ * @brief printGames
+ */
 void printGames(){
     std::cout << std::endl;
     std::cout << "Aktivní hry:" << std::endl;
@@ -220,6 +257,11 @@ void printGames(){
     std::cout << std::endl;
 }
 
+
+/** ********************************************************************************
+ * @brief handleCommand
+ * @param command
+ */
 void handleCommand(std::string command){
     if(command.compare("users") == 0){
         printUsers();
@@ -229,15 +271,24 @@ void handleCommand(std::string command){
         printGames();
         return;
     }
+    if(command.compare("help")  == 0){
+        helpProgram();
+        return;
+    }
+    if(command.compare("konec")  == 0){
+        return; // reakce je implementována nad smyčkou čtení příkazů
+    }
+    MSG("Neznámý příkaz");
 }
 
-/**
+/** ********************************************************************************
+ * Funkce nastartuje server a v nekončné smyčce čte argumenty ze STDIN
  * @brief start_server
  * @return
  */
 int start_server(){
     netStructure = new NetStructure(port_number, wait_que_len, addr);
-    service = new Reciever(netStructure);
+    reciever = new Reciever(netStructure);
 
     Sender::initialize();
     Sender::startThread();
@@ -252,9 +303,7 @@ int start_server(){
         LOG_ERROR("Nedostatek paměti pro vytvoření Reciever::listen_thread_p")
     }
 
-    pthread_create(Reciever::listen_thread_p, NULL, Reciever::listenerStart, service);
-
-    void *retval;
+    pthread_create(Reciever::listen_thread_p, NULL, Reciever::listenerStart, reciever);
 
     std::string command;
 
@@ -266,10 +315,14 @@ int start_server(){
         std::cout << ">";
     }
 
-    pthread_join(*Reciever::listen_thread_p, &retval);
-    MessageHandler::joinThreads();
-    Sender::joinThread();
+    stopServer();
+    joinThreads();
 
+    printStats();
+
+    freeMemory();
+
+    MSG("Konec serveru");
     return 0;
 }
 
@@ -309,6 +362,6 @@ int main(int argc, char *argv[])
        help();
     }
 
-
+    MSG("Konec programu");
     return result;
 }

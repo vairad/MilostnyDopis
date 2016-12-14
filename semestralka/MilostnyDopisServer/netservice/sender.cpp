@@ -8,8 +8,8 @@
 #include <sys/un.h>
 #include <unistd.h>
 #include <netinet/in.h>
-#include <stdlib.h>
-#include <errno.h>
+#include <cstdlib>
+#include <cerrno>
 
 
 #include "netservice/optcode.h"
@@ -21,6 +21,11 @@ bool Sender::workFlag;
 pthread_t *Sender::send_thread;
 unsigned long Sender::sended_bytes = 0;
 unsigned long Sender::sended_bytes_overflow = 0;
+
+unsigned long Sender::getSendedBytes()
+{
+    return sended_bytes;
+}
 
 void Sender::send_bytes(unsigned int byte_count)
 {
@@ -46,6 +51,7 @@ void Sender::initialize()
 void Sender::stop()
 {
     Sender::workFlag = false;
+    pthread_cancel(*send_thread);
 }
 
 void Sender::startThread()
@@ -58,7 +64,6 @@ void Sender::startThread()
         MSG("Chyba při startování programu. Ukončuji program.");
         exit(THREAD_CREATION_ERROR_SEN);
     }
-
 }
 
 void Sender::joinThread()
@@ -70,16 +75,17 @@ void Sender::joinThread()
 
 void Sender::sendMessage(Message *msg)
 {
-    char *msgToNet;
+    char msgToNet[2048];
     int charCount = HEADER_CHAR_COUNT + msg->getMsg().size() + 1;
+    memset(msgToNet, 0, 2048);
 
 
-    msgToNet = (char *) malloc(sizeof(char) * charCount );
-    if(msgToNet == NULL){
-        MSG("Nedostatek paměti pro odeslání zprávy. Ukončuji program.");
-        LOG_ERROR("Nedostatek paměti pro odeslání zprávy");
-        exit(NOT_ENOUGH_MEMORY_SEN);
-    }
+//    msgToNet = (char *) malloc(sizeof(char) * charCount );
+//    if(msgToNet == NULL){
+//        MSG("Nedostatek paměti pro odeslání zprávy. Ukončuji program.");
+//        LOG_ERROR("Nedostatek paměti pro odeslání zprávy");
+//        exit(NOT_ENOUGH_MEMORY_SEN);
+//    }
 
     strcpy(msgToNet, MESSAGE_HEADER);
     char number[5] = "0000";
@@ -98,8 +104,10 @@ void Sender::sendMessage(Message *msg)
 
     Sender::send_bytes(sended);
 
-    delete msg;
-    free(msgToNet);
+    if(msg != NULL){
+        delete msg;
+        msg = NULL;
+    }
 }
 
 void Sender::fillType(char *msg, MessageType type){

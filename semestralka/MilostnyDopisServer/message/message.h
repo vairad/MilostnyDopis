@@ -17,6 +17,8 @@ enum Event{
     NAK, // negative accept ...
     COD, // code resolve
     NEW, // create
+    OUT, // out
+    STA, // status
     ECH // echo ... basic function
 };
 

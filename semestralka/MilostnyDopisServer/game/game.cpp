@@ -11,6 +11,38 @@ Game::Game(std::string uid, int round_count) : uid(uid), round_count(round_count
 {
 }
 
+bool Game::addPlayer(User *who)
+{
+    if(player1 == NULL){
+        player1 = new Player(who);
+        player_count++;
+        return true;
+    }
+    if(player2 == NULL){
+        player2 = new Player(who);
+        player_count++;
+        return true;
+    }
+    if(player3 == NULL){
+        player3 = new Player(who);
+        player_count++;
+        return true;
+    }
+    if(player4 == NULL){
+        player4 = new Player(who);
+        player_count++;
+        return true;
+    }
+
+    if(player1->getUser() == who
+            || player2->getUser() == who
+            || player3->getUser() == who
+            || player4->getUser() == who){
+       return true;
+    }
+    return false;
+}
+
 //=================================================================================================
 
 /**

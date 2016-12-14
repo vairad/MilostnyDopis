@@ -5,8 +5,8 @@
 
 #include "netservice/netstructure.h"
 
-#include "users/userdatabase.h"
-#include "game/gameservices.h"
+#include "message/gamehandler.h"
+#include "message/loginhandler.h"
 
 #include "util/utilities.h"
 
@@ -35,6 +35,9 @@ void MessageHandler::initialize(int worker_count)
 void MessageHandler::stop()
 {
     MessageHandler::workFlag = false;
+    for(int thread_index = 0; thread_index < MessageHandler::worker_count; thread_index++){
+        pthread_cancel(*(workers + thread_index));
+    }
 }
 
 void MessageHandler::startThreads()
@@ -73,10 +76,10 @@ void MessageHandler::handleMessage(Message *msg)
         handleTypeMessage(msg);
         break;
     case MessageType::login :
-        handleTypeLogin(msg);
+        LoginHandler::handleTypeLogin(msg);
         break;
     case MessageType::game :
-        handleTypeGame(msg);
+        GameHandler::handleTypeGame(msg);
         break;
     case MessageType::servis :
         //todo impl
@@ -87,26 +90,7 @@ void MessageHandler::handleMessage(Message *msg)
     };
 }
 
-void MessageHandler::handleTypeGame(Message *msg)
-{
-   Event type = msg->getEvent();
-    switch (type){
-    case Event::ECH : //echo event
-        handleGameECH(msg);
-        break;
-    case Event::COD : //echo event
-        handleGameCOD(msg);
-        break;
-    case Event::NEW:
-        handleGameNEW(msg);
-        break;
-    case Event::UNK :
-    default:
-        //todo impl
 
-        break;
-    }
-}
 
 void MessageHandler::handleTypeMessage(Message *msg)
 {
@@ -125,23 +109,6 @@ void MessageHandler::handleTypeMessage(Message *msg)
     }
 }
 
-void MessageHandler::handleTypeLogin(Message *msg)
-{
-   Event type = msg->getEvent();
-    switch (type){
-    case Event::ECH : //echo event
-        handleLoginECH(msg);
-        break;
-    case Event::COD:
-        handleLoginCOD(msg);
-        break;
-    case Event::UNK :
-    default:
-        //todo impl
-
-        break;
-    }
-}
 
 void *MessageHandler::messageHandlerStart(void *arg_ptr)
 {
@@ -152,86 +119,6 @@ void *MessageHandler::messageHandlerStart(void *arg_ptr)
 }
 
 
-void MessageHandler::handleLoginECH(Message *msg)
-{
-    LOG_DEBUG("MessageHandler::handleLoginECH() - start");
-    MSG_PS("Přihlašuji uživatele", msg->getMsg().c_str());
 
-    User *user;
-    std::string id;
-    if(UserDatabase::getInstance()->hasSocketUser(msg->getSocket())){
-        MSG_PD("Na tomto socketu je již vytvořen uživaltel", msg->getSocket());
-        user = UserDatabase::getInstance()->getUserBySocket(msg->getSocket());
-        id = user->getUID();
-        msg->setMsg(*user->getNickname());
-        msg->setEvent(Event::NAK);
-    } else {
-        user = new User(new std::string(msg->getMsg()), msg->getSocket());
-        id = UserDatabase::getInstance()->addUser(user, msg->getSocket());
-        msg->setEvent(Event::ACK);
-    }
 
-    id += "&&";
-    id += msg->getMsg();
-    msg->setMsg(id);
-    MessageQueue::sendInstance()->push_msg(msg);
-}
 
-void MessageHandler::handleLoginCOD(Message *msg)
-{
-    LOG_DEBUG("MessageHandler::handleLoginCOD() - start");
-    MSG_PS("Přihlašuji uživatele s id", msg->getMsg().c_str());
-
-    User *user;
-    std::string id = msg->getMsg();
-    if(UserDatabase::getInstance()->hasSocketUser(msg->getSocket())){
-        MSG_PD("Na tomto socketu je již vytvořen uživaltel", msg->getSocket());
-        user = UserDatabase::getInstance()->getUserBySocket(msg->getSocket());
-        id = user->getUID();
-        msg->setMsg(*user->getNickname());
-        msg->setEvent(Event::NAK);
-    } else {
-        if(!UserDatabase::getInstance()->existUserID(id)){
-            MSG("Neexistujici ID");
-            LOG_DEBUG_PS("Neexistujici ID", id.c_str());
-            msg->setEvent(Event::NAK);
-            msg->setMsg("NO ID");
-            MessageQueue::sendInstance()->push_msg(msg);
-            return;
-        }
-        user = UserDatabase::getInstance()->getUserById(id);
-        UserDatabase::getInstance()->setSocketUser(id, msg->getSocket());
-        msg->setEvent(Event::ACK);
-    }
-
-    id += "&&";
-    id += user->getNickname()->c_str();
-    msg->setMsg(id);
-    MessageQueue::sendInstance()->push_msg(msg);
-}
-
-void MessageHandler::handleGameECH(Message *msg){
-    LOG_DEBUG("MessageHandler::handleGameECH() - start");
-    msg->setMsg(GameServices::getInst()->listGames());
-    msg->setEvent(Event::ACK);
-    MessageQueue::sendInstance()->push_msg(msg);
-}
-
-void MessageHandler::handleGameCOD(Message *msg){
-    LOG_DEBUG("MessageHandler::handleGameCOD() - start");
-
-}
-
-void MessageHandler::handleGameNEW(Message *msg){
-    LOG_DEBUG("MessageHandler::handleGameNEW() - start");
-    int round_count;
-    bool res = Utilities::readNumber(msg->getMsg(), &round_count);
-    if(res == false){
-        msg->setEvent(Event::NAK);
-        MessageQueue::sendInstance()->push_msg(msg);
-    }
-    Game *g = GameServices::getInst()->createNewGame(round_count);
-    msg->setEvent(Event::ACK);
-    msg->setMsg(g->getUid());
-    MessageQueue::sendInstance()->push_msg(msg);
-}

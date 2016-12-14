@@ -66,6 +66,11 @@ void Player::setSecondCard(const GameCards &value)
     secondCard = value;
 }
 
+User *Player::getUser() const
+{
+    return user;
+}
+
 Player::Player(User *user) : user(user)
 {
     
