@@ -43,9 +43,9 @@ public class GameRecord {
     @Override
     public String toString(){
         if(isRootNode){
-            return "Server " + uid;
+            return "Server " + uid; //todo resource text
         }
-        return "Hra: " + uid + " (" + playersCount + ")";
+        return "Hra: " + uid + " (" + playersCount + ")"; // todo resource text
     }
 
     public static GameRecord getGame(String msg) {
@@ -55,7 +55,7 @@ public class GameRecord {
                 if(gr.getUid().equals(msg)){
                     return gr;
                 }
-            }
+            } 
         }catch (NullPointerException e){
             return null;
         }

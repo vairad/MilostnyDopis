@@ -94,7 +94,7 @@ public class App extends Application {
                     return;
                 }
                 if(!Player.getInstance().isLogged()){
-                    DialogFactory.alertError("Nejsi přihlášený", "Ne" , "Ne");
+                    DialogFactory.alertError("Nejsi přihlášený", "Ne" , "Ne"); // todo resource texts
                     return;
                 }
 

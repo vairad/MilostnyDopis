@@ -49,7 +49,7 @@ public class GameWindow extends Window {
             scene.getStylesheets().add(App.class.getResource("app.css").toExternalForm());
 
             stage.setTitle(labels.getString("TITLE")
-                                    + " na serveru: "
+                                    + " na serveru: "		//todo resource text
                                     + NetService.getInstance().getServerName());
             stage.setScene(scene);
         } catch (IOException ex) {
