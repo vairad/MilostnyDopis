@@ -95,38 +95,30 @@ public class Controller implements Initializable {
 
     @FXML
     public void onRefresh(ActionEvent actionEvent) {
-        loadingGamesState();
+        treeWiew.setDisable(true);
         Message msg = new Message(Event.ECH, MessageType.game, "");
         NetService.getInstance().sender.addItem(msg);
-    }
-
-    private void loadingGamesState() {
-        logger.debug("start method");
-        treeWiew.setDisable(true);
-        progressIndicator.setDisable(false);
-        progressIndicator.setProgress(0);
     }
 
     @FXML
     public void onNewGame(ActionEvent actionEvent) {
         Message msg = new Message(Event.NEW, MessageType.game, "");
         NetService.getInstance().sender.addItem(msg);
+        onRefresh(actionEvent);
     }
 
 //=============================================================================================================
 
     void noLoggedForm() {
-        treeWiew.setDisable(true);
-        refreshButton.setDisable(true);
-        newGameButton.setDisable(true);
+        disableGameMenu();
         logoutButton.setDisable(true);
         enableForm();
     }
 
+
+
     void loggedForm() {
-        treeWiew.setDisable(false);
-        refreshButton.setDisable(false);
-        newGameButton.setDisable(false);
+        enableGameMenu();
         logoutButton.setDisable(false);
         connectButton.setDisable(true);
         disableForm();
@@ -247,5 +239,11 @@ public class Controller implements Initializable {
         treeWiew.setDisable(false);
         refreshButton.setDisable(false);
         newGameButton.setDisable(false);
+    }
+
+    private void disableGameMenu() {
+        treeWiew.setDisable(true);
+        refreshButton.setDisable(true);
+        newGameButton.setDisable(true);
     }
 }

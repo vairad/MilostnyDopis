@@ -3,7 +3,6 @@ package gui;
 import game.Game;
 import game.Player;
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -111,7 +110,7 @@ public class App extends Application {
                 }
         }); // end of event handler definition
 
-        App.disableTreeView();
+        App.enableTreeView();
     }
 
 
@@ -128,7 +127,7 @@ public class App extends Application {
         controller.loggedForm();
     }
 
-    private static void disableTreeView() {
+    private static void enableTreeView() {
         controller.enableGameMenu();
     }
 
