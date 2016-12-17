@@ -3,6 +3,7 @@ package gui;
 import game.Game;
 import game.Player;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -96,7 +97,9 @@ public class App extends Application {
                     return;
                 }
                 if(!Player.getInstance().isLogged()){
-                    DialogFactory.alertError("Nejsi přihlášený", "Ne" , "Ne"); // todo resource texts //todo proč to tue je :D
+                    DialogFactory.alertError(bundle.getString("noLogged")
+                                            , bundle.getString("noLoggedHeadline")
+                                            , bundle.getString("noLoggedText"));
                     return;
                 }
 
@@ -104,10 +107,13 @@ public class App extends Application {
                 NetService.getInstance().sender.addItem(msg);
                 logger.trace("Proveden pokus o přihlášení do hry: " + item);
 
-                // todo disable controls
-            }
-        });
+
+                }
+        }); // end of event handler definition
+
+        App.disableTreeView();
     }
+
 
     //======================== REMOTE EVENTS ================================
 
@@ -121,6 +127,11 @@ public class App extends Application {
     public static void userLogged(){
         controller.loggedForm();
     }
+
+    private static void disableTreeView() {
+        controller.enableGameMenu();
+    }
+
 
     //=====================================================================================================
     //=========================================================

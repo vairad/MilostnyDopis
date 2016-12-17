@@ -243,4 +243,9 @@ public class Controller implements Initializable {
         return treeWiew;
     }
 
+    void enableGameMenu() {
+        treeWiew.setDisable(false);
+        refreshButton.setDisable(false);
+        newGameButton.setDisable(false);
+    }
 }

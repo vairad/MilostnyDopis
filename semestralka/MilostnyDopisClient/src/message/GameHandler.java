@@ -57,7 +57,9 @@ public class GameHandler {
             }
         }
         GameRecord.setAllGameRecords(gameRecords);
-        Platform.runLater(() -> App.fillTree(gameRecords));
+        Platform.runLater(() -> {
+            App.fillTree(gameRecords);
+        });
     }
 
     private static void handleGameACKResponse(String msg){
