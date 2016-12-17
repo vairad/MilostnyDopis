@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+	<Properties>
+		<Property name="pFormat">[%level - %class{1}.%method()] - %msg%n</Property>
+
+		<Property name="suffix">.txt</Property>
+
+		<Property name="projectName">log-MilostnyDopisClient</Property>
+
+		<Property name="baseLog">${projectName}${suffix}</Property> <!-- Jen do úrovně  INFO-->
+		<Property name="debugLog">${projectName}-debug${suffix}</Property> <!-- Jen do úrovně  DEBUG-->
+		<Property name="traceLog">${projectName}-trace${suffix}</Property> <!-- Jen do úrovně  ALL -->
+	</Properties>
+
+	<Appenders>
+		<Console name="screen" target="SYSTEM_OUT">
+			<PatternLayout pattern="${pFormat}" />
+		</Console>
+
+		<File name="file" filename="${baseLog}" append="true">
+			<PatternLayout pattern="${pFormat}" />
+			<ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY" />
+		</File>
+
+		<File name="file-debug" filename="${debugLog}" append="false">
+			<PatternLayout pattern="${pFormat}" />
+			<ThresholdFilter level="DEBUG" onMatch="ACCEPT" onMismatch="DENY" />
+		</File>
+
+		<File name="file-all" filename="${traceLog}" append="false">
+			<PatternLayout pattern="${pFormat}" />
+			<ThresholdFilter level="ALL" onMatch="ACCEPT" onMismatch="DENY" />
+		</File>
+
+	</Appenders>
+	<Loggers>
+
+		<Root level="ALL">
+			 <AppenderRef ref="screen"/>
+		</Root>
+
+		<Logger name="gui.Controller" level="ALL"> <!-- additivity="false" -->
+			<AppenderRef ref="file"/>
+			<!--<AppenderRef ref="screen"/> -->
+		</Logger>
+
+		<Logger name="gui.App" level="ALL"> <!-- additivity="false" -->
+			<AppenderRef ref="file"/>
+			<!--<AppenderRef ref="screen"/> -->
+		</Logger>
+
+		<!--<Logger name="log4joscislo.Generator" level="ALL">
+			<AppenderRef ref="file"/>
+			<AppenderRef ref="file-debug"/>
+		</Logger>-->
+
+		<!--<Logger name="log4joscislo.OsobniCislo" level="ALL">
+			<AppenderRef ref="file-debug"/>
+			<AppenderRef ref="file-all"/>
+		</Logger> -->
+
+	</Loggers>
+</Configuration>
