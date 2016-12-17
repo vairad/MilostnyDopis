@@ -220,7 +220,7 @@ public class Controller implements Initializable {
         }
 
         try{
-            statusText.setText("Pokus o připojení k serveru"); //todo resouce text
+            statusText.setText(bundle.getString("connectionTry"));
             NetService.getInstance().setup(address.getText(), resultPort);
             NetService.getInstance().initialize();
 
@@ -231,12 +231,12 @@ public class Controller implements Initializable {
             logger.trace("MessageHandler started");
 
         }catch (IOException e){
-            statusText.setText("Nelze se připojit k serveru: " + e.getLocalizedMessage()); // todo resouce text
+            statusText.setText(bundle.getString("notConnected") +" " + e.getLocalizedMessage());
             logger.error("IO Error", e);
             noLoggedForm();
             return;
         }
-        statusText.setText("Probíhá přihlášení"); // todo resouce text
+        statusText.setText(bundle.getString("loginInProgress"));
     }
 
     TreeView<GameRecord> getTreeWiew() {

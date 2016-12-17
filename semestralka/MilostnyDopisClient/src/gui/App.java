@@ -32,7 +32,8 @@ public class App extends Application {
     public static Logger logger =	LogManager.getLogger(App.class.getName());
 
     private Stage stage;
-    ResourceBundle labels;
+
+    protected static ResourceBundle bundle;
     private static Controller controller;
 
     @Override
@@ -49,8 +50,8 @@ public class App extends Application {
     private void loadView(Locale locale) {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader();
-            labels = ResourceBundle.getBundle("Texts", locale);
-            fxmlLoader.setResources(labels);
+            bundle = ResourceBundle.getBundle("Texts", locale);
+            fxmlLoader.setResources(bundle);
 
             Parent root = fxmlLoader.load(App.class.getResource("startScreen.fxml").openStream());
 
@@ -59,7 +60,7 @@ public class App extends Application {
             Scene scene = new Scene(root, 300, 500);
             scene.getStylesheets().add(App.class.getResource("app.css").toExternalForm());
 
-            stage.setTitle(labels.getString("TITLE"));
+            stage.setTitle(bundle.getString("TITLE"));
             stage.setScene(scene);
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -88,13 +89,14 @@ public class App extends Application {
             {
                 GameRecord item = tree.getSelectionModel().getSelectedItem().getValue();
                 logger.debug("Byla zvolena hra pro přihlášení:" + item);
-                boolean result = DialogFactory.yesNoQuestion("title", "question"); //todo resources texts
+                boolean result = DialogFactory.yesNoQuestion(bundle.getString("loginGameQTitle")
+                                            , bundle.getString("loginGameQ") + " " + item);
                 if(!result){
                     logger.trace("Uživatel zrušil přihlašování do hry: " + item);
                     return;
                 }
                 if(!Player.getInstance().isLogged()){
-                    DialogFactory.alertError("Nejsi přihlášený", "Ne" , "Ne"); // todo resource texts
+                    DialogFactory.alertError("Nejsi přihlášený", "Ne" , "Ne"); // todo resource texts //todo proč to tue je :D
                     return;
                 }
 

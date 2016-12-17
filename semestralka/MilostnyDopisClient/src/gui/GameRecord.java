@@ -43,9 +43,9 @@ public class GameRecord {
     @Override
     public String toString(){
         if(isRootNode){
-            return "Server " + uid; //todo resource text
+            return App.bundle.getString("server") + " " + uid;
         }
-        return "Hra: " + uid + " (" + playersCount + ")"; // todo resource text
+        return App.bundle.getString("game") + " " + uid + " (" + playersCount + ")";
     }
 
     public static GameRecord getGame(String msg) {

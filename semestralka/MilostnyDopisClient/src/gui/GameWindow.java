@@ -18,18 +18,16 @@ import java.util.ResourceBundle;
  */
 public class GameWindow extends Window {
 
-    /** instance loggeru hlavni tridy */
+    /** instance loggeru tridy */
     public static Logger logger =	LogManager.getLogger(GameWindow.class.getName());
 
     private Stage stage;
-    ResourceBundle labels;
+    ResourceBundle bundle;
 
 
     public  void show(){
         logger.debug("start Window");
         stage = new Stage();
-
-        loadView(new Locale("cs", "CZ"));
 
         stage.setMinHeight(300);
         stage.setMinWidth(500);
@@ -40,17 +38,17 @@ public class GameWindow extends Window {
     private void loadView(Locale locale) {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader();
-            labels = ResourceBundle.getBundle("Texts", locale);
-            fxmlLoader.setResources(labels);
+            bundle = App.bundle;
+            fxmlLoader.setResources(bundle);
 
-            Parent root = fxmlLoader.load(App.class.getResource("gameScreen.fxml").openStream());
+            Parent root = fxmlLoader.load(GameWindow.class.getResource("gameScreen.fxml").openStream());
 
             Scene scene = new Scene(root, 300, 500);
-            scene.getStylesheets().add(App.class.getResource("app.css").toExternalForm());
+            scene.getStylesheets().add(GameWindow.class.getResource("app.css").toExternalForm());
 
-            stage.setTitle(labels.getString("TITLE")
-                                    + " na serveru: "		//todo resource text
-                                    + NetService.getInstance().getServerName());
+            stage.setTitle(bundle.getString("TITLE")
+                            + " " + bundle.getString("onServer") + " "
+                            + NetService.getInstance().getServerName());
             stage.setScene(scene);
         } catch (IOException ex) {
             ex.printStackTrace();
