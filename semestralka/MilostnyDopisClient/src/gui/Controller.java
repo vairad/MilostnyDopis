@@ -7,7 +7,6 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
-import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeView;
 import javafx.scene.text.Text;
@@ -22,6 +21,8 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+
+import static java.lang.Thread.sleep;
 
 public class Controller implements Initializable {
     /** instance loggeru hlavni tridy */
@@ -46,8 +47,6 @@ public class Controller implements Initializable {
     @FXML
     public Button logoutButton;
     @FXML
-    public ProgressIndicator progressIndicator;
-    @FXML
     private Text statusText;
     @FXML
     private TreeView<GameRecord> treeWiew;
@@ -61,7 +60,7 @@ public class Controller implements Initializable {
     }
 
     @FXML
-    public void onConnect(ActionEvent actionEvent){
+    public void onConnect(){
         disableForm();
 
         if(!NetService.isRunning()){
@@ -72,7 +71,7 @@ public class Controller implements Initializable {
     }
 
     @FXML
-    public void onDefaultConnection(ActionEvent actionEvent){
+    public void onDefaultConnection(){
         logger.debug("Start method");
         address.setText("localhost");
         port.setText("2525");
@@ -80,7 +79,7 @@ public class Controller implements Initializable {
     }
 
     @FXML
-    public void onLogout(ActionEvent actionEvent) {
+    public void onLogout() {
         logger.debug("Start method");
         if(!Player.getInstance().isLogged()){
             return;
@@ -90,21 +89,26 @@ public class Controller implements Initializable {
             NetService.getInstance().sender.addItem(msg);
         }
         noLoggedForm();
+        try {
+            sleep(500);
+        } catch (InterruptedException e) {
+            logger.trace("Interupted wait for threads");
+        }
         NetService.getInstance().destroy();
     }
 
     @FXML
-    public void onRefresh(ActionEvent actionEvent) {
+    public void onRefresh() {
         treeWiew.setDisable(true);
         Message msg = new Message(Event.ECH, MessageType.game, "");
         NetService.getInstance().sender.addItem(msg);
     }
 
     @FXML
-    public void onNewGame(ActionEvent actionEvent) {
+    public void onNewGame() {
         Message msg = new Message(Event.NEW, MessageType.game, "");
         NetService.getInstance().sender.addItem(msg);
-        onRefresh(actionEvent);
+        onRefresh();
     }
 
 //=============================================================================================================
@@ -122,7 +126,7 @@ public class Controller implements Initializable {
         logoutButton.setDisable(false);
         connectButton.setDisable(true);
         disableForm();
-        onRefresh(null);
+        onRefresh();
     }
 
     /**
@@ -152,7 +156,7 @@ public class Controller implements Initializable {
     /**
      *
      */
-    public void sendLogin(){
+    private void sendLogin(){
         logger.debug("Start method");
         String messageS = checkNickname();
         if(messageS == null){
@@ -165,7 +169,7 @@ public class Controller implements Initializable {
 
     /**
      *
-     * @return
+     * @return repaired nickanme
      */
     private String checkNickname(){
         logger.debug("Start method");

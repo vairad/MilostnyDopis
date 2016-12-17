@@ -37,14 +37,14 @@ public class Message {
         this.event = event;
         this.type = type;
         this.message = message.trim();
-        this.byteLen = HEADER_LEN + this.message.length();
+        this.byteLen = HEADER_LEN + this.message.getBytes().length;
     }
 
     public Message(String message){
         this.type = MessageType.getTypeFromOpt(message.substring(7, 10));
         this.event = Event.getEventFromOpt(message.substring(10, 13));
         this.message = message.substring(14).trim();
-        this.byteLen = HEADER_LEN + this.message.length();
+        this.byteLen = HEADER_LEN + this.message.getBytes().length;
     }
 
     @Override
