@@ -149,12 +149,15 @@ void Sender::fillEvent(char *msg, Event event){
     case Event::ECH:
         strcpy(eventS, OPT_ECH);
         break;
+    case Event::STA:
+        strcpy(eventS, OPT_STA);
+        break;
     case Event::UNK:
         LOG_ERROR("Nelze nastavit typ unknown");
         break;
     default:
         MSG("Nenadála situace kontaktuje autora programu. Konec programu.");
-        LOG_ERROR("Neimplementovaný event!!");
+        LOG_ERROR("Neimplementovaný event v Sender!!");
         exit(EVENT_NOT_IMPLEMENTED_SEN);
     }
 

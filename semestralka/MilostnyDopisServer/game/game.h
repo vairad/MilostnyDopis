@@ -30,6 +30,9 @@ class Game
 
     GameDeck game_deck;
 
+    std::string xmlPlayer(Player *player, int order);
+    std::string xmlPlayerCollection();
+
 public:
     Game(std::string uid, int round_count = 5);
 

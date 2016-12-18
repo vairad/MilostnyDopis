@@ -5,6 +5,9 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.Window;
+import message.Event;
+import message.Message;
+import message.MessageType;
 import netservice.NetService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -24,6 +27,10 @@ public class GameWindow extends Window {
     private Stage stage;
     ResourceBundle bundle;
 
+    public GameWindow(GameRecord gameRecord){
+        Message msg = new Message(Event.STA, MessageType.game, gameRecord.getUid());
+        NetService.getInstance().sender.addItem(msg);
+    }
 
     public  void show(){
         logger.debug("start Window");

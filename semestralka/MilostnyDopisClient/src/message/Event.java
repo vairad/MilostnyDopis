@@ -10,7 +10,8 @@ public enum Event {
     ECH ("ECH"),
     NEW ("NEW"),
     OUT ("OUT"),
-    COD("COD");
+    COD ("COD"),
+    STA ("STA");
 
     private final String name;
 

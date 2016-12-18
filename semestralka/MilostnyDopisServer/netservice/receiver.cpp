@@ -266,6 +266,8 @@ Event Receiver::choose_event(char *opt){
         return  Event::COD;
     }else if(strcmp(opt, OPT_NEW) == 0){
         return  Event::NEW;
+    }else if(strcmp(opt, OPT_STA) == 0){
+        return  Event::STA;
     }else if(strcmp(opt, OPT_OUT) == 0){
         return  Event::OUT;
     }else{

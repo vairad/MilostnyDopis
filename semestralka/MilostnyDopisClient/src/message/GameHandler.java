@@ -1,5 +1,7 @@
 package message;
 
+import game.Game;
+import game.GameStatus;
 import gui.GameController;
 import gui.GameRecord;
 import gui.App;
@@ -24,6 +26,8 @@ public class GameHandler {
             case ACK:
                 handleGameACK(msg);
                 break;
+            case STA:
+                handleGameSTA(msg);
             case UNK:
                 logger.error("UNKNOWN LOGIN EVENT TYPE");
                 break;
@@ -31,6 +35,10 @@ public class GameHandler {
                 logger.error("UNIMPLEMENTED LOGIN EVENT TYPE");
                 break;
         }
+    }
+
+    private static void handleGameSTA(Message msg) {
+        Game.initialize(new GameStatus(msg.getMessage()));
     }
 
     private static void handleGameACK(Message msg) {

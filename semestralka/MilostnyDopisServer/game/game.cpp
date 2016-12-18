@@ -190,7 +190,50 @@ bool Game::giveCard(Player *who)
  */
 std::string Game::getStatus()
 {
-    return "soinovnqwpoasnvpseonewvpo";
+    std::string msg = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
+  //  msg += "<gameStatus xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.w3schools.com\" xsi:schemaLocation=\"http://home.zcu.cz/~vaisr test.xsd\" >";
+    msg += "<gameStatus>";
+
+    msg += xmlPlayerCollection();
+
+    msg += "</gameStatus>";
+    return msg;
+}
+
+std::string Game::xmlPlayer(Player *player, int order)
+{
+    if (player == NULL) {
+        return "";
+    }
+    std::string playerAtributes = "<player>";
+
+    playerAtributes += "<order>";
+    playerAtributes += std::to_string(order);
+    playerAtributes += "</order>";
+
+    playerAtributes += "<name>";
+    playerAtributes += *player->getUser()->getNickname();
+    playerAtributes += "</name>";
+
+    playerAtributes += "<id>";
+    playerAtributes += player->getUser()->getUID();
+    playerAtributes += "</id>";
+
+    playerAtributes += "</player>";
+    return playerAtributes;
+}
+
+std::string Game::xmlPlayerCollection()
+{
+    std::string playerCollection = "<playersCollection>";
+
+    playerCollection += xmlPlayer(player1, 1);
+    playerCollection += xmlPlayer(player2, 2);
+    playerCollection += xmlPlayer(player3, 3);
+    playerCollection += xmlPlayer(player4, 4);
+
+    playerCollection += "</playersCollection>";
+    return playerCollection;
 }
 
 /**

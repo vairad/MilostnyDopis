@@ -18,8 +18,11 @@ public class Game {
         game = game;
     }
 
-    public String getUid() {
+    public static String getUid() {
         return game.getUid();
     }
 
+    public static void initialize(GameStatus gameStatus) {
+
+    }
 }

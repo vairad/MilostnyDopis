@@ -32,5 +32,6 @@
 #define OPT_COD "COD"
 #define OPT_NEW "NEW"
 #define OPT_OUT "OUT"
+#define OPT_STA "STA"
 
 #endif // OPTCODE_H

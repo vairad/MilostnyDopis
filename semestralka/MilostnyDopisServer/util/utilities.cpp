@@ -1,5 +1,10 @@
 #include "utilities.h"
 
+#include <algorithm>
+#include <functional>
+#include <cctype>
+#include <locale>
+
 #include <errno.h>
 #include <stdlib.h>
 
@@ -26,3 +31,22 @@ bool Utilities::readNumber(std::string numberS, int *number)
    (*number) = readed;
    return true;
 }
+
+// trim from start
+std::string *Utilities::ltrim(std::string *s) {
+    s->erase(s->begin(), std::find_if(s->begin(), s->end(),
+            std::not1(std::ptr_fun<int, int>(std::isspace))));
+    return s;
+}
+
+// trim from end
+std::string *Utilities::rtrim(std::string *s) {
+    s->erase(std::find_if(s->rbegin(), s->rend(),
+            std::not1(std::ptr_fun<int, int>(std::isspace))).base(), s->end());
+    return s;
+}
+
+std::string *Utilities::trim(std::string *s){
+   return rtrim(ltrim(s));
+}
+

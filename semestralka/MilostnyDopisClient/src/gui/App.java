@@ -1,6 +1,7 @@
 package gui;
 
 import game.Game;
+import game.GameStatus;
 import game.Player;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -30,6 +31,8 @@ public class App extends Application {
 
     /** instance loggeru hlavni tridy */
     public static Logger logger =	LogManager.getLogger(App.class.getName());
+
+    private static GameWindow win = null;
 
     private Stage stage;
 
@@ -119,8 +122,12 @@ public class App extends Application {
     public static void newGame(GameRecord gameRecord) {
         logger.debug("start method");
         Game.initialize(gameRecord);
-        GameWindow win = new GameWindow();
-        win.show();
+        win = new GameWindow(gameRecord);
+    }
+
+    public static void receiveGameSatus(GameStatus gameStatus) {
+        logger.debug("start method");
+        Game.initialize(gameStatus);
     }
 
     public static void userLogged(){
