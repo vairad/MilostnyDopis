@@ -28,8 +28,9 @@ public class GameHandler {
                 break;
             case STA:
                 handleGameSTA(msg);
+                break;
             case UNK:
-                logger.error("UNKNOWN LOGIN EVENT TYPE");
+                logger.error("UNKNOWN GAME EVENT TYPE");
                 break;
             default:
                 logger.error("UNIMPLEMENTED LOGIN EVENT TYPE");
@@ -39,6 +40,9 @@ public class GameHandler {
 
     private static void handleGameSTA(Message msg) {
         Game.initialize(new GameStatus(msg.getMessage()));
+        if(Game.isReady()){
+            Platform.runLater(() -> App.showGameWindow());
+        }
     }
 
     private static void handleGameACK(Message msg) {

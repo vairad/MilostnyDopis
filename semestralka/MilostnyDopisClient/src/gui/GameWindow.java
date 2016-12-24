@@ -32,17 +32,19 @@ public class GameWindow extends Window {
         NetService.getInstance().sender.addItem(msg);
     }
 
-    public  void show(){
+    public void show(){
         logger.debug("start Window");
         stage = new Stage();
 
+        loadView();
+
         stage.setMinHeight(300);
         stage.setMinWidth(500);
-        stage.setMaximized(true);
+       // stage.setMaximized(true);
         stage.show();
     }
 
-    private void loadView(Locale locale) {
+    private void loadView() {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader();
             bundle = App.bundle;
@@ -50,7 +52,7 @@ public class GameWindow extends Window {
 
             Parent root = fxmlLoader.load(GameWindow.class.getResource("gameScreen.fxml").openStream());
 
-            Scene scene = new Scene(root, 300, 500);
+            Scene scene = new Scene(root);
             scene.getStylesheets().add(GameWindow.class.getResource("app.css").toExternalForm());
 
             stage.setTitle(bundle.getString("TITLE")

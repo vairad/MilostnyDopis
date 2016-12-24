@@ -9,20 +9,26 @@ import java.util.List;
  * Created by XXXXXXXXXXXXXXXX on 1.12.16.
  */
 public class Game {
-    private static GameRecord game;
+    private static GameRecord gameRecord;
     private static List<Player> players;
     private static List<Game> allGameRecords;
+    private static boolean ready;
 
-    public static void initialize(GameRecord game){
+    public static void initialize(GameRecord gameRecord){ //todo rename intialize methods
         players = new LinkedList<Player>();
-        game = game;
+        Game.gameRecord = gameRecord;
+        ready = true;
     }
 
     public static String getUid() {
-        return game.getUid();
+        return gameRecord.getUid();
     }
 
     public static void initialize(GameStatus gameStatus) {
 
+    }
+
+    public static boolean isReady() {
+        return ready;
     }
 }

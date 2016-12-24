@@ -26,12 +26,14 @@
 	</target>
 
 	<target name="resources"> <!-- Copy all resources to compiled files -->
+		<echo>Kopíruji resources</echo>
 		<copy todir="${bin.dir}">
 			<fileset dir="${src.dir}" includes="**/*.xml,**/*.fxml,**/*.properties,**/*.css,**/*.ico" />
 		</copy>
 	</target>
 
 	<target name="libraries"> <!-- Copy all resources to compiled files -->
+		<echo>Kopíruji knihovny</echo>
 		<copy todir="${out.dir}/${lib.dir}">
 			<fileset dir="${lib.dir}" includes="*.jar" />
 		</copy>
@@ -51,12 +53,13 @@
 	</target>
 
 	<target name="runJar" depends="distjar"> <!-- Run program from compiled files -->
+		<echo>Spoustim jar.${line.separator}</echo>
 		<java jar="${out.dir}/${jar.name}" fork="true" dir="${bin.dir}" />
 	</target>
 
 	<target name="javadoc"> <!-- Create developer documentation from sources -->
-	    <mkdir dir="${out.dir}/${doc.dir}" />
-	    <javadoc sourcepath="${src.dir}" destdir="${out.dir}/${doc.dir}" />
+	    <!--<mkdir dir="${out.dir}/${doc.dir}" />-->
+	  <!--  <javadoc sourcepath="${src.dir}" destdir="${out.dir}/${doc.dir}" />-->
 	</target>
 	
 	<target name="signature"> <!-- create file with timestamp -->

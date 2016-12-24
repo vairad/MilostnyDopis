@@ -14,7 +14,7 @@
     <xs:element name="playersCollection">
         <xs:complexType>
             <xs:sequence>
-                <xs:element ref="player"/>
+                <xs:element ref="player" minOccurs="1" maxOccurs="4"/>
             </xs:sequence>
         </xs:complexType>
     </xs:element>

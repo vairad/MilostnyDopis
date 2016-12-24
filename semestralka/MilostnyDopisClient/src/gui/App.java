@@ -125,7 +125,11 @@ public class App extends Application {
         win = new GameWindow(gameRecord);
     }
 
-    public static void receiveGameSatus(GameStatus gameStatus) {
+    public static void showGameWindow() {
+        win.show();
+    }
+
+    public static void receiveGameSatus(GameStatus gameStatus) { // todo analyze occurence of this method
         logger.debug("start method");
         Game.initialize(gameStatus);
     }
@@ -149,5 +153,6 @@ public class App extends Application {
         App.launch(args);
         logger.info("Konec programu");
     }
+
 
 }

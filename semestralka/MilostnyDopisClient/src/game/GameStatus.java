@@ -26,6 +26,11 @@ import java.nio.charset.StandardCharsets;
  */
 public class GameStatus {
 
+    private static final int ORDER_ATR = 0;
+    private static final int NICK_ATR = 1;
+    private static final int ID_ATR = 2;
+
+
     /** instance loggeru hlavni tridy */
     public static Logger logger =	LogManager.getLogger(GameStatus.class.getName());
 
@@ -48,6 +53,7 @@ public class GameStatus {
             xsdIS = new FileInputStream(xsd);
 
             if(validateAgainstXSD(xmlIS, xsdIS )){
+                xmlIS = new ByteArrayInputStream(serverMessage.getBytes(StandardCharsets.UTF_8));
                 parseXML(xmlIS);
             }else{
                 Message msg = new Message(Event.STA, MessageType.game, Game.getUid());
@@ -68,7 +74,7 @@ public class GameStatus {
             if(xmlIS != null) try {
                 xmlIS.close();
             } catch (IOException e) {
-                logger.debug("IO chyba xsd",e);
+                logger.debug("IO chyba xml",e);
             }
         }
     }
@@ -79,18 +85,39 @@ public class GameStatus {
     }
 
     private void parseXML(InputStream xmlIS) throws ParserConfigurationException, IOException, SAXException {
+        logger.debug("start method");
         serverXmlDocument = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(xmlIS);
-        NodeList playersNodeList = serverXmlDocument.getElementsByTagName("player");
+        Node playersCollection = serverXmlDocument.getElementsByTagName("playersCollection").item(0);
+        NodeList playersNodeList = playersCollection.getChildNodes();
         for (int index = 0; index < playersNodeList.getLength(); index++) {
             Node playerNode = playersNodeList.item(index);
+            parsePlayerXML(playerNode);
 
             logger.debug(playerNode.getFirstChild().getNodeValue());
         }
     }
 
+    private void parsePlayerXML(Node playerNode) {
+        logger.debug("start method");
+        NodeList playerNodes = playerNode.getChildNodes();
 
-    private static boolean validateAgainstXSD(InputStream xml, InputStream xsd)
-    {
+        Node playerAttribute = playerNodes.item(ORDER_ATR);
+        String tmp = playerAttribute.getFirstChild().getNodeValue();
+        logger.trace("Poradi : " + tmp);
+
+        playerAttribute = playerNodes.item(NICK_ATR);
+        tmp = playerAttribute.getFirstChild().getNodeValue();
+        logger.trace("Prezdivka : " + tmp);
+
+        playerAttribute = playerNodes.item(ID_ATR);
+        tmp = playerAttribute.getFirstChild().getNodeValue();
+        logger.trace("ID : " + tmp);
+
+    }
+
+
+    private static boolean validateAgainstXSD(InputStream xml, InputStream xsd) {
+        logger.debug("start method");
         try
         {
             SchemaFactory factory =
@@ -107,7 +134,16 @@ public class GameStatus {
             logger.debug("IO chyba", e);
             return false;
         }finally {
-            xml.
+            try {
+                xml.close();
+            } catch (IOException e) {
+                logger.debug("IO chyba", e);
+            }
+            try {
+                xsd.close();
+            } catch (IOException e) {
+                logger.debug("IO chyba", e);
+            }
         }
 
     }
