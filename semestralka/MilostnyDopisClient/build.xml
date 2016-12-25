@@ -28,7 +28,7 @@
 	<target name="resources"> <!-- Copy all resources to compiled files -->
 		<echo>Kopíruji resources</echo>
 		<copy todir="${bin.dir}">
-			<fileset dir="${src.dir}" includes="**/*.xml,**/*.fxml,**/*.properties,**/*.css,**/*.ico" />
+			<fileset dir="${src.dir}" includes="**/*.xml,**/*.fxml,**/*.xsd,**/*.properties,**/*.css,**/*.ico" />
 		</copy>
 	</target>
 
@@ -76,7 +76,7 @@
 	    <jar destfile="${out.dir}/${jar.name}">
 		<zipgroupfileset dir="${lib.dir}" includes="*.jar"/>	        
 		<manifest>
-	            <attribute name="main.Main-Class" value="${main.class}" />
+	            <attribute name="Main-Class" value="${main.class}" />
 	        </manifest>
 
 	        <fileset dir="${bin.dir}" includes="**" />
