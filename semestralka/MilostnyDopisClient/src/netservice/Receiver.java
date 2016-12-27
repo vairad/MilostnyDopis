@@ -47,7 +47,7 @@ public class Receiver extends Thread {
             }
 
             String msgS = new String(buffer);
-            logger.debug(msgS);
+            logger.trace(msgS);
 
             Message msg = new Message(msgS);
 
@@ -61,7 +61,7 @@ public class Receiver extends Thread {
                 logger.error("Chyba vložení do fronty zprávy: " + msg);
             }
 
-            logger.debug("Dostal jsem zpravu" + msg);
+            logger.debug("Received message: " + msg);
       }
     }
 

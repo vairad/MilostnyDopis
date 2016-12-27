@@ -10,6 +10,10 @@
 		<Property name="baseLog">${projectName}${suffix}</Property> <!-- Jen do úrovně  INFO-->
 		<Property name="debugLog">${projectName}-debug${suffix}</Property> <!-- Jen do úrovně  DEBUG-->
 		<Property name="traceLog">${projectName}-trace${suffix}</Property> <!-- Jen do úrovně  ALL -->
+
+		<Property name="sendMessages">${projectName}-send${suffix}</Property>
+		<Property name="receivedMessages">${projectName}-receive${suffix}</Property>
+		<Property name="messages">${projectName}-allMessages${suffix}</Property>
 	</Properties>
 
 	<Appenders>
@@ -32,6 +36,21 @@
 			<ThresholdFilter level="ALL" onMatch="ACCEPT" onMismatch="DENY" />
 		</File>
 
+		<File name="file-send-messages" filename="${sendMessages}" append="false">
+			<PatternLayout pattern="${pFormat}" />
+			<ThresholdFilter level="ALL" onMatch="ACCEPT" onMismatch="DENY" />
+		</File>
+
+		<File name="file-received-messages" filename="${receivedMessages}" append="false">
+			<PatternLayout pattern="${pFormat}" />
+			<ThresholdFilter level="ALL" onMatch="ACCEPT" onMismatch="DENY" />
+		</File>
+
+		<File name="file-messages" filename="${messages}" append="false">
+			<PatternLayout pattern="${pFormat}" />
+			<ThresholdFilter level="DEBUG" onMatch="ACCEPT" onMismatch="DENY" />
+		</File>
+
 	</Appenders>
 	<Loggers>
 
@@ -39,8 +58,15 @@
 			 <AppenderRef ref="screen"/>
 		</Root>
 
-		<Logger name="gui.Controller" level="ALL"> <!-- additivity="false" -->
-			<AppenderRef ref="file"/>
+		<Logger name="netservice.Sender" level="ALL"> <!-- additivity="false" -->
+			<AppenderRef ref="file-send-messages"/>
+			<AppenderRef ref="file-messages"/>
+			<!--<AppenderRef ref="screen"/> -->
+		</Logger>
+
+		<Logger name="netservice.Receiver" level="ALL"> <!-- additivity="false" -->
+			<AppenderRef ref="file-received-messages"/>
+			<AppenderRef ref="file-messages"/>
 			<!--<AppenderRef ref="screen"/> -->
 		</Logger>
 

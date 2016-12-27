@@ -41,6 +41,7 @@ public class Sender extends Thread {
             }
 
             String messageToNet = msg.toString();
+            logger.debug("Sending: " + msg.toString());
 
             if(messageToNet == null){
                 logger.error("Null message to send");
