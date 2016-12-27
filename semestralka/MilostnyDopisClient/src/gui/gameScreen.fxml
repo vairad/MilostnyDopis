@@ -2,12 +2,15 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
+<?import java.lang.String?>
 <GridPane fx:controller="gui.GameController"
           xmlns:fx="http://javafx.com/fxml"
           hgap="20"
           vgap="20"
           gridLinesVisible="true"
 >
+    <ListView fx:id="gameStatus"
+    />
     <!--   gridLinesVisible="true" -->
     <columnConstraints>
         <ColumnConstraints percentWidth="33.3" />
@@ -27,7 +30,7 @@
               GridPane.columnSpan="1"
     >
         <top>
-            <Label fx:id="player1Name">Player1 name placeholder</Label>
+            <Label fx:id="player1_name">Player1 name placeholder</Label>
         </top>
         <center>
             <ScrollPane>
@@ -44,7 +47,7 @@
             GridPane.columnSpan="1"
                 disable="true">
         <top>
-            <Label fx:id="player2_Name">Player2 name placeholder</Label>
+            <Label fx:id="player2_name">Player2 name placeholder</Label>
         </top>
         <center>
             <ScrollPane>
@@ -62,6 +65,7 @@
     </BorderPane>
 
     <BorderPane fx:id="player3"
+
             GridPane.columnIndex="2"
             GridPane.rowIndex="1"
             GridPane.columnSpan="1">

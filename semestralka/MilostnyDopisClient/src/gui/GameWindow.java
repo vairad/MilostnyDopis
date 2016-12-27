@@ -1,5 +1,6 @@
 package gui;
 
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -26,6 +27,7 @@ public class GameWindow extends Window {
 
     private Stage stage;
     ResourceBundle bundle;
+    private GameController controller;
 
     public GameWindow(GameRecord gameRecord){
         Message msg = new Message(Event.STA, MessageType.game, gameRecord.getUid());
@@ -37,6 +39,10 @@ public class GameWindow extends Window {
         stage = new Stage();
 
         loadView();
+
+        controller.appendStatus(bundle.getString("statusMessages"));
+
+
 
         stage.setMinHeight(300);
         stage.setMinWidth(500);
@@ -51,6 +57,8 @@ public class GameWindow extends Window {
             fxmlLoader.setResources(bundle);
 
             Parent root = fxmlLoader.load(GameWindow.class.getResource("gameScreen.fxml").openStream());
+
+            controller = fxmlLoader.getController();
 
             Scene scene = new Scene(root);
             scene.getStylesheets().add(GameWindow.class.getResource("app.css").toExternalForm());
