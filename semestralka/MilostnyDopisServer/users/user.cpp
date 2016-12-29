@@ -25,14 +25,24 @@ void User::setSocket(int value)
     socket = value;
 }
 
-const char *User::toString()
+std::string User::toString()
 {
     std::string tmp;
     tmp = "";
     tmp += *nickname;
     tmp += " ID: ";
     tmp += uid;
-    return tmp.c_str();
+    return tmp;
+}
+
+std::string User::toNet()
+{
+    std::string tmp;
+    tmp = "";
+    tmp += *nickname;
+    tmp += "&&";
+    tmp += uid;
+    return tmp;
 }
 
 Game *User::getGame() const

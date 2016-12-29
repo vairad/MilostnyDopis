@@ -21,6 +21,7 @@
     <xs:element name="gameStatus">
         <xs:complexType>
             <xs:sequence>
+                <xs:element ref="id" minOccurs="1" maxOccurs="1"/>
                 <xs:element ref="playersCollection"/>
             </xs:sequence>
         </xs:complexType>

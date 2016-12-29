@@ -32,6 +32,7 @@ class Game
 
     std::string xmlPlayer(Player *player, int order);
     std::string xmlPlayerCollection();
+    std::string xmlGameId();
 
 public:
     Game(std::string uid, int round_count = 5);
@@ -51,6 +52,8 @@ public:
     std::string getStatus();
     std::string toString();
     std::string getUid() const;
+    short getPlayer_count() const;
+    Player *getPlayer(int index);
 };
 
 #endif // GAME_H

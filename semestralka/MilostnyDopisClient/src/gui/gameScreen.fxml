@@ -1,17 +1,15 @@
-<?import gui.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-
-<?import java.lang.String?>
 <GridPane fx:controller="gui.GameController"
           xmlns:fx="http://javafx.com/fxml"
           hgap="20"
           vgap="20"
-          gridLinesVisible="true"
 >
+    <!--   gridLinesVisible="true" -->
+
     <ListView fx:id="gameStatus"
     />
-    <!--   gridLinesVisible="true" -->
+
     <columnConstraints>
         <ColumnConstraints percentWidth="33.3" />
         <ColumnConstraints percentWidth="33.3" />
@@ -24,10 +22,12 @@
         <RowConstraints percentHeight="33.3" />
     </rowConstraints>
 
+    <!-- Cizí hráč 1 =============== =============== ========== ============ =========== ============ =====-->
     <BorderPane fx:id="player1"
               GridPane.columnIndex="0"
               GridPane.rowIndex="1"
               GridPane.columnSpan="1"
+                disable="true"
     >
         <top>
             <Label fx:id="player1_name">Player1 name placeholder</Label>
@@ -41,6 +41,7 @@
         </center>
     </BorderPane>
 
+    <!-- cizí hráč 2 =============== =============== ========== ============ =========== ============ =====-->
     <BorderPane fx:id="player2"
             GridPane.columnIndex="1"
             GridPane.rowIndex="0"
@@ -53,22 +54,19 @@
             <ScrollPane>
                 <VBox fx:id="player2_cards"
                         alignment="CENTER">
-                    <CardControl card="GUARDIAN"/>
-                    <CardControl card="GUARDIAN"/>
-                    <CardControl card="GUARDIAN"/>
-                    <CardControl card="GUARDIAN"/>
-                    <CardControl card="GUARDIAN"/>
-
                 </VBox>
             </ScrollPane>
         </center>
     </BorderPane>
 
+    <!-- cizí hráč 3 =============== =============== ========== ============ =========== ============ =====-->
     <BorderPane fx:id="player3"
 
             GridPane.columnIndex="2"
             GridPane.rowIndex="1"
-            GridPane.columnSpan="1">
+            GridPane.columnSpan="1"
+                disable="true"
+    >
         <top>
             <Label fx:id="player3_name">Player3 name placeholder</Label>
         </top>
@@ -76,20 +74,6 @@
             <ScrollPane>
                 <VBox fx:id="player3_cards"
                         alignment="CENTER">
-                    <CardControl card="GUARDIAN"/>
-                    <CardControl card="GUARDIAN"/>
-                    <CardControl card="GUARDIAN"/>
-                    <CardControl card="GUARDIAN"/>
-                    <CardControl card="PRINCESS"/>
-                    <CardControl card="GUARDIAN"/>
-                    <CardControl card="GUARDIAN"/>
-                    <CardControl card="GUARDIAN"/>
-                    <CardControl card="PRINCESS"/>
-                    <CardControl card="GUARDIAN"/>
-                    <CardControl card="GUARDIAN"/>
-                    <CardControl card="GUARDIAN"/>
-                    <CardControl card="PRINCESS"/>
-
                 </VBox>
             </ScrollPane>
         </center>
@@ -101,6 +85,7 @@
                 GridPane.columnIndex="0"
                 GridPane.rowIndex="2"
                 GridPane.columnSpan="1"
+                disable="true"
     >
         <top>
             <Label fx:id="playerMeName">PlayerMe name placeholder</Label>

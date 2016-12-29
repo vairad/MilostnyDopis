@@ -1,5 +1,7 @@
 package gui;
 
+import game.Game;
+import game.Player;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -14,6 +16,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -28,26 +32,43 @@ public class GameWindow extends Window {
     private Stage stage;
     ResourceBundle bundle;
     private GameController controller;
+    private List<String> statusMessages;
 
     public GameWindow(GameRecord gameRecord){
+        statusMessages = new LinkedList<>();
+
+
         Message msg = new Message(Event.STA, MessageType.game, gameRecord.getUid());
         NetService.getInstance().sender.addItem(msg);
-    }
 
-    public void show(){
-        logger.debug("start Window");
         stage = new Stage();
 
         loadView();
+        statusMessages.add(bundle.getString("statusMessages"));
+        statusMessages.add(bundle.getString("connectGame")+ " " +gameRecord.getUid());
 
-        controller.appendStatus(bundle.getString("statusMessages"));
-
-
+        appendStatusMessages();
 
         stage.setMinHeight(300);
-        stage.setMinWidth(500);
-       // stage.setMaximized(true);
+        stage.setMinWidth(300);
+    }
+
+    @Override
+    public void show(){
+        logger.debug("start Window");
+
+        appendStatusMessages();
+
         stage.show();
+    }
+
+    void appendStatusMessages(){
+        controller.appendStatus(statusMessages);
+        statusMessages.clear();
+    }
+
+    public void addStatusMessage(String message){
+        statusMessages.add(message);
     }
 
     private void loadView() {
@@ -69,6 +90,25 @@ public class GameWindow extends Window {
             stage.setScene(scene);
         } catch (IOException ex) {
             ex.printStackTrace();
+        }
+    }
+
+    public void setUpPlayers() {
+        for (Player player: Game.getPlayers()) {
+            switch (player.getDisplay_order()){
+                case LOCAL:
+                    controller.setLocalPlayer(player);
+                    break;
+                case LEFT:
+                    controller.setPlayer1(player);
+                    break;
+                case CENTER:
+                    controller.setPlayer2(player);
+                    break;
+                case RIGHT:
+                    controller.setPlayer3(player);
+                    break;
+            }
         }
     }
 }

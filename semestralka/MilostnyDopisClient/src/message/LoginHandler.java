@@ -1,5 +1,6 @@
 package message;
 
+import constants.PlayerPosition;
 import game.Player;
 import gui.App;
 import javafx.application.Platform;
@@ -48,16 +49,15 @@ public class LoginHandler {
             return;
         }
 
-        if(Player.getInstance().getServerUid().equals(messageParts[0])){
+        if(Player.getLocalPlayer().getServerUid().equals(messageParts[0])){
             logger.trace("stejný uživatel :"+message);
-            Player.getInstance().setLogged(true);
+            Player.getLocalPlayer().setLogged(true);
 
             // affect GUI
             Platform.runLater(App::userLogged);
             return;
         }
 
-        Player.getInstance().setServerUid(messageParts[0]);
         String nick = "";
         if(messageParts.length > 2){
             //todo slepit string
@@ -65,8 +65,8 @@ public class LoginHandler {
             nick = messageParts[1];
         }
 
-        Player.getInstance().setNick(nick);
-        Player.getInstance().setLogged(true);
+        Player.setLocalPlayer(new Player(nick, messageParts[0]));
+        Player.getLocalPlayer().setLogged(true);
 
         // affect GUI
         Platform.runLater(App::userLogged);
@@ -81,7 +81,6 @@ public class LoginHandler {
             return;
         }
 
-        Player.getInstance().setServerUid(messageParts[0]);
         String nick = "";
         if(messageParts.length > 2){
             //todo slepit string
@@ -91,11 +90,10 @@ public class LoginHandler {
         }
 
         // affect logic
-        Player.getInstance().setNick(nick);
-        Player.getInstance().setLogged(true);
+        Player.setLocalPlayer(new Player(nick, messageParts[0]));
+        Player.getLocalPlayer().setLogged(true);
 
         // affect GUI
         Platform.runLater(App::userLogged);
-
     }
 }

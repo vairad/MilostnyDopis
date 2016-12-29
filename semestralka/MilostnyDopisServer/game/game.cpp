@@ -194,10 +194,41 @@ std::string Game::getStatus()
   //  msg += "<gameStatus xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.w3schools.com\" xsi:schemaLocation=\"http://home.zcu.cz/~vaisr test.xsd\" >";
     msg += "<gameStatus>";
 
+    msg += xmlGameId();
+
     msg += xmlPlayerCollection();
 
     msg += "</gameStatus>";
     return msg;
+}
+
+std::string Game::xmlGameId()
+{
+    std::string gameId = "";
+
+    gameId += "<id>";
+    gameId += this->getUid();
+    gameId += "</id>";
+
+    return gameId;
+}
+
+short Game::getPlayer_count() const
+{
+    return player_count;
+}
+
+Player *Game::getPlayer(int index){
+    switch(index){
+        case 0:
+        return player1;
+        case 1:
+        return player2;
+        case 2:
+        return player3;
+        case 3:
+        return player4;
+    }
 }
 
 std::string Game::xmlPlayer(Player *player, int order)

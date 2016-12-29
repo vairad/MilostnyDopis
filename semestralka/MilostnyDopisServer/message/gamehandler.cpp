@@ -120,7 +120,7 @@ void GameHandler::handleGameCOD(Message *msg){
     }
 
     user = UserDatabase::getInstance()->getUserBySocket(msg->getSocket());
-    MSG_PS("Připojuji se na žádost uživatele", user->toString());
+    MSG_PS("Připojuji se na žádost uživatele", user->toString().c_str());
 
     if(!checkGame(gameId)){
         msg->setEvent(Event::NAK);
@@ -150,6 +150,18 @@ void GameHandler::handleGameCOD(Message *msg){
         MSG_PS("Přihlašuji do hry :", game->toString().c_str());
         LOG_DEBUG_PS("Přihlašuji do hry :", game->toString().c_str());
         msg->setEvent(Event::ACK);
+
+        for(int playerIndex = 0; playerIndex < game->getPlayer_count(); playerIndex++){
+            std::string messageS = game->getUid();
+            messageS += "&&";
+            User *user = game->getPlayer(playerIndex)->getUser();
+            messageS += user->toNet();
+            Message *msgP = new Message(game->getPlayer(playerIndex)->getUser()->getSocket()
+                                      , MessageType::game
+                                      , Event::NEP
+                                      , messageS);
+            MessageQueue::sendInstance()->push_msg(msgP);
+        }
     }
     MessageQueue::sendInstance()->push_msg(msg);
 }
@@ -168,7 +180,7 @@ void GameHandler::handleGameNEW(Message *msg){
     }
 
     User *user = UserDatabase::getInstance()->getUserBySocket(msg->getSocket());
-    MSG_PD("Vytvařím hru na žádost uživatele", user->toString());
+    MSG_PS("Vytvařím hru na žádost uživatele", user->toString().c_str());
 
     int round_count;
     bool res = Utilities::readNumber(msg->getMsg(), &round_count);

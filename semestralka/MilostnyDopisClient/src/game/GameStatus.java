@@ -1,5 +1,6 @@
 package game;
 
+import constants.PlayerPosition;
 import message.Event;
 import message.Message;
 import message.MessageType;
@@ -20,6 +21,8 @@ import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+import java.util.LinkedList;
 
 /**
  * Created by XXXXXXXXXXXXXXXX on 17.12.16.
@@ -38,7 +41,8 @@ public class GameStatus {
 
     File xsd;
 
-    Player[] players;
+    LinkedList<Player> players;
+    private String uid;
 
     public GameStatus(String serverMessage){
 
@@ -80,21 +84,51 @@ public class GameStatus {
     }
 
     private void createGameFields() {
-        players = new Player[4];
+        players = new LinkedList<>();
 
     }
 
     private void parseXML(InputStream xmlIS) throws ParserConfigurationException, IOException, SAXException {
         logger.debug("start method");
         serverXmlDocument = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(xmlIS);
+
         Node playersCollection = serverXmlDocument.getElementsByTagName("playersCollection").item(0);
         NodeList playersNodeList = playersCollection.getChildNodes();
         for (int index = 0; index < playersNodeList.getLength(); index++) {
             Node playerNode = playersNodeList.item(index);
             parsePlayerXML(playerNode);
-
-            logger.debug(playerNode.getFirstChild().getNodeValue());
         }
+
+        Collections.sort(players);
+
+        setPlayersDisplayOrder();
+        
+        Node gameUid = serverXmlDocument.getElementsByTagName("gameStatus").item(0).getFirstChild();
+        this.uid = gameUid.getFirstChild().getNodeValue();
+
+    }
+
+    private void setPlayersDisplayOrder() {
+        while (!players.peekFirst().isLocal()){
+            players.addFirst(players.pollLast());
+        }
+        for (int index = 0; index < players.size(); index++){
+            switch (index) {
+                case 0:
+                    players.get(index).setDisplay_order(PlayerPosition.LOCAL);
+                    break;
+                case 1:
+                    players.get(index).setDisplay_order(PlayerPosition.LEFT);
+                    break;
+                case 2:
+                    players.get(index).setDisplay_order(PlayerPosition.CENTER);
+                    break;
+                case 3:
+                    players.get(index).setDisplay_order(PlayerPosition.RIGHT);
+                    break;
+            }
+        }
+
     }
 
     private void parsePlayerXML(Node playerNode) {
@@ -102,24 +136,24 @@ public class GameStatus {
         NodeList playerNodes = playerNode.getChildNodes();
 
         Node playerAttribute = playerNodes.item(ORDER_ATR);
-        String tmp = playerAttribute.getFirstChild().getNodeValue();
-        logger.trace("Poradi : " + tmp);
+        String orderS = playerAttribute.getFirstChild().getNodeValue();
+        logger.trace("Poradi : " + orderS);
 
         playerAttribute = playerNodes.item(NICK_ATR);
-        tmp = playerAttribute.getFirstChild().getNodeValue();
-        logger.trace("Prezdivka : " + tmp);
+        String nickS = playerAttribute.getFirstChild().getNodeValue();
+        logger.trace("Prezdivka : " + nickS);
 
         playerAttribute = playerNodes.item(ID_ATR);
-        tmp = playerAttribute.getFirstChild().getNodeValue();
-        logger.trace("ID : " + tmp);
+        String uidS = playerAttribute.getFirstChild().getNodeValue();
+        logger.trace("ID : " + uidS);
 
+        players.add(new Player(nickS, uidS, Integer.parseInt(orderS)));
     }
 
 
     private static boolean validateAgainstXSD(InputStream xml, InputStream xsd) {
         logger.debug("start method");
-        try
-        {
+        try {
             SchemaFactory factory =
                     SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
             Schema schema = factory.newSchema(new StreamSource(xsd));
@@ -127,13 +161,13 @@ public class GameStatus {
             validator.validate(new StreamSource(xml));
             return true;
         } catch (SAXException e) {
-            logger.debug("Nevalidní xml",e);
+            logger.debug("Nevalidní xml", e);
             return false;
 
         } catch (IOException e) {
             logger.debug("IO chyba", e);
             return false;
-        }finally {
+        } finally {
             try {
                 xml.close();
             } catch (IOException e) {
@@ -148,4 +182,7 @@ public class GameStatus {
 
     }
 
+    public String getUid() {
+        return uid;
+    }
 }

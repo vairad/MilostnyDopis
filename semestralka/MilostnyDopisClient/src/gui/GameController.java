@@ -1,11 +1,15 @@
 package gui;
 
+import game.Player;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
+
+import java.util.List;
 
 /**
  * Created by XXXXXXXXXXXXXXXX on 1.11.16.
@@ -27,14 +31,39 @@ public class GameController {
     @FXML public BorderPane playerMe;
     @FXML public VBox playerMe_cards;
     @FXML public Label playerMeName;
+    @FXML public BorderPane myHand;
+
+    @FXML public ScrollPane helpPlace;
+    @FXML public BorderPane help;
 
     @FXML public ListView<String> gameStatus;
 
-    public void onClose(ActionEvent actionEvent) {
 
+    public void onClose(ActionEvent actionEvent) {
+        //todo co se stane na konci hry
     }
 
-    public void appendStatus(String message){
-        gameStatus.getItems().add(message);
+    void appendStatus(List<String> message){
+        gameStatus.getItems().addAll(message);
+    }
+
+    public void setLocalPlayer(Player localPlayer) {
+        playerMe.setDisable(false);
+        playerMeName.setText(localPlayer.getNick() + "(" +localPlayer.getServerUid() + ")");
+    }
+
+    public void setPlayer1(Player player) {
+        player1.setDisable(false);
+        player1_name.setText(player.getNick() + "(" +player.getServerUid() + ")");
+    }
+
+    public void setPlayer2(Player player) {
+        player2.setDisable(false);
+        player2_name.setText(player.getNick() + "(" +player.getServerUid() + ")");
+    }
+
+    public void setPlayer3(Player player) {
+        player3.setDisable(false);
+        player3_name.setText(player.getNick() + "(" +player.getServerUid() + ")");
     }
 }

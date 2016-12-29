@@ -19,7 +19,8 @@ enum Event{
     NEW, // create
     OUT, // out
     STA, // status
-    ECH // echo ... basic function
+    ECH, // echo ... basic function
+    NEP
 };
 
 class Message

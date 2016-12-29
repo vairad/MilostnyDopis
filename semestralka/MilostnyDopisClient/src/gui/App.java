@@ -32,7 +32,7 @@ public class App extends Application {
     /** instance loggeru hlavni tridy */
     public static Logger logger =	LogManager.getLogger(App.class.getName());
 
-    private static GameWindow win = null;
+    public static GameWindow win = null;
 
     private Stage stage;
 
@@ -98,7 +98,7 @@ public class App extends Application {
                     logger.trace("Uživatel zrušil přihlašování do hry: " + item);
                     return;
                 }
-                if(!Player.getInstance().isLogged()){
+                if(!Player.getLocalPlayer().isLogged()){
                     DialogFactory.alertError(bundle.getString("noLogged")
                                             , bundle.getString("noLoggedHeadline")
                                             , bundle.getString("noLoggedText"));
@@ -119,6 +119,14 @@ public class App extends Application {
 
     //======================== REMOTE EVENTS ================================
 
+    public static void showMessagesGameWindow(){
+        win.appendStatusMessages();
+    }
+
+    public static void setUpPlayers(){
+        win.setUpPlayers();
+    }
+
     public static void newGame(GameRecord gameRecord) {
         logger.debug("start method");
         Game.initialize(gameRecord);
@@ -131,7 +139,7 @@ public class App extends Application {
 
     public static void receiveGameSatus(GameStatus gameStatus) { // todo analyze occurence of this method
         logger.debug("start method");
-        Game.initialize(gameStatus);
+        Game.reinitialize(gameStatus);
     }
 
     public static void userLogged(){

@@ -20,7 +20,8 @@ public:
     int getSocket() const;
     std::string *getNickname() const;
     void setSocket(int value);
-    const char *toString();
+    std::string toString();
+    std::string toNet();
     Game *getGame() const;
     void setGame(Game *value);
 };

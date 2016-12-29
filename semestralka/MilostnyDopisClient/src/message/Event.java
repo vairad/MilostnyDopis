@@ -11,6 +11,7 @@ public enum Event {
     NEW ("NEW"),
     OUT ("OUT"),
     COD ("COD"),
+    NEP ("NEP"),
     STA ("STA");
 
     private final String name;

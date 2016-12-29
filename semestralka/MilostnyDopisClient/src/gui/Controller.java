@@ -81,10 +81,10 @@ public class Controller implements Initializable {
     @FXML
     public void onLogout() {
         logger.debug("Start method");
-        if(!Player.getInstance().isLogged()){
+        if(!Player.getLocalPlayer().isLogged()){
             return;
         }
-        Message msg = new Message(Event.OUT, MessageType.login, Player.getInstance().getServerUid() );
+        Message msg = new Message(Event.OUT, MessageType.login, Player.getLocalPlayer().getServerUid() );
         for(int i = 0; i < 10; i++) {
             NetService.getInstance().sender.addItem(msg);
         }

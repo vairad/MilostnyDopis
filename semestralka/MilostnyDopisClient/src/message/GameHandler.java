@@ -2,12 +2,13 @@ package message;
 
 import game.Game;
 import game.GameStatus;
-import gui.GameController;
 import gui.GameRecord;
 import gui.App;
 import javafx.application.Platform;
+import netservice.NetService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import sun.misc.resources.Messages_sv;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -29,6 +30,9 @@ public class GameHandler {
             case STA:
                 handleGameSTA(msg);
                 break;
+            case NEP:
+                handleGameNEP(msg);
+                break;
             case UNK:
                 logger.error("UNKNOWN GAME EVENT TYPE");
                 break;
@@ -38,10 +42,19 @@ public class GameHandler {
         }
     }
 
+    private static void handleGameNEP(Message msg) {
+        if(App.win != null) {
+            App.win.addStatusMessage(msg.getMessage());
+            Platform.runLater(App::showMessagesGameWindow);
+            Message msgR = Game.getStatusMessage();
+            NetService.getInstance().sender.addItem(msgR);
+        }
+    }
+
     private static void handleGameSTA(Message msg) {
-        Game.initialize(new GameStatus(msg.getMessage()));
+        Game.reinitialize(new GameStatus(msg.getMessage()));
         if(Game.isReady()){
-            Platform.runLater(() -> App.showGameWindow());
+            Platform.runLater(App::showGameWindow);
         }
     }
 
