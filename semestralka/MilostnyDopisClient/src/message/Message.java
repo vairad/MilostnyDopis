@@ -40,7 +40,8 @@ public class Message {
         this.byteLen = HEADER_LEN + this.message.getBytes().length;
     }
 
-    public Message(String message){
+    public Message(String message) throws FormatException {
+        if(message.length() < 13) throw new FormatException();
         this.type = MessageType.getTypeFromOpt(message.substring(7, 10));
         this.event = Event.getEventFromOpt(message.substring(10, 13));
         this.message = message.substring(14).trim();

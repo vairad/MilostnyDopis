@@ -1,6 +1,7 @@
 package netservice;
 
 import message.Event;
+import message.FormatException;
 import message.Message;
 import message.MessageType;
 import org.apache.logging.log4j.LogManager;
@@ -49,19 +50,28 @@ public class Receiver extends Thread {
             String msgS = new String(buffer);
             logger.trace(msgS);
 
-            Message msg = new Message(msgS);
+            for (String subMessage : msgS.split("###")) {
+                Message msg;
+                try {
+                    msg = new Message("###" + subMessage);
+                }catch (FormatException e){
+                    logger.trace("too short message: ###" + subMessage);
+                    continue;
+                }
+                boolean result = checkMessage(msg);
+                if(!result){
+                    logger.error("Chyba zpracování zprávy: " + msg);
+                }
 
-            boolean result = checkMessage(msg);
-            if(!result){
-                logger.error("Chyba zpracování zprávy: " + msg);
+                result = addItem(msg);
+                if(!result){
+                    logger.error("Chyba vložení do fronty zprávy: " + msg);
+                }
+
+                logger.debug("Received message: " + msg);
             }
 
-            result = addItem(msg);
-            if(!result){
-                logger.error("Chyba vložení do fronty zprávy: " + msg);
-            }
 
-            logger.debug("Received message: " + msg);
       }
     }
 
