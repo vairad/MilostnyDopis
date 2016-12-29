@@ -1,6 +1,7 @@
 package game;
 
 import constants.PlayerPosition;
+import gui.App;
 import message.Event;
 import message.Message;
 import message.MessageType;
@@ -39,7 +40,7 @@ public class GameStatus {
 
     Document serverXmlDocument;
 
-    File xsd;
+    InputStream xsd;
 
     LinkedList<Player> players;
     private String uid;
@@ -48,13 +49,18 @@ public class GameStatus {
 
         createGameFields();
 
-        xsd = new File("test.xsd");
+        try {
+            xsd = Game.class.getResource("test.xsd").openStream();
+        } catch (IOException e) {
+            logger.error("No .xsd File");
+            return;
+        }
 
         InputStream xsdIS = null;
         InputStream xmlIS = null;
         try {
             xmlIS = new ByteArrayInputStream(serverMessage.getBytes(StandardCharsets.UTF_8));
-            xsdIS = new FileInputStream(xsd);
+            xsdIS = xsd;
 
             if(validateAgainstXSD(xmlIS, xsdIS )){
                 xmlIS = new ByteArrayInputStream(serverMessage.getBytes(StandardCharsets.UTF_8));
@@ -71,6 +77,7 @@ public class GameStatus {
 
             if(xsdIS != null) try {
                 xsdIS.close();
+                xsd.close();
             } catch (IOException e) {
                 logger.debug("IO chyba xsd",e);
             }

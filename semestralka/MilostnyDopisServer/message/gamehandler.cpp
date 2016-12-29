@@ -154,7 +154,6 @@ void GameHandler::handleGameCOD(Message *msg){
         for(int playerIndex = 0; playerIndex < game->getPlayer_count(); playerIndex++){
             std::string messageS = game->getUid();
             messageS += "&&";
-            User *user = game->getPlayer(playerIndex)->getUser();
             messageS += user->toNet();
             Message *msgP = new Message(game->getPlayer(playerIndex)->getUser()->getSocket()
                                       , MessageType::game
