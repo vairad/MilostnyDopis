@@ -31,6 +31,8 @@ public class CardControl extends HBox {
 
         getStylesheets().add(CardControl.class.getResource("cardControl.css").toExternalForm());
 
+        setSpacing(2.0);
+
         try {
             fxmlLoader.load();
         } catch (IOException exception) {
@@ -44,8 +46,15 @@ public class CardControl extends HBox {
 
     public void setCard(Card card) {
         this.card = card;
+        if(card == Card.NONE){
+            labelName.setText("");
+            labelValue.setText("");
+            setDisable(true);
+            return;
+        }
         labelName.setText(getCardText(card));
         labelValue.setText(Integer.toString(card.getValue()));
+        setDisable(false);
     }
 
 

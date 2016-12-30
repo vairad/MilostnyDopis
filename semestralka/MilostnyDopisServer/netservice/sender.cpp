@@ -152,6 +152,9 @@ void Sender::fillEvent(char *msg, Event event){
     case Event::STA:
         strcpy(eventS, OPT_STA);
         break;
+    case Event::CAR:
+        strcpy(eventS, OPT_CAR);
+        break;
     case Event::NEP:
         strcpy(eventS, OPT_NEP);
         break;

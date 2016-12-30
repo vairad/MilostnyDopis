@@ -15,6 +15,8 @@ class Player
     bool guarded;
     bool on_turn;
 
+    bool token;
+
     long score;
 
     GameCards myCard;
@@ -41,6 +43,8 @@ public:
     bool compareCard(GameCards card);
     GameCards cardOnDesk();
     GameCards showCard();
+
+    void giveToken();
 
     User *getUser() const;
 };

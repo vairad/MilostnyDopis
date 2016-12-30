@@ -1,5 +1,8 @@
 #include "player.h"
 
+#include "message/message.h"
+#include "message/messagequeue.h"
+
 bool Player::isInGame() const
 {
     return in_game;
@@ -43,6 +46,8 @@ void Player::setScore(long value)
 void Player::giveCard(GameCards card)
 {
     myCard = card;
+    Message *msg = new Message(user->getSocket(),MessageType::game, Event::CAR, std::to_string(card));
+    MessageQueue::sendInstance()->push_msg(msg);
 }
 
 bool Player::compareCard(GameCards card)
@@ -59,6 +64,13 @@ GameCards Player::cardOnDesk()
 GameCards Player::showCard()
 {
     return myCard;
+}
+
+void Player::giveToken()
+{
+    token = true;
+    Message *msg = new Message(user->getSocket(),MessageType::game, Event::CAR, "token");
+    MessageQueue::sendInstance()->push_msg(msg);
 }
 
 void Player::setSecondCard(const GameCards &value)

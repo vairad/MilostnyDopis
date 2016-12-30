@@ -34,5 +34,6 @@
 #define OPT_OUT "OUT"
 #define OPT_STA "STA"
 #define OPT_NEP "NEP" /*new player*/
+#define OPT_CAR "CAR" /*new card*/
 
 #endif // OPTCODE_H

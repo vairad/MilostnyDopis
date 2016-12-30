@@ -11,6 +11,9 @@ public class Player implements Comparable<Player> {
     private final int order;
     private PlayerPosition display_order;
 
+    private Card myCard = Card.NONE;
+    private Card secondCard = Card.NONE;
+
     private boolean local;
 
     /** Player properties */
@@ -88,5 +91,21 @@ public class Player implements Comparable<Player> {
     @Override
     public int compareTo(Player o) {
         return order - o.order;
+    }
+
+    public static void giveCard(Card cardFromInt) {
+        if (local_player.myCard == Card.NONE){
+            local_player.myCard = cardFromInt;
+            return;
+        }
+        local_player.secondCard = cardFromInt;
+    }
+
+    public Card getSecondCard() {
+        return secondCard;
+    }
+
+    public Card getMyCard() {
+        return myCard;
     }
 }

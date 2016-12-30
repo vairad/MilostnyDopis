@@ -38,6 +38,9 @@ public class GameController {
 
     @FXML public ListView<String> gameStatus;
 
+    @FXML public CardControl myCard;
+    @FXML public CardControl secondCard;
+
 
     public void onClose(ActionEvent actionEvent) {
         //todo co se stane na konci hry

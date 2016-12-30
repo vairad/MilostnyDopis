@@ -18,4 +18,13 @@ public enum Card {
     private final int value;
     Card(int value) { this.value = value; }
     public int getValue() { return value; }
+
+    public static Card getCardFromInt(int value) {
+        for( Card card : Card.values()){
+            if(card.value == value){
+                return card;
+            }
+        }
+        return NONE;
+    }
 }

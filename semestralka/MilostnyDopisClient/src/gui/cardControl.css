@@ -1,7 +1,20 @@
 #labelValue{
-    -fx-text-fill: #006464;
-    -fx-background-color: #DFB951;
+    -fx-text-fill: #004864;
+    -fx-background-color: #dfd24d;
     -fx-border-radius: 20;
     -fx-background-radius: 20;
     -fx-padding: 5;
+}
+
+#labelName{
+    -fx-text-fill: #004864;
+    -fx-border-width: 0;
+}
+
+.card {
+
+    -fx-background-color: #af3329;
+    -fx-border-color: #333333;
+    -fx-border-style: solid;
+    -fx-border-width: 2px;
 }

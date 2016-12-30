@@ -140,9 +140,13 @@ void GameHandler::handleGameCOD(Message *msg){
     }
 
     Game *game = GameServices::getInst()->getGameByUid(gameId);
-    user->setGame(game);
     bool result = game->addPlayer(user);
-    if(!result){
+
+    if(game->isStarted()){
+        MSG_PS("Hra je rozehraná", game->toString().c_str());
+        LOG_DEBUG_PS("Hra je rozehraná", game->toString().c_str());
+        msg->setEvent(Event::NAK);
+    } else if(!result){
         MSG_PS("Hra je obsazena", game->toString().c_str());
         LOG_DEBUG_PS("Hra je obsazena", game->toString().c_str());
         msg->setEvent(Event::NAK);
@@ -150,6 +154,7 @@ void GameHandler::handleGameCOD(Message *msg){
         MSG_PS("Přihlašuji do hry :", game->toString().c_str());
         LOG_DEBUG_PS("Přihlašuji do hry :", game->toString().c_str());
         msg->setEvent(Event::ACK);
+        user->setGame(game);
 
         for(int playerIndex = 0; playerIndex < game->getPlayer_count(); playerIndex++){
             std::string messageS = game->getUid();
@@ -163,6 +168,10 @@ void GameHandler::handleGameCOD(Message *msg){
         }
     }
     MessageQueue::sendInstance()->push_msg(msg);
+
+    if(game->getPlayer_count() == 2){
+        game->start();
+    }
 }
 
 /**

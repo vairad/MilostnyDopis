@@ -1,7 +1,9 @@
 package message;
 
+import game.Card;
 import game.Game;
 import game.GameStatus;
+import game.Player;
 import gui.GameRecord;
 import gui.App;
 import javafx.application.Platform;
@@ -12,6 +14,8 @@ import sun.misc.resources.Messages_sv;
 
 import java.util.LinkedList;
 import java.util.List;
+
+import static java.lang.Thread.sleep;
 
 /**
  * Created by XXXXXXXXXXXXXXXX on 14.12.16.
@@ -30,6 +34,9 @@ public class GameHandler {
             case STA:
                 handleGameSTA(msg);
                 break;
+            case CAR:
+                handleGameCAR(msg);
+                break;
             case NEP:
                 handleGameNEP(msg);
                 break;
@@ -37,9 +44,28 @@ public class GameHandler {
                 logger.error("UNKNOWN GAME EVENT TYPE");
                 break;
             default:
-                logger.error("UNIMPLEMENTED LOGIN EVENT TYPE");
+                logger.error("UNIMPLEMENTED GAME EVENT TYPE: " + msg.getEvent());
                 break;
         }
+    }
+
+    private static void handleGameCAR(Message msg) {
+        logger.debug("Dostal jsem kartu:" + msg.getMessage() );
+        while(App.win == null){
+            try {
+                sleep(500);
+            } catch (InterruptedException e) {
+               logger.debug("Přerušeno čekání na vytvoření okna");
+            }
+        }
+        App.win.addStatusMessage("Dostal jsem kartu:" + msg.getMessage()); // todo handle null pointer
+        try {
+            Player.giveCard(Card.getCardFromInt(Integer.parseInt(msg.getMessage())));
+        }catch (NumberFormatException e){
+            logger.trace("Nesmysl ve zprave o karte");
+        }
+        Platform.runLater(App::showMessagesGameWindow);
+        Platform.runLater(App::updateCards);
     }
 
     private static void handleGameNEP(Message msg) {
@@ -96,6 +122,6 @@ public class GameHandler {
             return;
         }
 
-        Platform.runLater(() -> App.newGame(gameRecord));
+        //todo check correct ID of recieved item
     }
 }

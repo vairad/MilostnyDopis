@@ -20,7 +20,8 @@ enum Event{
     OUT, // out
     STA, // status
     ECH, // echo ... basic function
-    NEP
+    NEP, // new player
+    CAR //new card
 };
 
 class Message

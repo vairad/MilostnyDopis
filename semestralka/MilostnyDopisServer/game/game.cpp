@@ -7,12 +7,42 @@ std::string Game::getUid() const
     return uid;
 }
 
-Game::Game(std::string uid, int round_count) : uid(uid), round_count(round_count)
+Game::Game(std::string uid, int round_count) : uid(uid)
+  , round_count(round_count)
+  , player1(NULL)
+  , player2(NULL)
+  , player3(NULL)
+  , player4(NULL)
 {
 }
 
 bool Game::addPlayer(User *who)
 {
+    //check parameter
+    if(who == NULL){
+        return false;
+    }
+
+    // check if player is logged in this game
+    if(player1 != NULL && player1->getUser() == who){
+       return true;
+    }
+    if(player2 != NULL && player2->getUser() == who){
+       return true;
+    }
+    if(player3 != NULL && player3->getUser() == who){
+        return true;
+     }
+    if(player4 != NULL && player4->getUser() == who){
+       return true;
+    }
+
+    // whenever game is started you cant join
+    if(started == true){
+        return false;
+    }
+
+    //login players
     if(player1 == NULL){
         player1 = new Player(who);
         player_count++;
@@ -33,15 +63,10 @@ bool Game::addPlayer(User *who)
         player_count++;
         return true;
     }
-
-    if(player1->getUser() == who
-            || player2->getUser() == who
-            || player3->getUser() == who
-            || player4->getUser() == who){
-       return true;
-    }
     return false;
 }
+
+
 
 //=================================================================================================
 
@@ -183,6 +208,76 @@ bool Game::giveCard(Player *who)
     return true;
 }
 
+void Game::start(){
+    LOG_DEBUG("Game::start()");
+    if(started == true){
+        LOG_DEBUG("Game was already started");
+        return;
+    }
+    started = true;
+    for(int playerIndex = 0; playerIndex < player_count; playerIndex++){
+        getPlayer(playerIndex)->giveCard(game_deck.getNextCard());
+    }
+    player1->giveToken();
+}
+
+/**
+ * @brief Game::getPlayer_count
+ * @return
+ */
+short Game::getPlayer_count() const
+{
+    return player_count;
+}
+
+/**
+ * @brief Game::getPlayer
+ * @param index
+ * @return
+ */
+Player *Game::getPlayer(int index){
+    switch(index){
+        case 0:
+        return player1;
+        case 1:
+        return player2;
+        case 2:
+        return player3;
+        case 3:
+        return player4;
+    }
+}
+
+/**
+ * @brief Game::isStarted
+ * @return
+ */
+bool Game::isStarted()
+{
+    return started;
+}
+
+/**
+ * @brief Game::toString
+ * @return
+ */
+std::string Game::toString()
+{
+    std::string tmp;
+    tmp += uid;
+    tmp += "&&";
+    tmp += std::to_string(player_count);
+    return tmp;
+}
+
+//==============
+//==============
+//==============
+//=========================================== CREATE XML OF GAME STATUS ============
+//==============
+//==============
+//==============
+
 /** *************************************************************************
  * Vrací aktuální stav hry pro možné zařazení uživatele do hry po výpadku atp
  * @brief Game::getStatus
@@ -211,24 +306,6 @@ std::string Game::xmlGameId()
     gameId += "</id>";
 
     return gameId;
-}
-
-short Game::getPlayer_count() const
-{
-    return player_count;
-}
-
-Player *Game::getPlayer(int index){
-    switch(index){
-        case 0:
-        return player1;
-        case 1:
-        return player2;
-        case 2:
-        return player3;
-        case 3:
-        return player4;
-    }
 }
 
 std::string Game::xmlPlayer(Player *player, int order)
@@ -266,19 +343,3 @@ std::string Game::xmlPlayerCollection()
     playerCollection += "</playersCollection>";
     return playerCollection;
 }
-
-/**
- * @brief Game::toString
- * @return
- */
-std::string Game::toString()
-{
-    std::string tmp;
-    tmp += uid;
-    tmp += "&&";
-    tmp += std::to_string(player_count);
-    return tmp;
-}
-
-
-

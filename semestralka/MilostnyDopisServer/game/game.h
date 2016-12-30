@@ -49,11 +49,14 @@ public:
     bool effectPrincess(Player *who);
     bool giveCard(Player *who);
 
+    void start();
+
     std::string getStatus();
     std::string toString();
     std::string getUid() const;
     short getPlayer_count() const;
     Player *getPlayer(int index);
+    bool isStarted();
 };
 
 #endif // GAME_H

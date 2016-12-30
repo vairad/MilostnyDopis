@@ -1,9 +1,12 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import gui.CardControl?>
 <GridPane fx:controller="gui.GameController"
           xmlns:fx="http://javafx.com/fxml"
           hgap="20"
           vgap="20"
+          minHeight="600"
+          minWidth="800"
 >
     <!--   gridLinesVisible="true" -->
 
@@ -104,12 +107,29 @@
                 GridPane.columnIndex="1"
                 GridPane.rowIndex="2"
                 GridPane.columnSpan="1"
+                minWidth="240"
     >
         <top>
             <Label>Karty na ruce placeholder</Label>
+
+
+
         </top>
         <center>
-
+            <HBox alignment="CENTER"
+                    spacing="10"
+                    minWidth="240">
+                <CardControl fx:id="myCard"
+                             styleClass="card"
+                             card="NONE"
+                             alignment="CENTER"
+                             minWidth="120"/>
+                <CardControl fx:id="secondCard"
+                             styleClass="card"
+                             card="NONE"
+                             alignment="CENTER"
+                             minWidth="120"/>
+            </HBox>
         </center>
     </BorderPane>
     <!-- /RUKA -->

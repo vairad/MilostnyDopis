@@ -4,7 +4,7 @@
 #include <deque>
 
 enum GameCards{
-    guardian    //1 strážná
+    guardian = 1    //1 strážná
     , priest    //2 kněz
     , baron     //3 baron
     , komorna   //4 komorná
