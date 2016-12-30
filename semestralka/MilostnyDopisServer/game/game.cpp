@@ -267,8 +267,12 @@ std::string Game::toString()
     tmp += uid;
     tmp += "&&";
     tmp += std::to_string(player_count);
+    tmp += "&&";
+    tmp += std::to_string(started);
     return tmp;
 }
+
+
 
 //==============
 //==============

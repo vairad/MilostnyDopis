@@ -7,13 +7,15 @@ import java.util.List;
  */
 public class GameRecord {
     private final boolean isRootNode;
+    private final boolean started;
     private String uid;
     private int playersCount;
     private static List<GameRecord> allGameRecords;
 
-    public GameRecord(String uid, int playersCount, boolean isRootNode){
+    private GameRecord(String uid, int playersCount, boolean isRootNode){
         this.uid = uid;
         this.playersCount = playersCount;
+        this.started = false;
         this.isRootNode = isRootNode;
     }
 
@@ -21,11 +23,12 @@ public class GameRecord {
         String[] parts = gameS.split("&&");
         this.uid = parts[0];
         this.playersCount = Integer.parseInt(parts[1]);
+        this.started = Integer.parseInt(parts[2]) > 0;
         this.isRootNode = false;
     }
 
     public GameRecord(String serverName, boolean isServer) {
-        this(serverName, 4, isServer);
+        this(serverName, 4, isServer); //todo fix stupid constructor
     }
 
     public static List<GameRecord> getAllGameRecords() {
@@ -62,4 +65,7 @@ public class GameRecord {
         return null;
     }
 
+    public boolean isStarted() {
+        return started;
+    }
 }

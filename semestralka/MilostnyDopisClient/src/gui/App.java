@@ -83,6 +83,9 @@ public class App extends Application {
         TreeItem<GameRecord> rootItem = new TreeItem<GameRecord> (new GameRecord(NetService.serverName, true));
         rootItem.setExpanded(true);
         for (GameRecord gameRecord : gameRecords) {
+            if(gameRecord.isStarted()){
+                continue;
+            }
             TreeItem<GameRecord> item = new TreeItem<GameRecord> (gameRecord);
             rootItem.getChildren().add(item);
         }
