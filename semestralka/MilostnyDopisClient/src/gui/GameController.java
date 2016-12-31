@@ -3,13 +3,12 @@ package gui;
 import game.Player;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.ScrollPane;
+import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Polygon;
+import javafx.scene.text.Text;
 
 import java.util.List;
 
@@ -37,6 +36,8 @@ public class GameController {
 
     @FXML public ScrollPane helpPlace;
     @FXML public BorderPane help;
+    @FXML public Label helpTitle;
+    @FXML public Text helpText;
 
     @FXML public ListView<String> gameStatus;
 
@@ -45,6 +46,9 @@ public class GameController {
 
     @FXML public StackPane sharedPlace;
     @FXML public Polygon pointer;
+
+    @FXML public Button playButton;
+    @FXML public TextField chosenPlayer;
 
 
     public void onClose(ActionEvent actionEvent) {
@@ -74,4 +78,9 @@ public class GameController {
         player3.setDisable(false);
         player3_name.setText(player.getNick() + "(" +player.getServerUid() + ")");
     }
+
+    public void onSubmit(ActionEvent actionEvent) {
+        DialogFactory.alertError("Něco", "Titulek", "Text");
+    }
+
 }

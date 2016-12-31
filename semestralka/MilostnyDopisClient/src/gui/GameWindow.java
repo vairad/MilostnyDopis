@@ -2,14 +2,16 @@ package gui;
 
 import constants.Constants;
 import constants.PlayerPosition;
+import game.Card;
 import game.Game;
 import game.Player;
 import javafx.animation.RotateTransition;
 import javafx.animation.TranslateTransition;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Point3D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import javafx.stage.Window;
@@ -35,7 +37,7 @@ public class GameWindow extends Window {
     public static Logger logger =	LogManager.getLogger(GameWindow.class.getName());
 
     private Stage stage;
-    ResourceBundle bundle;
+    private ResourceBundle bundle;
     private GameController controller;
     private List<String> statusMessages;
 
@@ -49,8 +51,9 @@ public class GameWindow extends Window {
 
     private boolean myCardChosen;
     private boolean secondCardChosen;
+    private Player chosenPlayer;
 
-    public GameWindow(GameRecord gameRecord){
+    GameWindow(GameRecord gameRecord){
         statusMessages = new LinkedList<>();
 
 
@@ -67,7 +70,7 @@ public class GameWindow extends Window {
 
 
         createTransitions();
-        createDBClickListeners();
+        createListeners();
 
         stage.setMinHeight(600);
         stage.setMinWidth(800);
@@ -104,36 +107,65 @@ public class GameWindow extends Window {
         secondCardChosen = false;
     }
 
-    private void createDBClickListeners() {
+    private void createListeners() {
         controller.myCard.setOnMouseClicked(event -> {
-            if(event.getClickCount() == 2){
+            if(event.getClickCount() == Constants.CARD_USE_CLICK_COUNT){
                 resolveMyCardState();
+                resolveChosenCard();
             }
         });
         controller.secondCard.setOnMouseClicked(event -> {
-            if(event.getClickCount() == 2){
+            if(event.getClickCount() == Constants.CARD_USE_CLICK_COUNT){
                 resolveSecondCardState();
+                resolveChosenCard();
             }
         });
 
-        controller.pointer.setOnMouseClicked(event -> {
-            if(event.getClickCount() == 2){
-                movePointerTo(PlayerPosition.CENTER);
-                return;
-            }
-            if(event.getClickCount() == 1 && event.isControlDown()){
-                movePointerTo(PlayerPosition.LOCAL);
-                return;
-            }
-            if(event.getClickCount() == 1 && event.isShiftDown()){
-                movePointerTo(PlayerPosition.LEFT);
-                return;
-            }
-            if(event.getClickCount() == 1){
-                movePointerTo(PlayerPosition.RIGHT);
-                return;
-            }
+        controller.player1.setOnMouseClicked(event -> {
+           //todo fill chosenPlayer =
+            controller.chosenPlayer.setText(controller.player1_name.getText());
         });
+        controller.player2.setOnMouseClicked(event -> {
+            //todo fill chosenPlayer =
+            controller.chosenPlayer.setText(controller.player2_name.getText());
+        });
+        controller.player3.setOnMouseClicked(event -> {
+            //todo fill chosenPlayer =
+            controller.chosenPlayer.setText(controller.player3_name.getText());
+        });
+        controller.playerMe.setOnMouseClicked(event -> {
+            //todo fill chosenPlayer =
+            controller.chosenPlayer.setText(controller.playerMeName.getText());
+        });
+    }
+
+    private void resolveChosenCard() {
+        controller.playButton.setVisible(false);
+        controller.chosenPlayer.setVisible(false);
+
+        if(myCardChosen && !secondCardChosen){
+            if(Card.needElectPlayer(controller.myCard.getCard())){
+                chosenPlayer = null;
+                controller.chosenPlayer.setText("");
+                controller.chosenPlayer.setVisible(true);
+            }
+            controller.playButton.setVisible(true);
+
+        }else if(!myCardChosen && secondCardChosen){
+            if(Card.needElectPlayer(controller.secondCard.getCard())){
+                chosenPlayer = null;
+                controller.chosenPlayer.setText("");
+                controller.chosenPlayer.setVisible(true);
+            }
+            controller.playButton.setVisible(true);
+
+        }else if(!myCardChosen && !secondCardChosen){
+            controller.playButton.setVisible(false);
+            controller.chosenPlayer.setVisible(false);
+        }else{
+            logger.error("Nesmyslny stav zvolené karty");
+        }
+
     }
 
     private void resolveSecondCardState() {
@@ -210,7 +242,7 @@ public class GameWindow extends Window {
         }
     }
 
-    public void setUpPlayers() {
+    void setUpPlayers() {
         for (Player player: Game.getPlayers()) {
             switch (player.getDisplay_order()){
                 case LOCAL:
@@ -229,13 +261,13 @@ public class GameWindow extends Window {
         }
     }
 
-    public void updateCards() {
+    void updateCards() {
         controller.myCard.setCard(Player.getLocalPlayer().getMyCard());
         controller.secondCard.setCard(Player.getLocalPlayer().getSecondCard());
         controller.myCard.getParent().requestLayout();
     }
 
-    public void movePointerTo(PlayerPosition position){
+    void movePointerTo(PlayerPosition position){
         double scaleFactor = 5;
         double randomRotation = 360 * (Constants.random.nextInt() % 4);
         switch (position){
@@ -263,13 +295,12 @@ public class GameWindow extends Window {
                 logger.error("Unimplemented player position");
                 return;
         }
-
-
         rotationPointer.playFromStart();
         translatePointer.playFromStart();
     }
 
-    public double getCenterX() {
-        return stage.getWidth() / 2.0;
+    public void fillHelp(Card card) {
+        controller.helpTitle.setText(CardControl.getCardText(card));
+        controller.helpText.setText(CardControl.getCardHelp(card));
     }
 }

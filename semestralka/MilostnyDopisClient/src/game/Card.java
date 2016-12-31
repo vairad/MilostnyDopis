@@ -27,4 +27,23 @@ public enum Card {
         }
         return NONE;
     }
+
+    public static boolean needElectPlayer(Card card) {
+        switch (card){
+            //need elect player
+            case GUARDIAN :
+            case PRIEST :
+            case BARON :
+            case PRINCE :
+            case KING :
+                return true;
+                //do not need elect player
+            case COUNTESS :
+            case PRINCESS :
+            case KOMORNA :
+            case NONE :
+            default:
+                return false;
+        }
+    }
 }

@@ -19,7 +19,7 @@ public class CardControl extends HBox {
     @FXML private Label labelValue;
     @FXML private Label labelName;
     private Card card;
-    private ResourceBundle bundle;
+    private static ResourceBundle bundle = null;
 
 
     public CardControl() {
@@ -32,6 +32,10 @@ public class CardControl extends HBox {
         getStylesheets().add(CardControl.class.getResource("cardControl.css").toExternalForm());
 
         setSpacing(2.0);
+
+        setOnMouseEntered(event -> {
+            App.fillHelp(card);
+        });
 
         try {
             fxmlLoader.load();
@@ -67,12 +71,21 @@ public class CardControl extends HBox {
         System.out.println("The button was clicked!");
     }
 
-    private String getCardText(Card card){
+    static String getCardText(Card card){
         try{
             return bundle.getString("CARD" + card.getValue());
         }catch (NullPointerException e){
             bundle = App.bundle;
             return bundle.getString("CARD" + card.getValue());
+        }
+    }
+
+    public static String getCardHelp(Card card) {
+        try{
+            return bundle.getString("HELP_CARD" + card.getValue());
+        }catch (NullPointerException e){
+            bundle = App.bundle;
+            return bundle.getString("HELP_CARD" + card.getValue());
         }
     }
 }

@@ -22,3 +22,7 @@
     -fx-border-style: solid;
     -fx-border-width: 2px;
 }
+
+#chosenPlayer{
+    -fx-opacity: 0.9;
+}

@@ -1,5 +1,6 @@
 package gui;
 
+import game.Card;
 import game.Game;
 import game.GameStatus;
 import game.Player;
@@ -168,5 +169,9 @@ public class App extends Application {
         if(win != null){
             win.updateCards();
         }
+    }
+
+    public static void fillHelp(Card card) {
+        App.win.fillHelp(card);
     }
 }

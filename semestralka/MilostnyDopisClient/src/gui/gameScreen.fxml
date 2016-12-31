@@ -1,8 +1,9 @@
+<?import gui.CardControl?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import gui.CardControl?>
 <?import javafx.scene.shape.Polygon?>
-<?import java.lang.Double?>
+<?import javafx.scene.text.Text?>
+<?import java.lang.*?>
 <GridPane fx:controller="gui.GameController"
           xmlns:fx="http://javafx.com/fxml"
           hgap="20"
@@ -104,6 +105,18 @@
                 <Double fx:value="25.0" />
             </points>
         </Polygon>
+        <VBox alignment="CENTER" spacing="10">
+            <TextField fx:id="chosenPlayer"
+                       id="chosenPlayer"
+                        visible="false"
+                        disable="true"
+                       alignment="CENTER"/>
+            <Button fx:id="playButton"
+                    onAction="#onSubmit"
+                    visible="false"
+                    alignment="CENTER"
+                    text="%playButton"/>
+        </VBox>
     </StackPane>
 
     <!-- LOKÁLNÍ UŽIVATEL =============== =============== ========== ============ =========== ============ =====-->
@@ -135,9 +148,6 @@
     >
         <top>
             <Label>Karty na ruce placeholder</Label>
-
-
-
         </top>
         <center>
             <HBox alignment="CENTER"
@@ -145,12 +155,12 @@
                     minWidth="240">
                 <CardControl fx:id="myCard"
                              styleClass="card"
-                             card="NONE"
+                             card="PRINCESS"
                              alignment="CENTER"
                              minWidth="120"/>
                 <CardControl fx:id="secondCard"
                              styleClass="card"
-                             card="NONE"
+                             card="BARON"
                              alignment="CENTER"
                              minWidth="120"/>
             </HBox>
@@ -163,12 +173,13 @@
                 GridPane.columnIndex="2"
                 GridPane.rowIndex="2"
                 GridPane.columnSpan="1"
-    >
+                >
         <top>
-            <Label>HELP placeholder</Label>
+            <Label fx:id="helpTitle" id="helpTitle"/>
         </top>
         <center>
-            <ScrollPane fx:id="helpPlace">
+            <ScrollPane fx:id="helpPlace" id="helpPlace">
+                <Text fx:id="helpText" id="helpText"/>
             </ScrollPane>
         </center>
     </BorderPane>
