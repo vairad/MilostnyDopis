@@ -4,17 +4,13 @@
     -fx-border-radius: 20;
     -fx-background-radius: 20;
     -fx-padding: 5;
+    -fx-effect: none;
 }
 
 #labelName{
     -fx-text-fill: #004864;
     -fx-border-width: 0;
+    -fx-effect: none;
 }
 
-.card {
 
-    -fx-background-color: #af3329;
-    -fx-border-color: #333333;
-    -fx-border-style: solid;
-    -fx-border-width: 2px;
-}

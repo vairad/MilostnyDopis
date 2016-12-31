@@ -7,7 +7,9 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Polygon;
 
 import java.util.List;
 
@@ -40,6 +42,9 @@ public class GameController {
 
     @FXML public CardControl myCard;
     @FXML public CardControl secondCard;
+
+    @FXML public StackPane sharedPlace;
+    @FXML public Polygon pointer;
 
 
     public void onClose(ActionEvent actionEvent) {

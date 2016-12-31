@@ -9,18 +9,16 @@
     -fx-min-width: 140px;
 }
 
-#ip1{
+.pointer {
+    -fx-background-color: #af3329;
+    -fx-stroke: maroon;
+    -fx-stroke-type: inside;
+    -fx-fill: #af3329;
 }
 
-#ip2{
+.card {
+    -fx-background-color: #af3329;
+    -fx-border-color: #333333;
+    -fx-border-style: solid;
+    -fx-border-width: 2px;
 }
-
-#ip3{
-}
-
-#ip4{
-}
-
-#port{
-}
-

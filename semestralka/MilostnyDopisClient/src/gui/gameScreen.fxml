@@ -1,6 +1,8 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import gui.CardControl?>
+<?import javafx.scene.shape.Polygon?>
+<?import java.lang.Double?>
 <GridPane fx:controller="gui.GameController"
           xmlns:fx="http://javafx.com/fxml"
           hgap="20"
@@ -81,6 +83,28 @@
             </ScrollPane>
         </center>
     </BorderPane>
+
+    <!-- Společný prostor ====================================================================================== -->
+
+    <StackPane fx:id="sharedPlace"
+               GridPane.columnIndex="1"
+               GridPane.rowIndex="1"
+               GridPane.columnSpan="1"
+    >
+        <Polygon fx:id="pointer"
+                styleClass="pointer">
+            <points>
+                <Double fx:value="-50.0" />
+                <Double fx:value="-50.0" />
+
+                <Double fx:value="25.0" />
+                <Double fx:value="50.0" />
+
+                <Double fx:value="50.0" />
+                <Double fx:value="25.0" />
+            </points>
+        </Polygon>
+    </StackPane>
 
     <!-- LOKÁLNÍ UŽIVATEL =============== =============== ========== ============ =========== ============ =====-->
     <!-- KARTY -->

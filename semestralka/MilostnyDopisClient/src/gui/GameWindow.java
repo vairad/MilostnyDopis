@@ -1,12 +1,16 @@
 package gui;
 
 import constants.Constants;
+import constants.PlayerPosition;
 import game.Game;
 import game.Player;
+import javafx.animation.RotateTransition;
 import javafx.animation.TranslateTransition;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Point3D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.util.Duration;
@@ -37,8 +41,12 @@ public class GameWindow extends Window {
 
     private static final Duration TRANSLATE_DURATION = Duration.seconds(Constants.TRANSLATE_DURATION);
 
-    private TranslateTransition transitionMyCard;
-    private TranslateTransition transitionSecondCard;
+    private TranslateTransition translationMyCard;
+    private TranslateTransition translationSecondCard;
+
+    private RotateTransition rotationPointer;
+    private TranslateTransition translatePointer;
+
     private boolean myCardChosen;
     private boolean secondCardChosen;
 
@@ -70,29 +78,29 @@ public class GameWindow extends Window {
     }
 
     private void moveMyCardToCenter(){
-        transitionMyCard.setToY( - getChosenCardStep());
-        transitionMyCard.playFromStart();
+        translationMyCard.setToY( - getChosenCardStep());
+        translationMyCard.playFromStart();
         myCardChosen = true;
     }
     
     private void moveMyCardHome(){
-        transitionMyCard.setToX(0);
-        transitionMyCard.setToY(0);
-        transitionMyCard.playFromStart();
+        translationMyCard.setToX(0);
+        translationMyCard.setToY(0);
+        translationMyCard.playFromStart();
         myCardChosen = false;
     }
 
     private void moveSecondCardToCenter(){
-        transitionSecondCard.setToY( - getChosenCardStep());
-        transitionSecondCard.playFromStart();
+        translationSecondCard.setToY( - getChosenCardStep());
+        translationSecondCard.playFromStart();
         secondCardChosen = true;
     }
 
 
     private void moveSecondCardHome(){
-        transitionSecondCard.setToX(0);
-        transitionSecondCard.setToY(0);
-        transitionSecondCard.playFromStart();
+        translationSecondCard.setToX(0);
+        translationSecondCard.setToY(0);
+        translationSecondCard.playFromStart();
         secondCardChosen = false;
     }
 
@@ -105,6 +113,25 @@ public class GameWindow extends Window {
         controller.secondCard.setOnMouseClicked(event -> {
             if(event.getClickCount() == 2){
                 resolveSecondCardState();
+            }
+        });
+
+        controller.pointer.setOnMouseClicked(event -> {
+            if(event.getClickCount() == 2){
+                movePointerTo(PlayerPosition.CENTER);
+                return;
+            }
+            if(event.getClickCount() == 1 && event.isControlDown()){
+                movePointerTo(PlayerPosition.LOCAL);
+                return;
+            }
+            if(event.getClickCount() == 1 && event.isShiftDown()){
+                movePointerTo(PlayerPosition.LEFT);
+                return;
+            }
+            if(event.getClickCount() == 1){
+                movePointerTo(PlayerPosition.RIGHT);
+                return;
             }
         });
     }
@@ -134,8 +161,12 @@ public class GameWindow extends Window {
     }
 
     private void createTransitions() {
-        transitionMyCard = new TranslateTransition(TRANSLATE_DURATION, controller.myCard);
-        transitionSecondCard = new TranslateTransition(TRANSLATE_DURATION, controller.secondCard);
+        translationMyCard = new TranslateTransition(TRANSLATE_DURATION, controller.myCard);
+        translationSecondCard = new TranslateTransition(TRANSLATE_DURATION, controller.secondCard);
+
+        rotationPointer = new RotateTransition(TRANSLATE_DURATION, controller.pointer);
+        rotationPointer.setAxis(Rotate.Z_AXIS);
+        translatePointer = new TranslateTransition(TRANSLATE_DURATION, controller.pointer);
     }
 
 
@@ -202,6 +233,40 @@ public class GameWindow extends Window {
         controller.myCard.setCard(Player.getLocalPlayer().getMyCard());
         controller.secondCard.setCard(Player.getLocalPlayer().getSecondCard());
         controller.myCard.getParent().requestLayout();
+    }
+
+    public void movePointerTo(PlayerPosition position){
+        double scaleFactor = 5;
+        double randomRotation = 360 * (Constants.random.nextInt() % 4);
+        switch (position){
+            case CENTER:
+                rotationPointer.setToAngle(45 + randomRotation);
+                translatePointer.setToX(0);
+                translatePointer.setToY( - controller.sharedPlace.getHeight()/scaleFactor);
+                break;
+            case LEFT:
+                rotationPointer.setToAngle(45 + 90 + 90 + 90 + randomRotation);
+                translatePointer.setToY(0);
+                translatePointer.setToX(- controller.sharedPlace.getWidth()/scaleFactor);
+                break;
+            case LOCAL:
+                rotationPointer.setToAngle(45 + 90 + 90 + randomRotation);
+                translatePointer.setToX(0);
+                translatePointer.setToY(controller.sharedPlace.getHeight()/scaleFactor);
+                break;
+            case RIGHT:
+                rotationPointer.setToAngle(45 + 90 + randomRotation);
+                translatePointer.setToY(0);
+                translatePointer.setToX(controller.sharedPlace.getWidth()/scaleFactor);
+                break;
+            default:
+                logger.error("Unimplemented player position");
+                return;
+        }
+
+
+        rotationPointer.playFromStart();
+        translatePointer.playFromStart();
     }
 
     public double getCenterX() {
