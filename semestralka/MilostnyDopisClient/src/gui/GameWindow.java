@@ -307,6 +307,11 @@ public class GameWindow extends Window {
     }
 
     public void fillHelp(Card card) {
+        if(card == null){
+            controller.helpTitle.setText(bundle.getString("defHelpTitle"));
+            controller.helpText.setText(bundle.getString("defHelpText"));
+            return;
+        }
         controller.helpTitle.setText(CardControl.getCardText(card));
         controller.helpText.setText(CardControl.getCardHelp(card));
     }

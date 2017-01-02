@@ -132,11 +132,11 @@
                 GridPane.columnSpan="1"
                 >
         <top>
-            <Label fx:id="helpTitle" id="helpTitle"/>
+            <Label fx:id="helpTitle" id="helpTitle" text="%defHelpTitle"/>
         </top>
         <center>
             <ScrollPane fx:id="helpPlace" id="helpPlace">
-                <Text fx:id="helpText" id="helpText"/>
+                <Text fx:id="helpText" id="helpText" text="%defHelpText"/>
             </ScrollPane>
         </center>
     </BorderPane>

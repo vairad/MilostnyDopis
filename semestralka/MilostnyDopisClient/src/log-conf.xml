@@ -14,6 +14,8 @@
 		<Property name="sendMessages">${projectName}-send${suffix}</Property>
 		<Property name="receivedMessages">${projectName}-receive${suffix}</Property>
 		<Property name="messages">${projectName}-allMessages${suffix}</Property>
+
+		<Property name="xml-parser">${projectName}-xmlParser${suffix}</Property>
 	</Properties>
 
 	<Appenders>
@@ -51,6 +53,11 @@
 			<ThresholdFilter level="DEBUG" onMatch="ACCEPT" onMismatch="DENY" />
 		</File>
 
+		<File name="file-xml-parser" filename="${xml-parser}" append="false">
+			<PatternLayout pattern="${pFormat}" />
+			<ThresholdFilter level="ALL" onMatch="ACCEPT" onMismatch="DENY" />
+		</File>
+
 	</Appenders>
 	<Loggers>
 
@@ -67,6 +74,11 @@
 		<Logger name="netservice.Receiver" level="ALL"> <!-- additivity="false" -->
 			<AppenderRef ref="file-received-messages"/>
 			<AppenderRef ref="file-messages"/>
+			<!--<AppenderRef ref="screen"/> -->
+		</Logger>
+
+		<Logger name="game.GameStatus" level="ALL"> <!-- additivity="false" -->
+			<AppenderRef ref="file-xml-parser"/>
 			<!--<AppenderRef ref="screen"/> -->
 		</Logger>
 

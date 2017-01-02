@@ -37,6 +37,10 @@ public class CardControl extends HBox {
             App.fillHelp(card);
         });
 
+        setOnMouseExited(event -> {
+            App.fillHelp(null);
+        });
+
         try {
             fxmlLoader.load();
         } catch (IOException exception) {

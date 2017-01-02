@@ -137,6 +137,6 @@ std::string Player::xmlPlayer(int order)
 }
 
 Player::Player(User *user) : user(user)
+  ,alive(true)
 {
-    
 }

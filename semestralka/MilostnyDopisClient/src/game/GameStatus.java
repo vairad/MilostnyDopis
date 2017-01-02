@@ -56,6 +56,8 @@ public class GameStatus {
         logger.debug("start method");
         createGameFields();
 
+        logger.info(serverMessage);
+
         try {
             xsd = Game.class.getResource("gameStatus.xsd").openStream();
         } catch (IOException e) {
@@ -174,7 +176,7 @@ public class GameStatus {
 
         playerAttribute = playerNodes.item(ALIVE_ATR_PLAYER);
         String aliveS = playerAttribute.getFirstChild().getNodeValue();
-        logger.trace("Alive : " + uidS);
+        logger.trace("Alive : " + aliveS);
 
         playerAttribute = playerNodes.item(CARDS_ATR_PLAYER);
         List<Card> cardList = parseCardListXML(playerAttribute);
