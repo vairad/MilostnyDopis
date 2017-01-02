@@ -23,6 +23,10 @@ import static org.junit.Assert.assertEquals;
 public class PlayerTest {
 
     public List<Player> players;
+    public Player player1;
+    public Player player11;
+    public Player player2;
+
 
     @Before
     public void setUp() throws Exception {
@@ -35,6 +39,10 @@ public class PlayerTest {
         players.add(new Player("Sest"   , "uid6", 6));
         players.add(new Player("Sedm"   , "uid7", 7));
 
+
+        player1 = new Player("Jedna"  , "uid1", 1);
+        player11 = new Player("Jedna kopie"  , "uid1", 1);
+        player2 = new Player("Dva"    , "uid2", 2);
     }
 
     //================================================
@@ -51,6 +59,21 @@ public class PlayerTest {
         Collections.sort(players);
         assertEquals("Chyba compareTo", 1, players.get(0).getOrder());
     }
+
+    @Test
+    public void testEquals1(){
+        assertEquals("Chyba equals stejné", true, player1.equals(player11));
+    }
+
+    @Test
+    public void testEquals2(){
+        assertEquals("Chyba equals jiný objekt (String)", false, player1.equals("uid1"));
+    }
+    @Test
+    public void testEquals3(){
+        assertEquals("Chyba equals jiné", false, player1.equals(player2));
+    }
+
 
 }
 
