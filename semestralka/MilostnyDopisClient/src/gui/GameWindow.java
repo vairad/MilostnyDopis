@@ -7,6 +7,8 @@ import game.Game;
 import game.Player;
 import javafx.animation.RotateTransition;
 import javafx.animation.TranslateTransition;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -134,6 +136,13 @@ public class GameWindow extends Window {
         controller.playerMe.setOnMouseClicked(event -> {
             chosenPlayer = controller.playerMe.getPlayer();
             controller.chosenPlayer.setText(chosenPlayer.getDisplayName());
+        });
+
+
+        controller.helpPlace.widthProperty().addListener(new ChangeListener<Number>() {
+            @Override public void changed(ObservableValue<? extends Number> observableValue, Number oldSceneWidth, Number newSceneWidth) {
+                controller.helpText.setWrappingWidth(controller.helpPlace.getWidth() - 4);
+            }
         });
     }
 
