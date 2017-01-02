@@ -2,6 +2,7 @@
 #define PACKAGE_H
 
 #include <deque>
+#include <string>
 
 enum GameCards{
     guardian = 1    //1 strážná
@@ -24,6 +25,7 @@ public:
     GameDeck();
     static const int size;
     GameCards getNextCard();
+    std::string static cardToXml(GameCards card);
 private:
     void shuffleDeck();
 };

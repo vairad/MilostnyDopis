@@ -9,6 +9,8 @@ std::string Game::getUid() const
 
 Game::Game(std::string uid, int round_count) : uid(uid)
   , round_count(round_count)
+  , status_sequence_id(0)
+  , player_count(0)
   , player1(NULL)
   , player2(NULL)
   , player3(NULL)
@@ -294,6 +296,7 @@ std::string Game::getStatus()
     msg += "<gameStatus>";
 
     msg += xmlGameId();
+    msg += xmlGameSeq();
 
     msg += xmlPlayerCollection();
 
@@ -312,37 +315,32 @@ std::string Game::xmlGameId()
     return gameId;
 }
 
-std::string Game::xmlPlayer(Player *player, int order)
+std::string Game::xmlGameSeq()
 {
-    if (player == NULL) {
-        return "";
-    }
-    std::string playerAtributes = "<player>";
+    std::string gameSeq = "";
 
-    playerAtributes += "<order>";
-    playerAtributes += std::to_string(order);
-    playerAtributes += "</order>";
+    status_sequence_id++;
 
-    playerAtributes += "<name>";
-    playerAtributes += *player->getUser()->getNickname();
-    playerAtributes += "</name>";
+    gameSeq += "<seq>";
+    gameSeq += std::to_string(status_sequence_id);
+    gameSeq += "</seq>";
 
-    playerAtributes += "<id>";
-    playerAtributes += player->getUser()->getUID();
-    playerAtributes += "</id>";
-
-    playerAtributes += "</player>";
-    return playerAtributes;
+    return gameSeq;
 }
+
 
 std::string Game::xmlPlayerCollection()
 {
     std::string playerCollection = "<playersCollection>";
 
-    playerCollection += xmlPlayer(player1, 1);
-    playerCollection += xmlPlayer(player2, 2);
-    playerCollection += xmlPlayer(player3, 3);
-    playerCollection += xmlPlayer(player4, 4);
+    if(player1 != NULL)
+        playerCollection += player1->xmlPlayer(1);
+    if(player2 != NULL)
+        playerCollection += player2->xmlPlayer(2);
+    if(player3 != NULL)
+        playerCollection += player3->xmlPlayer(3);
+    if(player4 != NULL)
+        playerCollection += player4->xmlPlayer(4);
 
     playerCollection += "</playersCollection>";
     return playerCollection;

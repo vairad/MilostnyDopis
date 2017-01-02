@@ -83,6 +83,59 @@ User *Player::getUser() const
     return user;
 }
 
+bool Player::getIs_alive() const
+{
+    return alive;
+}
+
+void Player::setIs_alive(bool value)
+{
+    alive = value;
+}
+
+std::string Player::xmlCards()
+{
+    std::string cardsCollection = "<cardsCollection>";
+
+    for(auto card = played_list.begin(); card != played_list.end(); ++card) {
+        cardsCollection += GameDeck::cardToXml(*card);
+        card++;
+    }
+
+    cardsCollection += "</cardsCollection>";
+    return cardsCollection;
+}
+
+
+std::string Player::xmlPlayer(int order)
+{
+    if(user == NULL){
+        return "";
+    }
+    std::string playerAtributes = "<player>";
+
+    playerAtributes += "<order>";
+    playerAtributes += std::to_string(order);
+    playerAtributes += "</order>";
+
+    playerAtributes += "<name>";
+    playerAtributes += *getUser()->getNickname();
+    playerAtributes += "</name>";
+
+    playerAtributes += "<id>";
+    playerAtributes += getUser()->getUID();
+    playerAtributes += "</id>";
+
+    playerAtributes += "<alive>";
+    playerAtributes += alive ? "true" : "false";
+    playerAtributes += "</alive>";
+
+    playerAtributes += xmlCards();
+
+    playerAtributes += "</player>";
+    return playerAtributes;
+}
+
 Player::Player(User *user) : user(user)
 {
     

@@ -1,7 +1,6 @@
 package game;
 
 import constants.PlayerPosition;
-import gui.App;
 import message.Event;
 import message.Message;
 import message.MessageType;
@@ -24,16 +23,23 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Created by XXXXXXXXXXXXXXXX on 17.12.16.
  */
 public class GameStatus {
 
-    private static final int ORDER_ATR = 0;
-    private static final int NICK_ATR = 1;
-    private static final int ID_ATR = 2;
+    /** pořadí atributů ve členu PLAYER */
+    private static final int ORDER_ATR_PLAYER = 0;
+    private static final int NICK_ATR_PLAYER = 1;
+    private static final int ID_ATR_PLAYER = 2;
+    private static final int ALIVE_ATR_PLAYER = 3;
+    private static final int CARDS_ATR_PLAYER = 4;
 
+    /** pořadí atributů ve členu CARD */
+    private static final int TYPE_ATR_CARD = 0;
+    private static final int NAME_ATR_CARD = 1;
 
     /** instance loggeru hlavni tridy */
     public static Logger logger =	LogManager.getLogger(GameStatus.class.getName());
@@ -44,13 +50,14 @@ public class GameStatus {
 
     LinkedList<Player> players;
     private String uid;
+    private Long seqNumber;
 
     public GameStatus(String serverMessage){
-
+        logger.debug("start method");
         createGameFields();
 
         try {
-            xsd = Game.class.getResource("test.xsd").openStream();
+            xsd = Game.class.getResource("gameStatus.xsd").openStream();
         } catch (IOException e) {
             logger.error("No .xsd File");
             return;
@@ -91,14 +98,15 @@ public class GameStatus {
     }
 
     private void createGameFields() {
+        logger.debug("start method");
         players = new LinkedList<>();
-
     }
 
     private void parseXML(InputStream xmlIS) throws ParserConfigurationException, IOException, SAXException {
         logger.debug("start method");
         serverXmlDocument = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(xmlIS);
 
+        //load players from xml
         Node playersCollection = serverXmlDocument.getElementsByTagName("playersCollection").item(0);
         NodeList playersNodeList = playersCollection.getChildNodes();
         for (int index = 0; index < playersNodeList.getLength(); index++) {
@@ -106,16 +114,25 @@ public class GameStatus {
             parsePlayerXML(playerNode);
         }
 
+        // sort players depends on order
         Collections.sort(players);
 
+        // compute display order of players for local gui
         setPlayersDisplayOrder();
-        
+
+        //load game uid from xml
         Node gameUid = serverXmlDocument.getElementsByTagName("gameStatus").item(0).getFirstChild();
         this.uid = gameUid.getFirstChild().getNodeValue();
+        logger.trace("Game uid: "+ this.uid);
 
+        // load sequence number from xml
+        Node seq = serverXmlDocument.getElementsByTagName("seq").item(0).getFirstChild();
+        this.seqNumber = Long.parseUnsignedLong(seq.getNodeValue());
+        logger.trace("Sequence number of game status: " + this.seqNumber);
     }
 
     private void setPlayersDisplayOrder() {
+        logger.debug("start method");
         while (!players.peekFirst().isLocal()){
             players.addFirst(players.pollLast());
         }
@@ -142,19 +159,61 @@ public class GameStatus {
         logger.debug("start method");
         NodeList playerNodes = playerNode.getChildNodes();
 
-        Node playerAttribute = playerNodes.item(ORDER_ATR);
+        Node playerAttribute = playerNodes.item(ORDER_ATR_PLAYER);
         String orderS = playerAttribute.getFirstChild().getNodeValue();
         logger.trace("Poradi : " + orderS);
 
-        playerAttribute = playerNodes.item(NICK_ATR);
+        playerAttribute = playerNodes.item(NICK_ATR_PLAYER);
         String nickS = playerAttribute.getFirstChild().getNodeValue();
         logger.trace("Prezdivka : " + nickS);
 
-        playerAttribute = playerNodes.item(ID_ATR);
+        playerAttribute = playerNodes.item(ID_ATR_PLAYER);
         String uidS = playerAttribute.getFirstChild().getNodeValue();
         logger.trace("ID : " + uidS);
 
-        players.add(new Player(nickS, uidS, Integer.parseInt(orderS)));
+
+        playerAttribute = playerNodes.item(ALIVE_ATR_PLAYER);
+        String aliveS = playerAttribute.getFirstChild().getNodeValue();
+        logger.trace("Alive : " + uidS);
+
+        playerAttribute = playerNodes.item(CARDS_ATR_PLAYER);
+        List<Card> cardList = parseCardListXML(playerAttribute);
+
+        Player p = new Player(nickS
+                        , uidS
+                        , Integer.parseInt(orderS)
+                        , Boolean.parseBoolean(aliveS));
+        p.resetCards(cardList);
+
+        players.add(p);
+    }
+
+    private List<Card> parseCardListXML(Node cardsCollection) {
+        logger.debug("start method");
+        LinkedList<Card> cardList = new LinkedList<>();
+
+        NodeList cardsNodeList = cardsCollection.getChildNodes();
+        for (int index = 0; index < cardsNodeList.getLength(); index++) {
+            Node cardNode = cardsNodeList.item(index);
+            cardList.add(parseCardXML(cardNode));
+        }
+
+        return cardList;
+    }
+
+    private Card parseCardXML(Node cardNode) {
+        logger.debug("start method");
+        NodeList cardNodes = cardNode.getChildNodes();
+
+        Node cardAttribute = cardNodes.item(TYPE_ATR_CARD);
+        String typeS = cardAttribute.getFirstChild().getNodeValue();
+        logger.trace("Typ karty : " + typeS);
+
+        cardAttribute = cardNodes.item(NAME_ATR_CARD);
+        String nameS = cardAttribute.getFirstChild().getNodeValue();
+        logger.trace("Nazev : " + nameS);
+
+        return Card.getCardFromInt(Integer.parseInt(typeS));
     }
 
 

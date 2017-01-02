@@ -20,17 +20,17 @@ class Game
     Player *player3 = NULL;
     Player *player4 = NULL;
 
-    short player_count = 0;
+    short player_count;
 
     int round_count;
 
     bool full = false;
     bool started = false;
 
+    unsigned long status_sequence_id;
 
     GameDeck game_deck;
 
-    std::string xmlPlayer(Player *player, int order);
     std::string xmlPlayerCollection();
     std::string xmlGameId();
 
@@ -57,6 +57,8 @@ public:
     short getPlayer_count() const;
     Player *getPlayer(int index);
     bool isStarted();
+private:
+    std::string xmlGameSeq();
 };
 
 #endif // GAME_H

@@ -2,13 +2,9 @@ package test;
 
 
 import game.Player;
-import message.Event;
-import message.Message;
-import message.MessageType;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -31,18 +27,18 @@ public class PlayerTest {
     @Before
     public void setUp() throws Exception {
         players = new LinkedList<>();
-        players.add(new Player("Jedna"  , "uid1", 1));
-        players.add(new Player("Dva"    , "uid2", 2));
-        players.add(new Player("Tri"    , "uid3", 3));
-        players.add(new Player("Ctyri"  , "uid4", 4));
-        players.add(new Player("Pet"    , "uid5", 5));
-        players.add(new Player("Sest"   , "uid6", 6));
-        players.add(new Player("Sedm"   , "uid7", 7));
+        players.add(new Player("Jedna"  , "uid1", 1, true));
+        players.add(new Player("Dva"    , "uid2", 2, true));
+        players.add(new Player("Tri"    , "uid3", 3, true));
+        players.add(new Player("Ctyri"  , "uid4", 4, true));
+        players.add(new Player("Pet"    , "uid5", 5, true));
+        players.add(new Player("Sest"   , "uid6", 6, true));
+        players.add(new Player("Sedm"   , "uid7", 7, true));
 
 
-        player1 = new Player("Jedna"  , "uid1", 1);
-        player11 = new Player("Jedna kopie"  , "uid1", 1);
-        player2 = new Player("Dva"    , "uid2", 2);
+        player1 = new Player("Jedna"  , "uid1", 1, true);
+        player11 = new Player("Jedna kopie"  , "uid1", 1, true);
+        player2 = new Player("Dva"    , "uid2", 2, true);
     }
 
     //================================================

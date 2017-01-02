@@ -1,0 +1,59 @@
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <!-- ============================== ZAKLADNI DATOVE TYPY ===================== -->
+    <xs:element name="name" type="xs:string"/>
+    <xs:element name="id" type="xs:string"/>
+    <xs:element name="order" type="xs:integer"/>
+    <xs:element name="type" type="xs:integer"/>
+    <xs:element name="alive" type="xs:boolean"/>
+    <xs:element name="seq" type="xs:unsignedLong"/>
+
+    <!-- ============================== HERNI STRUKTURY ========================== -->
+    <xs:element name="card">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="type"/>
+                <xs:element ref="name"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <!-- ======================================= -->
+    <xs:element name="player">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="order"/>
+                <xs:element ref="name"/>
+                <xs:element ref="id"/>
+                <xs:element ref="alive"/>
+                <xs:element ref="cardsCollection"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <!-- ============================== KOLEKCE STRUKTUR ========================= -->
+    <xs:element name="cardsCollection">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="card" minOccurs="0" maxOccurs="16"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <!-- ======================================= -->
+    <xs:element name="playersCollection">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="player" minOccurs="1" maxOccurs="4"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- ============================== KOŘENOVÝ ELEMENT ======================== -->
+    <xs:element name="gameStatus">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="id" minOccurs="1" maxOccurs="1"/>
+                <xs:element ref="seq" minOccurs="1" maxOccurs="1"/>
+                <xs:element ref="playersCollection" minOccurs="1" maxOccurs="1"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>
+

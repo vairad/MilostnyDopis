@@ -15,6 +15,8 @@ class Player
     bool guarded;
     bool on_turn;
 
+    bool alive;
+
     bool token;
 
     long score;
@@ -23,7 +25,7 @@ class Player
     GameCards secondCard;
 
     std::vector<GameCards> played_list;
-
+    std::string xmlCards();
 public:
     Player(User *user);
 
@@ -47,6 +49,9 @@ public:
     void giveToken();
 
     User *getUser() const;
+    bool getIs_alive() const;
+    void setIs_alive(bool value);
+    std::string xmlPlayer(int order);
 };
 
 #endif // PLAYER_H

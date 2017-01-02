@@ -39,3 +39,16 @@ GameCards GameDeck::getNextCard()
     cards.pop_front();
     return nextCard;
 }
+
+std::string GameDeck::cardToXml(GameCards card)
+{
+    std::string cardXml = "<card>";
+    cardXml += "<type>";
+    cardXml += std::to_string(card);
+    cardXml += "</type>";
+
+    cardXml += "<name>";
+    cardXml += "todo name of card"; //todo name of card
+    cardXml += "</name>";
+    return cardXml;
+}

@@ -29,11 +29,11 @@ public class Player implements Comparable<Player> {
     private List<Card> playedCards;
     private boolean alive;
 
-    public Player(String nick, String serverUid, int order){
+    public Player(String nick, String serverUid, int order, boolean alive){
         this.nick = nick;
         this.serverUid = serverUid;
         this.order = order;
-        this.alive = true; //todo read alive
+        this.alive = alive;
         if(serverUid.equals(localUid)){
             this.local = true;
         }
@@ -41,8 +41,9 @@ public class Player implements Comparable<Player> {
     }
 
     public Player(String nick, String serverUid) {
-        this(nick, serverUid, -1);
+        this(nick, serverUid, -1, false);
     }
+
 
 
     public static Player getLocalPlayer() {
@@ -138,5 +139,10 @@ public class Player implements Comparable<Player> {
         if(o instanceof Player )
             return ((Player) o).serverUid.equals(serverUid);
         return false;
+    }
+
+    public void resetCards(List<Card> cardList) {
+        playedCards.clear();
+        playedCards.addAll(cardList);
     }
 }
