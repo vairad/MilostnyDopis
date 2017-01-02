@@ -7,11 +7,9 @@ import game.Game;
 import game.Player;
 import javafx.animation.RotateTransition;
 import javafx.animation.TranslateTransition;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import javafx.stage.Window;
@@ -122,20 +120,20 @@ public class GameWindow extends Window {
         });
 
         controller.player1.setOnMouseClicked(event -> {
-           //todo fill chosenPlayer =
-            controller.chosenPlayer.setText(controller.player1_name.getText());
+            chosenPlayer = controller.player1.getPlayer();
+            controller.chosenPlayer.setText(chosenPlayer.getDisplayName());
         });
         controller.player2.setOnMouseClicked(event -> {
-            //todo fill chosenPlayer =
-            controller.chosenPlayer.setText(controller.player2_name.getText());
+            chosenPlayer = controller.player2.getPlayer();
+            controller.chosenPlayer.setText(chosenPlayer.getDisplayName());
         });
         controller.player3.setOnMouseClicked(event -> {
-            //todo fill chosenPlayer =
-            controller.chosenPlayer.setText(controller.player3_name.getText());
+            chosenPlayer = controller.player3.getPlayer();
+            controller.chosenPlayer.setText(chosenPlayer.getDisplayName());
         });
         controller.playerMe.setOnMouseClicked(event -> {
-            //todo fill chosenPlayer =
-            controller.chosenPlayer.setText(controller.playerMeName.getText());
+            chosenPlayer = controller.playerMe.getPlayer();
+            controller.chosenPlayer.setText(chosenPlayer.getDisplayName());
         });
     }
 
@@ -246,16 +244,16 @@ public class GameWindow extends Window {
         for (Player player: Game.getPlayers()) {
             switch (player.getDisplay_order()){
                 case LOCAL:
-                    controller.setLocalPlayer(player);
+                    controller.playerMe.setPlayer(player);
                     break;
                 case LEFT:
-                    controller.setPlayer1(player);
+                    controller.player1.setPlayer(player);
                     break;
                 case CENTER:
-                    controller.setPlayer2(player);
+                    controller.player2.setPlayer(player);
                     break;
                 case RIGHT:
-                    controller.setPlayer3(player);
+                    controller.player3.setPlayer(player);
                     break;
             }
         }

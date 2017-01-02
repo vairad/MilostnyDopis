@@ -4,6 +4,7 @@
 <?import javafx.scene.shape.Polygon?>
 <?import javafx.scene.text.Text?>
 <?import java.lang.*?>
+<?import gui.PlayerControl?>
 <GridPane fx:controller="gui.GameController"
           xmlns:fx="http://javafx.com/fxml"
           hgap="20"
@@ -29,61 +30,28 @@
     </rowConstraints>
 
     <!-- Cizí hráč 1 =============== =============== ========== ============ =========== ============ =====-->
-    <BorderPane fx:id="player1"
-              GridPane.columnIndex="0"
-              GridPane.rowIndex="1"
-              GridPane.columnSpan="1"
-                disable="true"
-    >
-        <top>
-            <Label fx:id="player1_name">Player1 name placeholder</Label>
-        </top>
-        <center>
-            <ScrollPane>
-                <VBox fx:id="player1_cards"
-                        alignment="CENTER">
-                </VBox>
-            </ScrollPane>
-        </center>
-    </BorderPane>
+    <PlayerControl fx:id="player1"
+                   GridPane.columnIndex="0"
+                   GridPane.rowIndex="1"
+                   GridPane.columnSpan="1"
+                   disable="true"
+    />
 
     <!-- cizí hráč 2 =============== =============== ========== ============ =========== ============ =====-->
-    <BorderPane fx:id="player2"
-            GridPane.columnIndex="1"
-            GridPane.rowIndex="0"
-            GridPane.columnSpan="1"
-                disable="true">
-        <top>
-            <Label fx:id="player2_name">Player2 name placeholder</Label>
-        </top>
-        <center>
-            <ScrollPane>
-                <VBox fx:id="player2_cards"
-                        alignment="CENTER">
-                </VBox>
-            </ScrollPane>
-        </center>
-    </BorderPane>
+    <PlayerControl fx:id="player2"
+                   GridPane.columnIndex="1"
+                   GridPane.rowIndex="0"
+                   GridPane.columnSpan="1"
+                   disable="true"/>
 
     <!-- cizí hráč 3 =============== =============== ========== ============ =========== ============ =====-->
-    <BorderPane fx:id="player3"
+    <PlayerControl fx:id="player3"
 
-            GridPane.columnIndex="2"
-            GridPane.rowIndex="1"
-            GridPane.columnSpan="1"
-                disable="true"
-    >
-        <top>
-            <Label fx:id="player3_name">Player3 name placeholder</Label>
-        </top>
-        <center>
-            <ScrollPane>
-                <VBox fx:id="player3_cards"
-                        alignment="CENTER">
-                </VBox>
-            </ScrollPane>
-        </center>
-    </BorderPane>
+                   GridPane.columnIndex="2"
+                   GridPane.rowIndex="1"
+                   GridPane.columnSpan="1"
+                   disable="true"
+    />
 
     <!-- Společný prostor ====================================================================================== -->
 
@@ -121,23 +89,12 @@
 
     <!-- LOKÁLNÍ UŽIVATEL =============== =============== ========== ============ =========== ============ =====-->
     <!-- KARTY -->
-    <BorderPane fx:id="playerMe"
-                GridPane.columnIndex="0"
-                GridPane.rowIndex="2"
-                GridPane.columnSpan="1"
-                disable="true"
-    >
-        <top>
-            <Label fx:id="playerMeName">PlayerMe name placeholder</Label>
-        </top>
-        <center>
-            <ScrollPane>
-                <VBox fx:id="playerMe_cards"
-                      alignment="CENTER">
-                </VBox>
-            </ScrollPane>
-        </center>
-    </BorderPane>
+    <PlayerControl fx:id="playerMe"
+                   GridPane.columnIndex="0"
+                   GridPane.rowIndex="2"
+                   GridPane.columnSpan="1"
+                   disable="true"
+    />
     <!-- /KARTY -->
     <!-- RUKA -->
     <BorderPane fx:id="myHand"

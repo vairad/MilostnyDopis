@@ -44,6 +44,11 @@ public class CardControl extends HBox {
         }
     }
 
+    public CardControl(Card card) {
+        this();
+        setCard(card);
+    }
+
     public Card getCard() {
         return card;
     }

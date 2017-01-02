@@ -2,6 +2,9 @@ package game;
 
 import constants.PlayerPosition;
 
+import java.util.LinkedList;
+import java.util.List;
+
 /**
  * Created by XXXXXXXXXXXXXXXX on 16.11.16.
  */
@@ -23,14 +26,18 @@ public class Player implements Comparable<Player> {
     /** State properties */
     private boolean logged;
     private boolean saved;
+    private List<Card> playedCards;
+    private boolean alive;
 
     public Player(String nick, String serverUid, int order){
         this.nick = nick;
         this.serverUid = serverUid;
         this.order = order;
+        this.alive = true; //todo read alive
         if(serverUid.equals(localUid)){
             this.local = true;
         }
+        playedCards = new LinkedList<>();
     }
 
     public Player(String nick, String serverUid) {
@@ -107,5 +114,29 @@ public class Player implements Comparable<Player> {
 
     public Card getMyCard() {
         return myCard;
+    }
+
+    public String getDisplayName() {
+        return nick + " (" +serverUid +")";
+    }
+
+    public List<Card> getPlayedCards() {
+        return playedCards;
+    }
+
+    public boolean isAlive() {
+        return alive;
+    }
+
+    /**
+     * Dvě instance Player jsou stejné pokud odkazují na shodné uid hráče
+     * @param o
+     * @return
+     */
+    @Override
+    public boolean equals(Object o){
+        if(o instanceof Player )
+            return ((Player) o).serverUid.equals(serverUid);
+        return false;
     }
 }
