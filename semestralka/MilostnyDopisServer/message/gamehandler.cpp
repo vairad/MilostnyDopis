@@ -33,6 +33,9 @@ void GameHandler::handleTypeGame(Message *msg)
     case Event::TOK:
         handleGameTOK(msg);
         break;
+    case Event::CAR:
+        handleGameCAR(msg);
+        break;
     case Event::UNK :
     default:
         //todo impl
@@ -131,6 +134,39 @@ void GameHandler::handleGameTOK(Message *msg){
 
     msg->setMsg("OK");
     MessageQueue::sendInstance()->push_msg(msg);
+}
+
+void GameHandler::handleGameCAR(Message *msg){
+    LOG_DEBUG("GameHandler::handleGameCAR() - start");
+    if(!checkLogged(msg->getSocket())){
+        LOG_DEBUG("Neni přihlášen");
+        //todo negativní odpověď
+        return;
+    }
+
+    User *user = UserDatabase::getInstance()->getUserBySocket(msg->getSocket());
+    Game *game = user->getGame();
+
+    if(game == NULL) {
+        LOG_DEBUG("Neni nastaven odkaz na hru u hráče");
+        return;
+    }
+    Player *player = game->getPlayer(user);
+
+    if(player == NULL){
+        LOG_DEBUG("Neni členem hry na kterou byl předán odkaz");
+        return;
+    }
+
+    if(!player->hasToken()){
+        LOG_DEBUG("Hráč není na tahu");
+        return;
+    }
+
+    bool result = game->giveCard(player);
+    if(result == false){
+        player->sendCards();
+    }
 }
 
 /**

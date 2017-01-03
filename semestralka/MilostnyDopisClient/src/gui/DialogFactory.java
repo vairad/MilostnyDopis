@@ -1,8 +1,12 @@
 package gui;
 
+import game.Card;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.ChoiceDialog;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -37,5 +41,27 @@ public class DialogFactory {
         } else {
             return false;
         }
+    }
+
+    public static Card guardianChose() {
+        List<Card> choices = new ArrayList<>();
+        choices.add(Card.PRIEST);
+        choices.add(Card.BARON);
+        choices.add(Card.KOMORNA);
+        choices.add(Card.PRINCE);
+        choices.add(Card.KING);
+        choices.add(Card.COUNTESS);
+        choices.add(Card.PRINCESS);
+
+        ChoiceDialog<Card> dialog = new ChoiceDialog<>(Card.PRIEST, choices);
+        dialog.setTitle("Volba Strážné");
+        dialog.setHeaderText("Jakou kartu má zvolený hráč?");
+        dialog.setContentText("Vyber:"); //todo to resources
+
+        Optional<Card> result = dialog.showAndWait();
+        if (result.isPresent()){
+            return result.get();
+        }
+        return null;
     }
 }

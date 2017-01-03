@@ -80,7 +80,7 @@ public class CardControl extends HBox {
         System.out.println("The button was clicked!");
     }
 
-    static String getCardText(Card card){
+    public static String getCardText(Card card){
         try{
             return bundle.getString("CARD" + card.getValue());
         }catch (NullPointerException e){

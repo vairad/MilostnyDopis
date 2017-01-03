@@ -2,6 +2,7 @@ package gui;
 
 import game.Game;
 import game.Player;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -57,10 +58,7 @@ public class GameController {
 
 
     public void onSubmit(ActionEvent actionEvent) {
-        DialogFactory.alertError("Předávám token", "Titulek", "Text");
-        Player.getLocalPlayer().takeToken();
-        Message msg = new Message(Event.TOK, MessageType.game, Game.getUid());
-        NetService.getInstance().sender.addItem(msg);
+        Platform.runLater(() -> App.win.PlayCard());
     }
 
 }

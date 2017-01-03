@@ -223,8 +223,11 @@ bool Game::effectPrincess(Player *who)
  */
 bool Game::giveCard(Player *who)
 {
-    who->setSecondCard(game_deck.getNextCard());
-    return true;
+    if(who->getSecondCard() == GameCards::none){
+        who->setSecondCard(game_deck.getNextCard());
+        return true;
+    }
+    return false;
 }
 
 /**

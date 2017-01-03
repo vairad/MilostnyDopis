@@ -156,4 +156,10 @@ public class GameHandler {
 
         //todo check correct ID of recieved item
     }
+
+    private void giveTokenToServer(){
+        Player.getLocalPlayer().takeToken();
+        Message msg = new Message(Event.TOK, MessageType.game, Game.getUid());
+        NetService.getInstance().sender.addItem(msg);
+    }
 }

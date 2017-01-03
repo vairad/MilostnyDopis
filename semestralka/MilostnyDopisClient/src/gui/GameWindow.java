@@ -319,4 +319,62 @@ public class GameWindow extends Window {
         controller.helpTitle.setText(CardControl.getCardText(card));
         controller.helpText.setText(CardControl.getCardHelp(card));
     }
+
+    public void PlayCard() {
+        Card playCard = getChosenCard();
+        Card tip = null;
+        if(playCard == Card.GUARDIAN){
+            tip = DialogFactory.guardianChose();
+            if(tip == null){
+                DialogFactory.alertError("Nutné zvolit volbu", "", ""); //todo to resources
+                return;
+            }
+        }
+        if(Card.needElectPlayer(playCard) && chosenPlayer == null){
+            DialogFactory.alertError("Nutné zvolit hráče", "", ""); //todo to resources
+            return;
+        }
+        if(chosenPlayer.equals(Player.getLocalPlayer()) && playCard != Card.PRINCE){
+            DialogFactory.alertError("Nelze zvolit sebe jako cíl karty", "", ""); //todo to resources
+            return;
+        }
+        sendCardToServer(playCard, chosenPlayer, tip);
+        playChosenCard();
+    }
+
+    private void sendCardToServer(Card playCard, Player chosenPlayer, Card tip) {
+        //todo send card to server
+    }
+
+    public Card getChosenCard() {
+        Card c = null;
+        if(myCardChosen){
+            c = controller.myCard.getCard();
+        }
+        if(secondCardChosen){
+            c = controller.secondCard.getCard();
+        }
+        return c;
+    }
+
+    public Card playChosenCard() {
+        Card c = null;
+        if(myCardChosen){
+            c = controller.myCard.getCard();
+            controller.myCard.setCard(controller.secondCard.getCard());
+        }
+        if(secondCardChosen){
+            c = controller.secondCard.getCard();
+        }
+        controller.secondCard.setCard(Card.NONE);
+
+        secondCardChosen = false;
+        myCardChosen = false;
+        chosenPlayer = null;
+        moveMyCardHome();
+        moveSecondCardHome();
+        resolveChosenCard();
+
+        return c;
+    }
 }

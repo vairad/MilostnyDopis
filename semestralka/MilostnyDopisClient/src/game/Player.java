@@ -29,12 +29,14 @@ public class Player implements Comparable<Player> {
     private List<Card> playedCards;
     private boolean alive;
     private boolean token;
+    private boolean guarded;
 
     public Player(String nick, String serverUid, int order, boolean alive, boolean token){
         this.nick = nick;
         this.serverUid = serverUid;
         this.order = order;
         this.alive = alive;
+        this.guarded = false;
         if(serverUid.equals(localUid)){
             this.local = true;
         }
@@ -159,5 +161,9 @@ public class Player implements Comparable<Player> {
 
     public boolean haveToken(){
         return token;
+    }
+
+    public boolean isGuarded() {
+        return guarded;
     }
 }

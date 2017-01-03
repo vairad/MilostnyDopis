@@ -1,5 +1,7 @@
 package game;
 
+import gui.CardControl;
+
 /**
  * Created by XXXXXXXXXXXXXXXX on 19.12.16.
  */
@@ -18,6 +20,11 @@ public enum Card {
     private final int value;
     Card(int value) { this.value = value; }
     public int getValue() { return value; }
+
+    @Override
+    public String toString(){
+        return CardControl.getCardText(this);
+    }
 
     public static Card getCardFromInt(int value) {
         for( Card card : Card.values()){

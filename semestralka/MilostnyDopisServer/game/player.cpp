@@ -13,15 +13,6 @@ void Player::setGuarded(bool value)
     guarded = value;
 }
 
-bool Player::isOnTurn() const
-{
-    return on_turn;
-}
-
-void Player::setOnTurn(bool value)
-{
-    on_turn = value;
-}
 
 long Player::getScore() const
 {
@@ -69,6 +60,8 @@ void Player::takeToken()
 void Player::setSecondCard(const GameCards &value)
 {
     secondCard = value;
+    Message *msg = new Message(user->getSocket(),MessageType::game, Event::CAR, std::to_string(secondCard));
+    MessageQueue::sendInstance()->push_msg(msg);
 }
 
 User *Player::getUser() const
@@ -84,6 +77,11 @@ bool Player::isAlive() const
 void Player::setAlive(bool value)
 {
     alive = value;
+}
+
+GameCards Player::getSecondCard() const
+{
+    return secondCard;
 }
 
 std::string Player::xmlCards()
@@ -138,7 +136,20 @@ bool Player::hasToken()
     return token;
 }
 
+void Player::sendCards()
+{
+    std::string msgS = "";
+    msgS += std::to_string(myCard);
+    msgS += "&&";
+    msgS += std::to_string(secondCard);
+
+    Message *msg = new Message(user->getSocket(),MessageType::game, Event::CAR, msgS);
+    MessageQueue::sendInstance()->push_msg(msg);
+}
+
 Player::Player(User *user) : user(user)
   ,alive(true)
+  ,myCard(GameCards::none)
+  ,secondCard(GameCards::none)
 {
 }
