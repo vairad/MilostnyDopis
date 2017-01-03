@@ -343,7 +343,19 @@ public class GameWindow extends Window {
     }
 
     private void sendCardToServer(Card playCard, Player chosenPlayer, Card tip) {
-        //todo send card to server
+        String messageS = "";
+        messageS += playCard.getValue();
+        if(chosenPlayer != null){
+            messageS += "&";
+            messageS += chosenPlayer.getServerUid();
+            if(tip != null){
+                messageS += "&";
+                messageS += tip.getValue();
+            }
+        }
+
+        Message msg = new Message(Event.PLA, MessageType.game, messageS );
+        NetService.getInstance().sender.addItem(msg);
     }
 
     public Card getChosenCard() {

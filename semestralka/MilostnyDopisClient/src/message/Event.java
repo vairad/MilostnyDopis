@@ -14,7 +14,8 @@ public enum Event {
     NEP ("NEP"),
     CAR ("CAR"),
     TOK ("TOK"),
-    STA ("STA");
+    STA ("STA"),
+    PLA("PLA");
 
     private final String name;
 
