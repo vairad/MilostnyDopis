@@ -58,7 +58,7 @@ public class GameController {
 
     public void onSubmit(ActionEvent actionEvent) {
         DialogFactory.alertError("Předávám token", "Titulek", "Text");
-        Player.getLocalPlayer().giveToken();
+        Player.getLocalPlayer().takeToken();
         Message msg = new Message(Event.TOK, MessageType.game, Game.getUid());
         NetService.getInstance().sender.addItem(msg);
     }

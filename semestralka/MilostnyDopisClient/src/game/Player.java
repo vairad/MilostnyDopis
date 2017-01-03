@@ -53,6 +53,7 @@ public class Player implements Comparable<Player> {
     }
 
     public static void setLocalPlayer(Player local_player) {
+        local_player.setDisplay_order(PlayerPosition.LOCAL);
         Player.localUid = local_player.serverUid;
         Player.local_player = local_player;
     }
@@ -150,6 +151,10 @@ public class Player implements Comparable<Player> {
 
     public void giveToken() {
         token = true;
+    }
+
+    public void takeToken(){
+        token = false;
     }
 
     public boolean haveToken(){

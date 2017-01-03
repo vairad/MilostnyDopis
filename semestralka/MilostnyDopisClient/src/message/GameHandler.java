@@ -77,6 +77,8 @@ public class GameHandler {
             Platform.runLater(() -> App.moveTokenTo(playerForToken));
         }
         Platform.runLater(App::showMessagesGameWindow);
+        Message msgToSend = new Message(Event.CAR, MessageType.game, "CARD");
+        NetService.getInstance().sender.addItem(msgToSend);
     }
 
     private static void handleGameCAR(Message msg) {

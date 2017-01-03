@@ -67,7 +67,11 @@ public class Game {
     public static Player getPlayer(String playerUid) {
         for (Player p : players ) {
             if(p.getServerUid().equals(playerUid)){
-                return p;
+                if(p.equals(Player.getLocalPlayer())){
+                    return Player.getLocalPlayer();
+                } else {
+                    return p;
+                }
             }
         }
         return null;
