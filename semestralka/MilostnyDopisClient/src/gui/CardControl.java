@@ -37,9 +37,10 @@ public class CardControl extends HBox {
             App.fillHelp(card);
         });
 
-        setOnMouseExited(event -> {
-            App.fillHelp(null);
-        });
+// whenever is window minimized you could not scroll help
+//        setOnMouseExited(event -> {
+//            App.fillHelp(null);
+//        });
 
         try {
             fxmlLoader.load();

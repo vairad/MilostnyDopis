@@ -145,9 +145,15 @@ public class GameWindow extends Window {
 
         controller.helpPlace.widthProperty().addListener(new ChangeListener<Number>() {
             @Override public void changed(ObservableValue<? extends Number> observableValue, Number oldSceneWidth, Number newSceneWidth) {
-                controller.helpText.setWrappingWidth(controller.helpPlace.getWidth() - 4);
+                controller.helpText.setWrappingWidth(controller.helpPlace.getWidth() - 20);
             }
         });
+        controller.helpPlace.setOnMouseClicked(event -> {
+            if(event.getClickCount() == 2){
+                App.fillHelp(null);
+            }
+        });
+
     }
 
     private void resolveChosenCard() {
@@ -326,16 +332,22 @@ public class GameWindow extends Window {
         if(playCard == Card.GUARDIAN){
             tip = DialogFactory.guardianChose();
             if(tip == null){
-                DialogFactory.alertError("Nutné zvolit volbu", "", ""); //todo to resources
+                DialogFactory.alertError(bundle.getString("noGuardianTitle")
+                                        ,bundle.getString("noGuardianHeadline")
+                                        ,bundle.getString("noGuardianText"));
                 return;
             }
         }
         if(Card.needElectPlayer(playCard) && chosenPlayer == null){
-            DialogFactory.alertError("Nutné zvolit hráče", "", ""); //todo to resources
+            DialogFactory.alertError(bundle.getString("noPlayerTitle")
+                    ,bundle.getString("noPlayerHeadline")
+                    ,bundle.getString("noPlayerText"));
             return;
         }
         if(chosenPlayer.equals(Player.getLocalPlayer()) && playCard != Card.PRINCE){
-            DialogFactory.alertError("Nelze zvolit sebe jako cíl karty", "", ""); //todo to resources
+            DialogFactory.alertError(bundle.getString("noMeTitle")
+                    ,bundle.getString("noMeHeadline")
+                    ,bundle.getString("noMeText"));
             return;
         }
         sendCardToServer(playCard, chosenPlayer, tip);

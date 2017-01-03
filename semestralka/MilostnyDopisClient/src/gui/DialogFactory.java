@@ -54,9 +54,9 @@ public class DialogFactory {
         choices.add(Card.PRINCESS);
 
         ChoiceDialog<Card> dialog = new ChoiceDialog<>(Card.PRIEST, choices);
-        dialog.setTitle("Volba Strážné");
-        dialog.setHeaderText("Jakou kartu má zvolený hráč?");
-        dialog.setContentText("Vyber:"); //todo to resources
+        dialog.setTitle(App.bundle.getString("guardianChooseTitle"));
+        dialog.setHeaderText(App.bundle.getString("guardianChooseQuestion"));
+        dialog.setContentText(App.bundle.getString("guardianChooseText"));
 
         Optional<Card> result = dialog.showAndWait();
         if (result.isPresent()){
