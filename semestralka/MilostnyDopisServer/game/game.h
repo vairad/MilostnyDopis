@@ -20,6 +20,8 @@ class Game
     Player *player3 = NULL;
     Player *player4 = NULL;
 
+    Player **players[4];
+
     short player_count;
 
     int round_count;
@@ -51,14 +53,21 @@ public:
 
     void start();
 
+    void moveTokenToNextPlayer(User *user);
+    Player *getNextPlayerForToken(Player *playerWithToken);
+
     std::string getStatus();
     std::string toString();
     std::string getUid() const;
     short getPlayer_count() const;
     Player *getPlayer(int index);
+    Player *getPlayer(User *user);
+
     bool isStarted();
 private:
     std::string xmlGameSeq();
+    void sendTokenTo(Player *player);
+
 };
 
 #endif // GAME_H

@@ -12,6 +12,7 @@ private:
     static void handleGameCOD(Message *msg);
     static void handleGameECH(Message *msg);
     static void handleGameSTA(Message *msg);
+    static void handleGameTOK(Message *msg);
 
     static bool checkLogged(int socket);
     static bool checkGame(std::string uid);

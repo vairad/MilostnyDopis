@@ -158,6 +158,9 @@ void Sender::fillEvent(char *msg, Event event){
     case Event::NEP:
         strcpy(eventS, OPT_NEP);
         break;
+    case Event::TOK:
+        strcpy(eventS, OPT_TOK);
+        break;
     case Event::UNK:
         LOG_ERROR("Nelze nastavit typ unknown");
         break;

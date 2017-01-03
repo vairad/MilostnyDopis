@@ -110,14 +110,18 @@ public class GameWindow extends Window {
     private void createListeners() {
         controller.myCard.setOnMouseClicked(event -> {
             if(event.getClickCount() == Constants.CARD_USE_CLICK_COUNT){
-                resolveMyCardState();
-                resolveChosenCard();
+                if(controller.playerMe.getPlayer().haveToken()){
+                    resolveMyCardState();
+                    resolveChosenCard();
+                }
             }
         });
         controller.secondCard.setOnMouseClicked(event -> {
             if(event.getClickCount() == Constants.CARD_USE_CLICK_COUNT){
-                resolveSecondCardState();
-                resolveChosenCard();
+                if(controller.playerMe.getPlayer().haveToken()) {
+                    resolveSecondCardState();
+                    resolveChosenCard();
+                }
             }
         });
 

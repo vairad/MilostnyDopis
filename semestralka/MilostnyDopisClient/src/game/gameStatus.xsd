@@ -5,6 +5,7 @@
     <xs:element name="order" type="xs:integer"/>
     <xs:element name="type" type="xs:integer"/>
     <xs:element name="alive" type="xs:boolean"/>
+    <xs:element name="token" type="xs:boolean"/>
     <xs:element name="seq" type="xs:unsignedLong"/>
 
     <!-- ============================== HERNI STRUKTURY ========================== -->
@@ -24,6 +25,7 @@
                 <xs:element ref="name"/>
                 <xs:element ref="id"/>
                 <xs:element ref="alive"/>
+                <xs:element ref="token"/>
                 <xs:element ref="cardsCollection"/>
             </xs:sequence>
         </xs:complexType>

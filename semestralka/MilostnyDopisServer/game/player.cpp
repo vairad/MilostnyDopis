@@ -3,16 +3,6 @@
 #include "message/message.h"
 #include "message/messagequeue.h"
 
-bool Player::isInGame() const
-{
-    return in_game;
-}
-
-void Player::setInGame(bool value)
-{
-    in_game = value;
-}
-
 bool Player::isGuarded() const
 {
     return guarded;
@@ -43,7 +33,7 @@ void Player::setScore(long value)
     score = value;
 }
 
-void Player::giveCard(GameCards card)
+void Player::giveFirstCard(GameCards card)
 {
     myCard = card;
     Message *msg = new Message(user->getSocket(),MessageType::game, Event::CAR, std::to_string(card));
@@ -69,8 +59,11 @@ GameCards Player::showCard()
 void Player::giveToken()
 {
     token = true;
-    Message *msg = new Message(user->getSocket(),MessageType::game, Event::CAR, "token");
-    MessageQueue::sendInstance()->push_msg(msg);
+}
+
+void Player::takeToken()
+{
+    token = false;
 }
 
 void Player::setSecondCard(const GameCards &value)
@@ -83,12 +76,12 @@ User *Player::getUser() const
     return user;
 }
 
-bool Player::getIs_alive() const
+bool Player::isAlive() const
 {
     return alive;
 }
 
-void Player::setIs_alive(bool value)
+void Player::setAlive(bool value)
 {
     alive = value;
 }
@@ -130,10 +123,19 @@ std::string Player::xmlPlayer(int order)
     playerAtributes += alive ? "true" : "false";
     playerAtributes += "</alive>";
 
+    playerAtributes += "<token>";
+    playerAtributes += token ? "true" : "false";
+    playerAtributes += "</token>";
+
     playerAtributes += xmlCards();
 
     playerAtributes += "</player>";
     return playerAtributes;
+}
+
+bool Player::hasToken()
+{
+    return token;
 }
 
 Player::Player(User *user) : user(user)

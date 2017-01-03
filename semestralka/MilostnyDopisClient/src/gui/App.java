@@ -174,4 +174,8 @@ public class App extends Application {
     public static void fillHelp(Card card) {
         App.win.fillHelp(card);
     }
+
+    public static void moveTokenTo(Player player) {
+        App.win.movePointerTo(player.getDisplay_order());
+    }
 }

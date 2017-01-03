@@ -2,6 +2,7 @@ package gui;
 
 import game.Card;
 import game.Player;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
@@ -48,9 +49,17 @@ public class PlayerControl extends BorderPane {
         }
         name.setText(player.getDisplayName());
         checkPlayerAlive();
+        checkPlayerToken();
+
         cards.getChildren().clear();
         for (Card card: player.getPlayedCards()) {
             cards.getChildren().add(new CardControl(card));
+        }
+    }
+
+    private void checkPlayerToken() {
+        if(player.haveToken()){
+            Platform.runLater(() -> App.moveTokenTo(player));
         }
     }
 

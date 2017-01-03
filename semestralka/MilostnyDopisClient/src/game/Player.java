@@ -28,8 +28,9 @@ public class Player implements Comparable<Player> {
     private boolean saved;
     private List<Card> playedCards;
     private boolean alive;
+    private boolean token;
 
-    public Player(String nick, String serverUid, int order, boolean alive){
+    public Player(String nick, String serverUid, int order, boolean alive, boolean token){
         this.nick = nick;
         this.serverUid = serverUid;
         this.order = order;
@@ -38,10 +39,11 @@ public class Player implements Comparable<Player> {
             this.local = true;
         }
         playedCards = new LinkedList<>();
+        this.token = token;
     }
 
     public Player(String nick, String serverUid) {
-        this(nick, serverUid, -1, false);
+        this(nick, serverUid, -1, false, false);
     }
 
 
@@ -144,5 +146,13 @@ public class Player implements Comparable<Player> {
     public void resetCards(List<Card> cardList) {
         playedCards.clear();
         playedCards.addAll(cardList);
+    }
+
+    public void giveToken() {
+        token = true;
+    }
+
+    public boolean haveToken(){
+        return token;
     }
 }

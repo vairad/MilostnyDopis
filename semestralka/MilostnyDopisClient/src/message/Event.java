@@ -13,6 +13,7 @@ public enum Event {
     COD ("COD"),
     NEP ("NEP"),
     CAR ("CAR"),
+    TOK ("TOK"),
     STA ("STA");
 
     private final String name;

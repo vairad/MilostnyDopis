@@ -30,6 +30,9 @@ void GameHandler::handleTypeGame(Message *msg)
     case Event::STA:
         handleGameSTA(msg);
         break;
+    case Event::TOK:
+        handleGameTOK(msg);
+        break;
     case Event::UNK :
     default:
         //todo impl
@@ -102,6 +105,31 @@ void GameHandler::handleGameSTA(Message *msg){
     std::string gameStatus = GameServices::getInst()->getGameByUid(msg->getMsg())->getStatus();
 
     msg->setMsg(gameStatus);
+    MessageQueue::sendInstance()->push_msg(msg);
+}
+
+void GameHandler::handleGameTOK(Message *msg){
+    LOG_DEBUG("GameHandler::handleGameTOK() - start");
+    if(!checkLogged(msg->getSocket())){
+        //todo negativní odpověď
+        return;
+    }
+    if(!checkGame(msg->getMsg())){
+        //todo negativní odpověď
+        return;
+    }
+
+    Game *game = GameServices::getInst()->getGameByUid(msg->getMsg());
+    User *user = UserDatabase::getInstance()->getUserBySocket(msg->getSocket());
+
+    if(!(game->getPlayer(user)->hasToken())){
+        //todo negativní odpověď
+        return;
+    }
+
+    game->moveTokenToNextPlayer(user);
+
+    msg->setMsg("OK");
     MessageQueue::sendInstance()->push_msg(msg);
 }
 

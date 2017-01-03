@@ -1,5 +1,7 @@
 package gui;
 
+import game.Game;
+import game.Player;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -7,6 +9,10 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Polygon;
 import javafx.scene.text.Text;
+import message.Event;
+import message.Message;
+import message.MessageType;
+import netservice.NetService;
 
 import java.util.List;
 
@@ -51,7 +57,10 @@ public class GameController {
 
 
     public void onSubmit(ActionEvent actionEvent) {
-        DialogFactory.alertError("Něco", "Titulek", "Text");
+        DialogFactory.alertError("Předávám token", "Titulek", "Text");
+        Player.getLocalPlayer().giveToken();
+        Message msg = new Message(Event.TOK, MessageType.game, Game.getUid());
+        NetService.getInstance().sender.addItem(msg);
     }
 
 }

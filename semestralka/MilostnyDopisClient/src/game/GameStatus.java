@@ -35,7 +35,8 @@ public class GameStatus {
     private static final int NICK_ATR_PLAYER = 1;
     private static final int ID_ATR_PLAYER = 2;
     private static final int ALIVE_ATR_PLAYER = 3;
-    private static final int CARDS_ATR_PLAYER = 4;
+    private static final int TOKEN_ATR_PLAYER = 4;
+    private static final int CARDS_ATR_PLAYER = 5;
 
     /** pořadí atributů ve členu CARD */
     private static final int TYPE_ATR_CARD = 0;
@@ -178,13 +179,18 @@ public class GameStatus {
         String aliveS = playerAttribute.getFirstChild().getNodeValue();
         logger.trace("Alive : " + aliveS);
 
+        playerAttribute = playerNodes.item(TOKEN_ATR_PLAYER);
+        String tokenS = playerAttribute.getFirstChild().getNodeValue();
+        logger.trace("Token : " + tokenS);
+
         playerAttribute = playerNodes.item(CARDS_ATR_PLAYER);
         List<Card> cardList = parseCardListXML(playerAttribute);
 
         Player p = new Player(nickS
                         , uidS
                         , Integer.parseInt(orderS)
-                        , Boolean.parseBoolean(aliveS));
+                        , Boolean.parseBoolean(aliveS)
+                        , Boolean.parseBoolean(tokenS));
         p.resetCards(cardList);
 
         players.add(p);

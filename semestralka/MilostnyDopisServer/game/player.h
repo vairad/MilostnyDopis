@@ -11,7 +11,6 @@ class Player
 {
     User *user;
 
-    bool in_game;
     bool guarded;
     bool on_turn;
 
@@ -29,8 +28,6 @@ class Player
 public:
     Player(User *user);
 
-    bool isInGame() const;
-    void setInGame(bool value);
     bool isGuarded() const;
     void setGuarded(bool value);
     bool isOnTurn() const;
@@ -39,7 +36,7 @@ public:
     long getScore() const;
     void setScore(long value);
 
-    void giveCard(GameCards card);
+    void giveFirstCard(GameCards card);
     void setSecondCard(const GameCards &value);
 
     bool compareCard(GameCards card);
@@ -47,11 +44,13 @@ public:
     GameCards showCard();
 
     void giveToken();
+    void takeToken();
 
     User *getUser() const;
-    bool getIs_alive() const;
-    void setIs_alive(bool value);
+    bool isAlive() const;
+    void setAlive(bool value);
     std::string xmlPlayer(int order);
+    bool hasToken();
 };
 
 #endif // PLAYER_H

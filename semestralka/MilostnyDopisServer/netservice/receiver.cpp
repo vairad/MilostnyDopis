@@ -270,6 +270,8 @@ Event Receiver::choose_event(char *opt){
         return  Event::STA;
     }else if(strcmp(opt, OPT_OUT) == 0){
         return  Event::OUT;
+    }else if(strcmp(opt, OPT_TOK) == 0){
+        return  Event::TOK;
     }else{
         return Event::UNK;
     }

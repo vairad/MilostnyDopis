@@ -21,6 +21,7 @@ enum Event{
     STA, // status
     ECH, // echo ... basic function
     NEP, // new player
+    TOK, //token
     CAR //new card
 };
 

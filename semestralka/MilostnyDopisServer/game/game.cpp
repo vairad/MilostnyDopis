@@ -2,6 +2,8 @@
 
 #include "log/log.h"
 
+#include "message/messagequeue.h"
+
 std::string Game::getUid() const
 {
     return uid;
@@ -16,6 +18,10 @@ Game::Game(std::string uid, int round_count) : uid(uid)
   , player3(NULL)
   , player4(NULL)
 {
+    players[0] = &player1;
+    players[1] = &player2;
+    players[2] = &player3;
+    players[3] = &player4;
 }
 
 bool Game::addPlayer(User *who)
@@ -70,6 +76,10 @@ bool Game::addPlayer(User *who)
 
 
 
+//============================================================================================================================
+//=================================================================================================
+//=================================================================================================
+//=================================================================================================
 //=================================================================================================
 
 /**
@@ -88,7 +98,7 @@ bool Game::effectGuardian(Player *who, Player *whom, GameCards tip)
     }
     if(whom->compareCard(tip)){
         whom->cardOnDesk();
-        whom->setInGame(false);
+        whom->setAlive(false);
         return true;
     }
     return false;
@@ -150,7 +160,7 @@ bool Game::effectPrince(Player *who, Player *whom)
         return false;
     }
     whom->cardOnDesk();
-    if(whom->isInGame()){
+    if(whom->isAlive()){
         giveCard(whom);
     }
     return true;
@@ -169,8 +179,8 @@ bool Game::effectKing(Player *who, Player *whom)
         return false;
     }
     GameCards tmpCard = whom->showCard();
-    whom->giveCard(who->showCard());
-    who->giveCard(tmpCard);
+    whom->giveFirstCard(who->showCard());
+    who->giveFirstCard(tmpCard);
     return true;
 }
 
@@ -195,9 +205,16 @@ bool Game::effectCountess(Player *who)
  */
 bool Game::effectPrincess(Player *who)
 {
-    who->setInGame(false);
+    who->setAlive(false);
     return true;
 }
+
+
+//=================================================================================================
+//=================================================================================================
+//=================================================================================================
+//=================================================================================================
+//=====================================================================================================================
 
 /**
  * @brief Game::giveCard
@@ -210,6 +227,10 @@ bool Game::giveCard(Player *who)
     return true;
 }
 
+/**
+ * Přepne hru do stavu započaté
+ * @brief Game::start
+ */
 void Game::start(){
     LOG_DEBUG("Game::start()");
     if(started == true){
@@ -218,9 +239,70 @@ void Game::start(){
     }
     started = true;
     for(int playerIndex = 0; playerIndex < player_count; playerIndex++){
-        getPlayer(playerIndex)->giveCard(game_deck.getNextCard());
+        getPlayer(playerIndex)->giveFirstCard(game_deck.getNextCard());
     }
     player1->giveToken();
+    sendTokenTo(player1);
+}
+
+/**
+ * @brief Game::moveTokenToNextPlayer
+ * @param user
+ */
+void Game::moveTokenToNextPlayer(User *user)
+{
+    Player *playerWithToken = getPlayer(user);
+    Player *playerToGetToken = getNextPlayerForToken(playerWithToken);
+    playerWithToken->takeToken();
+    playerToGetToken->giveToken();
+    sendTokenTo(playerToGetToken);
+}
+
+/**
+ * @brief Game::getNextPlayerForToken
+ * @param playerWithToken
+ * @return
+ */
+Player *Game::getNextPlayerForToken(Player *playerWithToken){
+    short indexWithToken = 0;
+    for(; indexWithToken < 4; indexWithToken++){
+        if(*players[indexWithToken] == playerWithToken){
+            break;
+        }
+    }
+
+    Player *chosenPlayer = NULL;
+    while(chosenPlayer == NULL){
+        indexWithToken++;
+        indexWithToken = indexWithToken % 4;
+        Player *p = *players[indexWithToken];
+        if(p != NULL && p->isAlive()){
+            chosenPlayer = p;
+        }
+
+    }
+    return chosenPlayer;
+}
+
+/**
+ * @brief Game::getPlayer
+ * @param user
+ * @return
+ */
+Player *Game::getPlayer(User *user){
+   if(player1 != NULL && player1->getUser() == user){
+       return player1;
+   }
+   if(player2 != NULL && player2->getUser() == user){
+       return player2;
+   }
+   if(player3 != NULL && player3->getUser() == user){
+       return player3;
+   }
+   if(player4 != NULL && player4->getUser() == user){
+       return player4;
+   }
+   return NULL;
 }
 
 /**
@@ -275,6 +357,35 @@ std::string Game::toString()
 }
 
 
+/**
+ * @brief Game::sendTokenTo
+ * @param player
+ */
+void Game::sendTokenTo(Player *player)
+{
+    if(player != NULL ){
+        std::string msgS = getUid();
+        msgS += "&&";
+        msgS += player->getUser()->getUID();
+        if(player1 != NULL){
+            Message *msg = new Message(player1->getUser()->getSocket(),MessageType::game, Event::TOK, msgS);
+            MessageQueue::sendInstance()->push_msg(msg);
+        }
+        if(player2 != NULL){
+            Message *msg = new Message(player2->getUser()->getSocket(),MessageType::game, Event::TOK, msgS);
+            MessageQueue::sendInstance()->push_msg(msg);
+        }
+        if(player3 != NULL){
+            Message *msg = new Message(player3->getUser()->getSocket(),MessageType::game, Event::TOK, msgS);
+            MessageQueue::sendInstance()->push_msg(msg);
+        }
+        if(player4 != NULL){
+            Message *msg = new Message(player4->getUser()->getSocket(),MessageType::game, Event::TOK, msgS);
+            MessageQueue::sendInstance()->push_msg(msg);
+        }
+    }
+
+}
 
 //==============
 //==============
@@ -327,6 +438,7 @@ std::string Game::xmlGameSeq()
 
     return gameSeq;
 }
+
 
 
 std::string Game::xmlPlayerCollection()

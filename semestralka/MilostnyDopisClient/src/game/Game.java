@@ -63,4 +63,13 @@ public class Game {
     public static Message getStatusMessage() {
         return new Message(Event.STA, MessageType.game, getUid());
     }
+
+    public static Player getPlayer(String playerUid) {
+        for (Player p : players ) {
+            if(p.getServerUid().equals(playerUid)){
+                return p;
+            }
+        }
+        return null;
+    }
 }
