@@ -14,6 +14,7 @@ private:
     static void handleGameSTA(Message *msg);
     static void handleGameTOK(Message *msg);
     static void handleGameCAR(Message *msg);
+    static void handleGamePLA(Message *msg);
 
     static bool checkLogged(int socket);
     static bool checkGame(std::string uid);

@@ -84,13 +84,23 @@ GameCards Player::getSecondCard() const
     return secondCard;
 }
 
+void Player::playCard(GameCards card)
+{
+    if(myCard == card){
+        myCard = secondCard;
+        secondCard = GameCards::none;
+    }else if(secondCard == card){
+        secondCard = GameCards::none;
+    }
+    played_list.push_back(card);
+}
+
 std::string Player::xmlCards()
 {
     std::string cardsCollection = "<cardsCollection>";
 
     for(auto card = played_list.begin(); card != played_list.end(); ++card) {
         cardsCollection += GameDeck::cardToXml(*card);
-        card++;
     }
 
     cardsCollection += "</cardsCollection>";

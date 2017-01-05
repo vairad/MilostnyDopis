@@ -51,7 +51,7 @@ MessageQueue::MessageQueue()
 
 
 bool MessageQueue::push_msg(Message *msg){
-    LOG_INFO("MessageQueue::push_msg()");
+   // LOG_INFO("MessageQueue::push_msg()");
     sem_wait(&counter_sem_Size);
 
     pthread_mutex_lock(&queue_lock);
@@ -69,7 +69,7 @@ bool MessageQueue::push_msg(Message *msg){
 }
 
 Message *MessageQueue::pop_msg(void){
-    LOG_INFO("MessageQueue::pop_msg()");
+  //  LOG_INFO("MessageQueue::pop_msg()");
     Message *msg = NULL;
     sem_wait(&counter_sem_toServe);
 

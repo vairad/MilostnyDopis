@@ -274,6 +274,8 @@ Event Receiver::choose_event(char *opt){
         return  Event::TOK;
     }else if(strcmp(opt, OPT_CAR) == 0){
         return  Event::CAR;
+    }else if(strcmp(opt, OPT_PLA) == 0){
+        return  Event::PLA;
     }else{
         return Event::UNK;
     }

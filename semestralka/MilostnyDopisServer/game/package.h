@@ -26,6 +26,7 @@ public:
     static const int size;
     GameCards getNextCard();
     std::string static cardToXml(GameCards card);
+    static GameCards getCardByInt(int card);
 private:
     void shuffleDeck();
 };

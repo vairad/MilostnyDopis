@@ -50,5 +50,39 @@ std::string GameDeck::cardToXml(GameCards card)
     cardXml += "<name>";
     cardXml += "todo name of card"; //todo name of card
     cardXml += "</name>";
+    cardXml += "</card>";
     return cardXml;
+}
+
+GameCards GameDeck::getCardByInt(int card)
+{
+    switch(card){
+    case 1:
+        return GameCards::guardian;
+        break;
+    case 2:
+        return GameCards::priest;
+        break;
+    case 3:
+        return GameCards::baron;
+        break;
+    case 4:
+        return GameCards::komorna;
+        break;
+    case 5:
+        return GameCards::prince;
+        break;
+    case 6:
+        return GameCards::king;
+        break;
+    case 7:
+        return GameCards::countess;
+        break;
+    case 8:
+        return GameCards::princess;
+        break;
+    default:
+        return GameCards::none;
+        break;
+    }
 }

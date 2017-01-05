@@ -1,7 +1,5 @@
 package gui;
 
-import game.Game;
-import game.Player;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -10,10 +8,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Polygon;
 import javafx.scene.text.Text;
-import message.Event;
-import message.Message;
-import message.MessageType;
-import netservice.NetService;
 
 import java.util.List;
 

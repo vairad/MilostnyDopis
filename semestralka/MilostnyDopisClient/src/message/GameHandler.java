@@ -4,13 +4,12 @@ import game.Card;
 import game.Game;
 import game.GameStatus;
 import game.Player;
-import gui.GameRecord;
 import gui.App;
+import gui.GameRecord;
 import javafx.application.Platform;
 import netservice.NetService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import sun.misc.resources.Messages_sv;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -43,12 +42,44 @@ public class GameHandler {
             case TOK:
                 handleGameTOK(msg);
                 break;
+            case PLA:
+                handleGamePLA(msg);
+                break;
             case UNK:
                 logger.error("UNKNOWN GAME EVENT TYPE");
                 break;
             default:
                 logger.error("UNIMPLEMENTED GAME EVENT TYPE: " + msg.getEvent());
                 break;
+        }
+    }
+
+    private static void handleGamePLA(Message msg) {
+        logger.debug("start");
+        String[] messageParts = msg.getMessage().split("&&");
+        if(messageParts.length < 2){
+            logger.debug("špatný formát zprávy... málo částí");
+            return;
+        }
+        if(messageParts[0].equals("CANCEL")){
+            logger.trace("větev neuznané karty"); // TODO server zatím vše uzná
+            return;
+        }
+
+        //todo compare first part of message to equal game
+
+        Card receivedCard = Card.getCardFromInt(Integer.parseInt(messageParts[2]));
+        if(Card.needElectPlayer(receivedCard)){
+            try {
+                Game.getPlayer(messageParts[1]).addCard(receivedCard);
+            }catch (NullPointerException e){
+                logger.debug("nesmyslny hráč");
+            }
+            //todo read result of my effect
+        }
+        Platform.runLater(() -> App.win.addCard());
+        if(Game.getPlayer(messageParts[1]).equals(Player.getLocalPlayer())){
+            giveTokenToServer();
         }
     }
 
@@ -71,14 +102,14 @@ public class GameHandler {
             return;
         }
         App.win.addStatusMessage("Token má:" + msg.getMessage());
+        Game.clearToken();
         Player playerForToken = Game.getPlayer(messageParts[1]);
         if(playerForToken != null){
             playerForToken.giveToken();
             Platform.runLater(() -> App.moveTokenTo(playerForToken));
         }
         Platform.runLater(App::showMessagesGameWindow);
-        Message msgToSend = new Message(Event.CAR, MessageType.game, "CARD");
-        NetService.getInstance().sender.addItem(msgToSend);
+        NetService.getInstance().sender.addItem(MessageFactory.getCards());
     }
 
     private static void handleGameCAR(Message msg) {
@@ -94,7 +125,13 @@ public class GameHandler {
         try {
             Player.giveCard(Card.getCardFromInt(Integer.parseInt(msg.getMessage())));
         }catch (NumberFormatException e){
-            logger.trace("Nesmysl ve zprave o karte");
+            String[] messageParts = msg.getMessage().split("&&");
+            if(messageParts.length != 2){
+                logger.trace("Nesmysl ve zprave o karte");
+                return;
+            }
+            Player.resetCards(Card.getCardFromInt(Integer.parseInt(messageParts[0]))
+                              ,Card.getCardFromInt(Integer.parseInt(messageParts[1])));
         }
         Platform.runLater(App::showMessagesGameWindow);
         Platform.runLater(App::updateCards);
@@ -104,7 +141,7 @@ public class GameHandler {
         if(App.win != null) {
             App.win.addStatusMessage(msg.getMessage());
             Platform.runLater(App::showMessagesGameWindow);
-            Message msgR = Game.getStatusMessage();
+            Message msgR = MessageFactory.getStatusMessage(Game.getUid());
             NetService.getInstance().sender.addItem(msgR);
         }
     }
@@ -114,6 +151,7 @@ public class GameHandler {
         if(Game.isReady()){
             Platform.runLater(App::showGameWindow);
         }
+        NetService.getInstance().sender.addItem(MessageFactory.getCards());
     }
 
     private static void handleGameACK(Message msg) {
@@ -157,7 +195,7 @@ public class GameHandler {
         //todo check correct ID of recieved item
     }
 
-    private void giveTokenToServer(){
+    private static void giveTokenToServer(){
         Player.getLocalPlayer().takeToken();
         Message msg = new Message(Event.TOK, MessageType.game, Game.getUid());
         NetService.getInstance().sender.addItem(msg);

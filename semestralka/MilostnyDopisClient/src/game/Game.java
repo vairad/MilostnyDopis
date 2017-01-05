@@ -26,7 +26,7 @@ public class Game {
     private static boolean ready;
 
     public static void initialize(GameRecord gameRecord){
-        players = new LinkedList<Player>();
+        players = new LinkedList<>();
         Game.gameRecord = gameRecord;
         ready = false;
     }
@@ -60,10 +60,6 @@ public class Game {
         return players;
     }
 
-    public static Message getStatusMessage() {
-        return new Message(Event.STA, MessageType.game, getUid());
-    }
-
     public static Player getPlayer(String playerUid) {
         for (Player p : players ) {
             if(p.getServerUid().equals(playerUid)){
@@ -75,5 +71,10 @@ public class Game {
             }
         }
         return null;
+    }
+
+    public static void clearToken() {
+        Player.getLocalPlayer().takeToken();
+        players.forEach(Player::takeToken);
     }
 }

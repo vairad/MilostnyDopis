@@ -64,6 +64,8 @@ public:
     Player *getPlayer(User *user);
 
     bool isStarted();
+    bool playCard(GameCards cardToPlay, std::string userId, GameCards tip);
+    void sendCardToPlayers(GameCards playedCard, Player *player);
 private:
     std::string xmlGameSeq();
     void sendTokenTo(Player *player);

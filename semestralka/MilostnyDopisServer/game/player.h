@@ -50,6 +50,7 @@ public:
     bool hasToken();
     void sendCards();
     GameCards getSecondCard() const;
+    void playCard(GameCards card);
 };
 
 #endif // PLAYER_H

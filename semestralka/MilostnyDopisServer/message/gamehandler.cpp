@@ -10,6 +10,8 @@
 
 #include "util/utilities.h"
 
+#include <cstring>
+
 /**
  * @brief GameHandler::handleTypeGame
  * @param msg
@@ -35,6 +37,9 @@ void GameHandler::handleTypeGame(Message *msg)
         break;
     case Event::CAR:
         handleGameCAR(msg);
+        break;
+    case Event::PLA:
+        handleGamePLA(msg);
         break;
     case Event::UNK :
     default:
@@ -111,6 +116,10 @@ void GameHandler::handleGameSTA(Message *msg){
     MessageQueue::sendInstance()->push_msg(msg);
 }
 
+/**
+ * @brief GameHandler::handleGameTOK
+ * @param msg
+ */
 void GameHandler::handleGameTOK(Message *msg){
     LOG_DEBUG("GameHandler::handleGameTOK() - start");
     if(!checkLogged(msg->getSocket())){
@@ -136,8 +145,50 @@ void GameHandler::handleGameTOK(Message *msg){
     MessageQueue::sendInstance()->push_msg(msg);
 }
 
+/**
+ * @brief GameHandler::handleGameCAR
+ * @param msg
+ */
 void GameHandler::handleGameCAR(Message *msg){
     LOG_DEBUG("GameHandler::handleGameCAR() - start");
+    if(!checkLogged(msg->getSocket())){
+        LOG_DEBUG("Neni přihlášen");
+        //todo negativní odpověď
+        return;
+    }
+
+    User *user = UserDatabase::getInstance()->getUserBySocket(msg->getSocket());
+    Game *game = user->getGame();
+
+    if(game == NULL) {
+        LOG_DEBUG("Neni nastaven odkaz na hru u hráče");
+        return;
+    }
+    Player *player = game->getPlayer(user);
+
+    if(player == NULL){
+        LOG_DEBUG("Neni členem hry na kterou byl předán odkaz");
+        return;
+    }
+
+    if(!player->hasToken()){
+        player->sendCards();
+        return;
+    }
+
+    bool result = game->giveCard(player);
+    if(result == false){
+        player->sendCards();
+    }
+}
+
+
+/**
+ * @brief GameHandler::handleGamePLA
+ * @param msg
+ */
+void GameHandler::handleGamePLA(Message *msg){
+    LOG_DEBUG("GameHandler::handleGamePLA() - start");
     if(!checkLogged(msg->getSocket())){
         LOG_DEBUG("Neni přihlášen");
         //todo negativní odpověď
@@ -163,10 +214,46 @@ void GameHandler::handleGameCAR(Message *msg){
         return;
     }
 
-    bool result = game->giveCard(player);
-    if(result == false){
-        player->sendCards();
+    GameCards cardToPlay = GameCards::none;
+    std::string userId = "";
+    GameCards cardTip = GameCards::none;
+
+    vector<std::string> messageParts;
+    char tmpMsg[254];
+    memset(tmpMsg, 0, 254 * sizeof(char));
+    strcpy(tmpMsg, msg->getMsg().c_str());
+    char *msgP = strtok(tmpMsg, "&");
+
+    while (msgP != NULL) {
+        std::string s(msgP);
+        messageParts.push_back(s);
+        msgP = strtok(NULL, "&");
     }
+
+    if(messageParts.size() >= 1){
+        int card = std::stoi(messageParts[0]);
+        cardToPlay = GameDeck::getCardByInt(card);
+    }
+
+    if(messageParts.size() >= 2){
+        userId = messageParts[1];
+    }
+
+    if(messageParts.size() >= 3){
+        int card = std::stoi(messageParts[2]);
+        cardTip = GameDeck::getCardByInt(card);
+    }
+
+    bool result = game->playCard(cardToPlay, userId, cardTip);
+    if(result == false){
+        std::string msgS = "CANCEL";
+        msgS += "&&";
+        msgS += std::to_string(cardToPlay);
+        msg->setMsg(msgS);
+        MessageQueue::sendInstance()->push_msg(msg);
+    }
+    player->playCard(cardToPlay);
+    game->sendCardToPlayers(cardToPlay, player);
 }
 
 /**

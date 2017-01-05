@@ -11,17 +11,19 @@ import java.util.List;
 public class Player implements Comparable<Player> {
     private static Player local_player = null;
     private static String localUid = null;
-    private final int order;
-    private PlayerPosition display_order;
 
-    private Card myCard = Card.NONE;
-    private Card secondCard = Card.NONE;
-
-    private boolean local;
 
     /** Player properties */
     private String nick;
     private String serverUid;
+
+    private Card myCard;
+    private Card secondCard;
+
+    private final int order;
+    private PlayerPosition display_order;
+
+    private boolean local;
 
     /** State properties */
     private boolean logged;
@@ -42,13 +44,14 @@ public class Player implements Comparable<Player> {
         }
         playedCards = new LinkedList<>();
         this.token = token;
+
+        myCard = Card.NONE;
+        secondCard = Card.NONE;
     }
 
     public Player(String nick, String serverUid) {
         this(nick, serverUid, -1, false, false);
     }
-
-
 
     public static Player getLocalPlayer() {
         return local_player;
@@ -62,11 +65,6 @@ public class Player implements Comparable<Player> {
 
     public String getNick() {
         return nick;
-    }
-
-    public void setNick(String nick) {
-        this.nick = nick;
-        this.saved = false;
     }
 
     public String getServerUid() {
@@ -165,5 +163,23 @@ public class Player implements Comparable<Player> {
 
     public boolean isGuarded() {
         return guarded;
+    }
+
+    public void addCard(Card card) {
+        playedCards.add(card);
+    }
+
+    public void playMyCard() {
+        myCard = secondCard;
+        secondCard = Card.NONE;
+    }
+
+    public void playSecondCard() {
+        secondCard = Card.NONE;
+    }
+
+    public static void resetCards(Card myCard, Card secondCard) {
+        local_player.myCard = myCard;
+        local_player.secondCard = secondCard;
     }
 }

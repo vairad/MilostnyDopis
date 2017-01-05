@@ -344,6 +344,40 @@ bool Game::isStarted()
     return started;
 }
 
+bool Game::playCard(GameCards cardToPlay, std::string userId, GameCards tip)
+{
+    //todo implementation =============================================*************************************
+    return true;
+}
+
+void Game::sendCardToPlayers(GameCards playedCard, Player *player)
+{
+    if(playedCard != GameCards::none ){
+        std::string msgS = getUid();
+        msgS += "&&";
+        msgS += player->getUser()->getUID();
+        msgS += "&&";
+        msgS += std::to_string(playedCard);
+
+        if(player1 != NULL){
+            Message *msg = new Message(player1->getUser()->getSocket(),MessageType::game, Event::PLA, msgS);
+            MessageQueue::sendInstance()->push_msg(msg);
+        }
+        if(player2 != NULL){
+            Message *msg = new Message(player2->getUser()->getSocket(),MessageType::game, Event::PLA, msgS);
+            MessageQueue::sendInstance()->push_msg(msg);
+        }
+        if(player3 != NULL){
+            Message *msg = new Message(player3->getUser()->getSocket(),MessageType::game, Event::PLA, msgS);
+            MessageQueue::sendInstance()->push_msg(msg);
+        }
+        if(player4 != NULL){
+            Message *msg = new Message(player4->getUser()->getSocket(),MessageType::game, Event::PLA, msgS);
+            MessageQueue::sendInstance()->push_msg(msg);
+        }
+    }
+}
+
 /**
  * @brief Game::toString
  * @return
@@ -387,7 +421,6 @@ void Game::sendTokenTo(Player *player)
             MessageQueue::sendInstance()->push_msg(msg);
         }
     }
-
 }
 
 //==============

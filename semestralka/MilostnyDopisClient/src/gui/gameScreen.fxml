@@ -112,12 +112,12 @@
                     minWidth="240">
                 <CardControl fx:id="myCard"
                              styleClass="card"
-                             card="PRINCESS"
+                             card="NONE"
                              alignment="CENTER"
                              minWidth="120"/>
                 <CardControl fx:id="secondCard"
                              styleClass="card"
-                             card="GUARDIAN"
+                             card="NONE"
                              alignment="CENTER"
                              minWidth="120"/>
             </HBox>

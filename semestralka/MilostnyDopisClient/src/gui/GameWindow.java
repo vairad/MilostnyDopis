@@ -263,6 +263,7 @@ public class GameWindow extends Window {
         for (Player player: Game.getPlayers()) {
             switch (player.getDisplay_order()){
                 case LOCAL:
+                    Player.setLocalPlayer(player);
                     controller.playerMe.setPlayer(player);
                     break;
                 case LEFT:
@@ -344,7 +345,7 @@ public class GameWindow extends Window {
                     ,bundle.getString("noPlayerText"));
             return;
         }
-        if(chosenPlayer.equals(Player.getLocalPlayer()) && playCard != Card.PRINCE){
+        if(chosenPlayer != null && chosenPlayer.equals(Player.getLocalPlayer()) && playCard != Card.PRINCE){
             DialogFactory.alertError(bundle.getString("noMeTitle")
                     ,bundle.getString("noMeHeadline")
                     ,bundle.getString("noMeText"));
@@ -352,6 +353,7 @@ public class GameWindow extends Window {
         }
         sendCardToServer(playCard, chosenPlayer, tip);
         playChosenCard();
+        controller.playerMe.requestLayout();
     }
 
     private void sendCardToServer(Card playCard, Player chosenPlayer, Card tip) {
@@ -385,9 +387,11 @@ public class GameWindow extends Window {
         Card c = null;
         if(myCardChosen){
             c = controller.myCard.getCard();
+            Player.getLocalPlayer().playMyCard();
             controller.myCard.setCard(controller.secondCard.getCard());
         }
         if(secondCardChosen){
+            Player.getLocalPlayer().playSecondCard();
             c = controller.secondCard.getCard();
         }
         controller.secondCard.setCard(Card.NONE);
@@ -400,5 +404,10 @@ public class GameWindow extends Window {
         resolveChosenCard();
 
         return c;
+    }
+
+    public void addCard(){
+        setUpPlayers();
+
     }
 }

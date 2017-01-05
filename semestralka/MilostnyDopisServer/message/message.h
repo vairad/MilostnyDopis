@@ -22,6 +22,7 @@ enum Event{
     ECH, // echo ... basic function
     NEP, // new player
     TOK, //token
+    PLA, // played card
     CAR //new card
 };
 
