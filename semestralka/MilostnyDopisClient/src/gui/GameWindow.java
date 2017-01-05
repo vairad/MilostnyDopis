@@ -263,8 +263,9 @@ public class GameWindow extends Window {
         for (Player player: Game.getPlayers()) {
             switch (player.getDisplay_order()){
                 case LOCAL:
-                    Player.setLocalPlayer(player);
-                    controller.playerMe.setPlayer(player);
+                  //  Player.setLocalPlayer(player); //TODO inspect
+                    Player.updateLocalPlayer(player);
+                    controller.playerMe.setPlayer(Player.getLocalPlayer());
                     break;
                 case LEFT:
                     controller.player1.setPlayer(player);

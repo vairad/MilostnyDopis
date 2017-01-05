@@ -69,15 +69,17 @@ public class GameHandler {
         //todo compare first part of message to equal game
 
         Card receivedCard = Card.getCardFromInt(Integer.parseInt(messageParts[2]));
-        if(Card.needElectPlayer(receivedCard)){
-            try {
-                Game.getPlayer(messageParts[1]).addCard(receivedCard);
-            }catch (NullPointerException e){
-                logger.debug("nesmyslny hráč");
-            }
-            //todo read result of my effect
+        logger.debug("Přijata zahraná karta: " + receivedCard);
+
+        try {
+            Game.getPlayer(messageParts[1]).addCard(receivedCard);
+        }catch (NullPointerException e){
+            logger.error("Id hráče ve zprávě není v seznamu hráčů lokální hry.");
         }
+
         Platform.runLater(() -> App.win.addCard());
+
+        // pokud jsem obdržel výsledek své karty... předávám token hry
         if(Game.getPlayer(messageParts[1]).equals(Player.getLocalPlayer())){
             giveTokenToServer();
         }
