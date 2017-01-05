@@ -20,13 +20,15 @@ enum GameCards{
 class GameDeck
 {
     std::deque<GameCards> cards;
-
+    short gived_count;
 public:
     GameDeck();
     static const int size;
     GameCards getNextCard();
     std::string static cardToXml(GameCards card);
     static GameCards getCardByInt(int card);
+    short getGivedCount() const;
+
 private:
     void shuffleDeck();
 };

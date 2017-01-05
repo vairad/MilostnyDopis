@@ -4,7 +4,12 @@
 
 const int GameDeck::size = 16;
 
-GameDeck::GameDeck()
+short GameDeck::getGivedCount() const
+{
+    return gived_count;
+}
+
+GameDeck::GameDeck() : gived_count(0)
 {
     cards.push_back(GameCards::guardian);
     cards.push_back(GameCards::guardian);
@@ -37,6 +42,7 @@ GameCards GameDeck::getNextCard()
 {
     GameCards nextCard = cards.front();
     cards.pop_front();
+    gived_count++;
     return nextCard;
 }
 
