@@ -10,11 +10,11 @@ GameDeck::GameDeck()
     cards.push_back(GameCards::guardian);
     cards.push_back(GameCards::guardian);
     cards.push_back(GameCards::guardian);
+    cards.push_back(GameCards::guardian);
 
     cards.push_back(GameCards::priest);
     cards.push_back(GameCards::priest);
 
-    cards.push_back(GameCards::baron);
     cards.push_back(GameCards::baron);
     cards.push_back(GameCards::baron);
 
