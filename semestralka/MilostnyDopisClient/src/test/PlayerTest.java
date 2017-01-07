@@ -27,18 +27,18 @@ public class PlayerTest {
     @Before
     public void setUp() throws Exception {
         players = new LinkedList<>();
-        players.add(new Player("Jedna"  , "uid1", 1, true, true));
-        players.add(new Player("Dva"    , "uid2", 2, true, true));
-        players.add(new Player("Tri"    , "uid3", 3, true, true));
-        players.add(new Player("Ctyri"  , "uid4", 4, true, true));
-        players.add(new Player("Pet"    , "uid5", 5, true, true));
-        players.add(new Player("Sest"   , "uid6", 6, true, true));
-        players.add(new Player("Sedm"   , "uid7", 7, true, true));
+        players.add(new Player("Jedna"  , "uid1", 1));
+        players.add(new Player("Dva"    , "uid2", 2));
+        players.add(new Player("Tri"    , "uid3", 3));
+        players.add(new Player("Ctyri"  , "uid4", 4));
+        players.add(new Player("Pet"    , "uid5", 5));
+        players.add(new Player("Sest"   , "uid6", 6));
+        players.add(new Player("Sedm"   , "uid7", 7));
 
 
-        player1 = new Player("Jedna"  , "uid1", 1, true, true);
-        player11 = new Player("Jedna kopie"  , "uid1", 1, true, true);
-        player2 = new Player("Dva"    , "uid2", 2, true, true);
+        player1 = new Player("Jedna"  , "uid1", 1);
+        player11 = new Player("Jedna kopie"  , "uid1", 1);
+        player2 = new Player("Dva"    , "uid2", 2);
     }
 
     //================================================

@@ -44,7 +44,7 @@ public enum Card {
             case PRINCE :
             case KING :
                 return true;
-                //do not need elect player
+            //do not need elect player
             case COUNTESS :
             case PRINCESS :
             case KOMORNA :

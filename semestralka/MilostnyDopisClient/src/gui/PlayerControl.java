@@ -1,6 +1,7 @@
 package gui;
 
 import game.Card;
+import game.Game;
 import game.Player;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -8,6 +9,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.ResourceBundle;
@@ -16,6 +19,9 @@ import java.util.ResourceBundle;
  * Created by XXXXXXXXXXXXXXXX on 2.1.17.
  */
 public class PlayerControl extends BorderPane {
+
+    /** instance loggeru tridy */
+    public static Logger logger =	LogManager.getLogger(PlayerControl.class.getName());
 
     @FXML private VBox cards;
     @FXML private Label name;
@@ -50,7 +56,11 @@ public class PlayerControl extends BorderPane {
         name.setText(player.getDisplayName());
         checkPlayerAlive();
         checkPlayerToken();
+        updateCardsBox();
 
+    }
+
+    private void updateCardsBox() {
         cards.getChildren().clear();
         for (Card card: player.getPlayedCards()) {
             cards.getChildren().add(new CardControl(card));
@@ -71,7 +81,28 @@ public class PlayerControl extends BorderPane {
         }
     }
 
+    public void update(){
+        logger.debug("Update players state");
+        try {
+            player = Game.getPlayer(player.getServerUid());
+            checkPlayerAlive();
+            checkPlayerToken();
+        }catch (NullPointerException e){
+            logger.trace("Null player");
+        }
+    }
+
     public Player getPlayer(){
         return player;
+    }
+
+    public void updateCards() {
+        logger.debug("Update players state");
+        try {
+            player = Game.getPlayer(player.getServerUid());
+            updateCardsBox();
+        }catch (NullPointerException e){
+            logger.trace("Null player");
+        }
     }
 }

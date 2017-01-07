@@ -73,7 +73,7 @@ public class GameWindow extends Window {
         createListeners();
 
         stage.setMinHeight(600);
-        stage.setMinWidth(800);
+        stage.setMinWidth(600);
     }
 
     private double getChosenCardStep(){
@@ -263,7 +263,6 @@ public class GameWindow extends Window {
         for (Player player: Game.getPlayers()) {
             switch (player.getDisplay_order()){
                 case LOCAL:
-                  //  Player.setLocalPlayer(player); //TODO inspect
                     Player.updateLocalPlayer(player);
                     controller.playerMe.setPlayer(Player.getLocalPlayer());
                     break;
@@ -346,12 +345,15 @@ public class GameWindow extends Window {
                     ,bundle.getString("noPlayerText"));
             return;
         }
-        if(chosenPlayer != null && chosenPlayer.equals(Player.getLocalPlayer()) && playCard != Card.PRINCE){
+        if(Card.needElectPlayer(playCard)
+                && chosenPlayer.equals(Player.getLocalPlayer())
+                && playCard != Card.PRINCE){
             DialogFactory.alertError(bundle.getString("noMeTitle")
                     ,bundle.getString("noMeHeadline")
                     ,bundle.getString("noMeText"));
             return;
         }
+
         sendCardToServer(playCard, chosenPlayer, tip);
         playChosenCard();
         controller.playerMe.requestLayout();
@@ -407,8 +409,23 @@ public class GameWindow extends Window {
         return c;
     }
 
+    /**
+     * Method update card box for each player
+     */
     public void addCard(){
-        setUpPlayers();
+        controller.player1.updateCards();
+        controller.player2.updateCards();
+        controller.player3.updateCards();
+        controller.playerMe.updateCards();
+    }
 
+    /**
+     * Method update enable state for each player
+     */
+    public void updatePlayers() {
+        controller.player1.update();
+        controller.player2.update();
+        controller.player3.update();
+        controller.playerMe.update();
     }
 }

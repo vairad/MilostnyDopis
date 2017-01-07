@@ -33,12 +33,12 @@ public class Player implements Comparable<Player> {
     private boolean token;
     private boolean guarded;
 
-    public Player(String nick, String serverUid, int order, boolean alive, boolean token){
+    public Player(String nick, String serverUid, int order, boolean alive, boolean token, boolean guarded){
         this.nick = nick;
         this.serverUid = serverUid;
         this.order = order;
         this.alive = alive;
-        this.guarded = false;
+        this.guarded = guarded;
         if(serverUid.equals(localUid)){
             this.local = true;
         }
@@ -48,9 +48,12 @@ public class Player implements Comparable<Player> {
         myCard = Card.NONE;
         secondCard = Card.NONE;
     }
+    public  Player(String nick, String serverUid, int order){
+        this(nick, serverUid, order, false, false, false);
+    }
 
     public Player(String nick, String serverUid) {
-        this(nick, serverUid, -1, false, false);
+        this(nick, serverUid, -1, false, false, false);
     }
 
     public static Player getLocalPlayer() {
@@ -114,6 +117,10 @@ public class Player implements Comparable<Player> {
         return order - o.order;
     }
 
+    /**
+     * Give card to local players hand
+     * @param cardFromInt
+     */
     public static void giveCard(Card cardFromInt) {
         if (local_player.myCard == Card.NONE){
             local_player.myCard = cardFromInt;
@@ -175,6 +182,11 @@ public class Player implements Comparable<Player> {
         return guarded;
     }
 
+    /**
+     * Add card to collection of played cards
+     * @<code>playedCards</code>
+     * @param card
+     */
     public void addCard(Card card) {
         playedCards.add(card);
     }
@@ -194,8 +206,12 @@ public class Player implements Comparable<Player> {
     }
 
     public static void updateLocalPlayer(Player player) {
-        local_player.alive = player.alive;
-        local_player.token = player.token;
-        local_player.guarded = player.guarded;
+        local_player.setAttributes(player.alive, player.token, player.guarded);
+    }
+
+    public void setAttributes(boolean alive, boolean token, boolean guarded) {
+        this.alive = alive;
+        this.token = token;
+        this.guarded = guarded;
     }
 }

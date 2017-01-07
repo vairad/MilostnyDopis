@@ -23,15 +23,19 @@ enum Event{
     NEP, // new player
     TOK, //token
     PLA, // played card
+    PLS, // player status
+    RES, // result of played card
     CAR //new card
+
 };
 
 class Message
 {
+    int socket;
     MessageType type;
     Event event;
     std::string msg;
-    int socket;
+
 public:
     Message(int socket, MessageType type, Event event, std::string msg);
     void print();

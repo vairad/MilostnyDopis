@@ -47,6 +47,6 @@ std::string *Utilities::rtrim(std::string *s) {
 }
 
 std::string *Utilities::trim(std::string *s){
-   return rtrim(ltrim(s));
+    return rtrim(ltrim(s));
 }
 

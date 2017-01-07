@@ -13,6 +13,8 @@ Game::Game(std::string uid, int round_count) : uid(uid)
   , round_count(round_count)
   , status_sequence_id(0)
   , player_count(0)
+  , full(false)
+  , started(false)
   , player1(NULL)
   , player2(NULL)
   , player3(NULL)
@@ -24,6 +26,328 @@ Game::Game(std::string uid, int round_count) : uid(uid)
     players[3] = &player4;
 }
 
+//============================================================================================================================
+//=================================================================================================
+//=================================================================================================
+//=================================================================================================
+//=================================================================================================
+
+/**
+ * Urči hráče a jeho kartu, pokud zvolíš správně hráč je vyřazen ze hry.
+ * Nelze zvolit strážnou a nelze zvolit hráče který je chtáněný komornou
+ * @brief Game::effectGuardian
+ * @param who
+ * @param whom
+ * @param tip
+ * @return
+ */
+bool Game::effectGuardian(Player *who, Player *whom, GameCards tip, std::string *result)
+{
+    LOG_DEBUG("effectGuardian() - start");
+
+    /* CHECK PREREQUISITES */
+    if(whom->isGuarded()){
+        LOG_TRACE("effectGuardian() - cíl je chráněný");
+        return false;
+        *result = "GUARDED";
+    }
+    if(tip == GameCards::guardian){
+        LOG_TRACE("effectGuardian() - tip strazne proti pravidlům");
+        return false;
+        *result = "WRONG";
+    }
+    if(who == whom){
+        LOG_TRACE("effectGuardian() - nelze určit sebe");
+        return false;
+        *result = "SAME";
+    }
+
+    /* CARD EFFECT */
+    if(whom->compareCard(tip)){
+        LOG_DEBUG("effectGuardian() - success");
+        GameCards card = whom->cardOnDesk();
+        this->sendCardToPlayers(card, whom);
+        whom->setAlive(false);
+        *result = "KILL";
+    } else {
+        LOG_DEBUG("effectGuardian() - miss");
+        *result = "MISS";
+    }
+    return true;
+}
+
+/**
+ * Podívej se na kartu zvoleného hráče, pokud není chráněn komornou.
+ * @brief Game::effectPriest
+ * @param who
+ * @param whom
+ * @return
+ */
+bool Game::effectPriest(Player *who, Player *whom, std::string *result)
+{
+    LOG_DEBUG("effectPriest() - start");
+
+    /* CHECK PREREQUISITES */
+    if(whom->isGuarded()){
+        LOG_TRACE("effectPriest() - cíl je chráněný");
+        return false;
+        *result = "GUARDED";
+    }
+    if(who == whom){
+        LOG_TRACE("effectPriest() - nelze určit sebe");
+        return false;
+        *result = "SAME";
+    }
+    /* DO EFFECT */
+    LOG_TRACE("effectPriest() - effect");
+    *result = std::to_string(whom->showCard());
+    return true;
+}
+
+/**
+ * Porovnej si karu se zvoleným hráčem, pokud není chráněn komornou.
+ *
+ * @brief Game::effectBaron
+ * @param who
+ * @param whom
+ * @return
+ */
+bool Game::effectBaron(Player *who, Player *whom, std::string *result)
+{
+    LOG_DEBUG("effectBaron() - start");
+
+    /* CHECK PREREQUISITES */
+    if(whom->isGuarded()){
+        LOG_TRACE("effectBaron() - cíl je chráněný");
+        return false;
+        *result = "GUARDED";
+    }
+    if(who == whom){
+        LOG_TRACE("effectBaron() - nelze určit sebe");
+        return false;
+        *result = "SAME";
+    }
+    /* DO EFFECT */
+    GameCards losersCard, winnerCard;
+    Player *loser, *winner;
+    if(whom->showCard() < who->showCard() && who->showCard() != GameCards::none){
+        //win case
+        losersCard = whom->cardOnDesk();
+        loser = whom;
+        winnerCard = who->showCard();
+        winner = who;
+    }else{
+        //lose case
+        losersCard = who->cardOnDesk();
+        loser = who;
+        winnerCard = whom->showCard();
+        winner = whom;
+    }
+
+    loser->setAlive(false);
+
+    *result = "RESULT";
+    *result += "@@";
+    *result += std::to_string(losersCard);
+    *result += "@@";
+    *result += loser->getUser()->getUID();
+    *result += "@@";
+    *result += std::to_string(winnerCard);
+    *result += "@@";
+    *result += winner->getUser()->getUID();
+
+    this->sendCardToPlayers(losersCard, loser);
+    return true;
+}
+
+/**
+ * Po celé další kolo jsi chráněn před efekty karet ostatních
+ * @brief Game::effectMaid
+ * @param who
+ * @return
+ */
+bool Game::effectMaid(Player *who, std::string *result)
+{
+    LOG_DEBUG("effectMaid() - start");
+
+    /* CHECK PREREQUISITES */
+
+    /* DO EFFECT */
+    who->setGuarded(true);
+    *result = "SUCCESS";
+    return true;
+}
+
+/**
+ * Vylož kartu na stůl a pokud můžeš pokračovat vezmi si další.
+ * @brief Game::effectPrince
+ * @param who
+ * @param whom
+ * @return
+ */
+bool Game::effectPrince(Player *who, Player *whom, std::string *result)
+{
+    LOG_DEBUG("effectPrince() - start");
+
+    /* CHECK PREREQUISITES */
+    if(who->haveCountess()){
+        LOG_TRACE("effectPrince() - musíš zahrát komornou");
+        return false;
+        *result = "WRONG";
+    }
+    if(whom->isGuarded()){
+        LOG_TRACE("effectPrince() - cíl je chráněný");
+        return false;
+        *result = "GUARDED";
+    }
+                        // ============================================ TODO TODO
+    this->sendCardToPlayers(whom->cardOnDesk(), whom);
+    if(whom->isAlive()){
+        whom->giveFirstCard(game_deck.getNextCard());
+    }
+    return true;
+}
+
+/**
+ * Vyměň si kartu s označeným hráčem, pokud není chráněn komornou.
+ * @brief Game::effectKing
+ * @param who
+ * @param whom
+ * @return
+ */
+bool Game::effectKing(Player *who, Player *whom, std::string *result)
+{
+    LOG_DEBUG("effectKing() - start");
+
+    /* CHECK PREREQUISITES */
+    if(who->haveCountess()){
+        LOG_TRACE("effectKing() - musíš zahrát komornou");
+        return false;
+        *result = "WRONG";
+    }
+    if(whom->isGuarded()){
+        LOG_TRACE("effectKing() - cíl je chráněný");
+        return false;
+        *result = "GUARDED";
+    }
+    if(who == whom){
+        LOG_TRACE("effectKing() - nelze určit sebe");
+        return false;
+        *result = "SAME";
+    }
+    /* DO EFFECT */
+    GameCards tmpCard = whom->showCard();
+    whom->giveFirstCard(who->showCard());
+    who->giveFirstCard(tmpCard);
+    return true;
+}
+
+/**
+ * Vylož kartu, pokud se ti sejde na ruce hraběnka s králem nebo princem.
+ * Nemá speciální efekt po odehrání.
+ * @brief Game::effectCountess
+ * @param who
+ * @return
+ */
+bool Game::effectCountess(Player *who, std::string *result)
+{
+    LOG_DEBUG("effectCountess() - start");
+    if(who->haveRoyalMan()){
+        LOG_TRACE("effectCountess() - forced play");
+    }
+    *result = "SUCCESS";
+    return true;
+}
+
+
+/**
+ * Pokud zahraješ tuto kartu, hra pro tebe končí.
+ * @brief Game::effectPrincess
+ * @param who
+ * @return
+ */
+bool Game::effectPrincess(Player *who, std::string *result)
+{
+    LOG_DEBUG("effectPrincess() - start");
+    who->setAlive(false);
+    *result = "SUCCESS";
+    return true;
+}
+
+//=================================================================================================
+//=================================================================================================
+//=================================================================================================
+//=================================================================================================
+//=====================================================================================================================
+
+
+/** *******************************************************************************************************************
+ * Choose correct effect of cards
+ *
+ * @brief Game::playCard
+ * @param result
+ * @param cardToPlay
+ * @param who
+ * @param whom
+ * @param tip
+ * @return
+ */
+std::string Game::playCard(bool *result, GameCards cardToPlay, Player *who, Player *whom, GameCards cardTip)
+{
+    LOG_DEBUG("Game::playCard() - start switch")
+
+    if(!who->haveThisCard(cardToPlay)){
+        *result = false;
+        return "ERROR You DO NOT have this card";
+    }
+
+    std::string resultS;
+    switch(cardToPlay){
+    case GameCards::guardian:
+        LOG_TRACE("Game::playCard() - case guardian")
+        *result = this->effectGuardian(who, whom, cardTip, &resultS);
+        break;
+    case GameCards::priest:
+        LOG_TRACE("Game::playCard() - case priest")
+        *result = this->effectPriest(who, whom, &resultS);
+        break;
+    case GameCards::baron:
+        LOG_TRACE("Game::playCard() - case baron")
+        *result = this->effectBaron(who, whom, &resultS);
+        break;
+    case GameCards::komorna:
+        LOG_TRACE("Game::playCard() - case komorna")
+        *result = this->effectMaid(who, &resultS);
+        break;
+    case GameCards::prince:
+        LOG_TRACE("Game::playCard() - case prince")
+        *result = this->effectPrince(who, whom, &resultS);
+        break;
+    case GameCards::king:
+        LOG_TRACE("Game::playCard() - case king")
+        *result = this->effectKing(who, whom, &resultS);
+        break;
+    case GameCards::countess:
+        LOG_TRACE("Game::playCard() - case countess")
+        *result = this->effectCountess(who, &resultS);
+        break;
+    case GameCards::princess:
+        LOG_TRACE("Game::playCard() - case princess")
+        *result = this->effectPrincess(who, &resultS);
+        break;
+    default:
+        LOG_TRACE("Game::playCard() - case default")
+        *result = false;
+        break;
+    }
+    return resultS;
+}
+
+/**
+ * @brief Game::addPlayer
+ * @param who
+ * @return
+ */
 bool Game::addPlayer(User *who)
 {
     //check parameter
@@ -73,148 +397,6 @@ bool Game::addPlayer(User *who)
     }
     return false;
 }
-
-
-
-//============================================================================================================================
-//=================================================================================================
-//=================================================================================================
-//=================================================================================================
-//=================================================================================================
-
-/**
- * Urči hráče a jeho kartu, pokud zvolíš správně hráč je vyřazen ze hry.
- * Nelze zvolit strážnou a nelze zvolit hráče který je chtáněný komornou
- * @brief Game::effectGuardian
- * @param who
- * @param whom
- * @param tip
- * @return
- */
-bool Game::effectGuardian(Player *who, Player *whom, GameCards tip)
-{
-    if(whom->isGuarded()){
-        return false;
-    }
-    if(whom->compareCard(tip)){
-        whom->cardOnDesk();
-        whom->setAlive(false);
-        return true;
-    }
-    return false;
-}
-
-/**
- * Podívej se na kartu zvoleného hráče, pokud není chráněn komornou.
- * @brief Game::effectPriest
- * @param who
- * @param whom
- * @return
- */
-GameCards Game::effectPriest(Player *who, Player *whom)
-{
-    if(whom->isGuarded()){
-        return GameCards::none;
-    }
-    return whom->showCard();
-}
-
-/**
- * Porovnej si karu se zvoleným hráčem, pokud není chráněn komornou.
- *
- * @brief Game::effectBaron
- * @param who
- * @param whom
- * @return
- */
-bool Game::effectBaron(Player *who, Player *whom)
-{
-    if(whom->isGuarded()){
-        return false;
-    }
-    return whom->compareCard(who->showCard());
-}
-
-/**
- * Po celé další kolo jsi chráněn před efekty karet ostatních
- * @brief Game::effectMaid
- * @param who
- * @return
- */
-bool Game::effectMaid(Player *who)
-{
-    who->setGuarded(true);
-    return true;
-}
-
-/**
- * Vylož kartu na stůl a pokud můžeš pokračovat vezmi si další.
- * @brief Game::effectPrince
- * @param who
- * @param whom
- * @return
- */
-bool Game::effectPrince(Player *who, Player *whom)
-{
-    if(whom->isGuarded()){
-        return false;
-    }
-    whom->cardOnDesk();
-    if(whom->isAlive()){
-        giveCard(whom);
-    }
-    return true;
-}
-
-/**
- * Vyměň si kartu s označeným hráčem, pokud není chráněn komornou.
- * @brief Game::effectKing
- * @param who
- * @param whom
- * @return
- */
-bool Game::effectKing(Player *who, Player *whom)
-{
-    if(whom->isGuarded()){
-        return false;
-    }
-    GameCards tmpCard = whom->showCard();
-    whom->giveFirstCard(who->showCard());
-    who->giveFirstCard(tmpCard);
-    return true;
-}
-
-/**
- * Vylož kartu, pokud se ti sejde na ruce hraběnka s králem nebo princem.
- * Nemá speciální efekt po odehrání.
- * @brief Game::effectCountess
- * @param who
- * @return
- */
-bool Game::effectCountess(Player *who)
-{
-    // no special efect when card is played
-}
-
-
-/**
- * Pokud zahraješ tuto kartu, hra pro tebe končí.
- * @brief Game::effectPrincess
- * @param who
- * @return
- */
-bool Game::effectPrincess(Player *who)
-{
-    who->setAlive(false);
-    return true;
-}
-
-
-//=================================================================================================
-//=================================================================================================
-//=================================================================================================
-//=================================================================================================
-//=====================================================================================================================
 
 /**
  * @brief Game::giveCard
@@ -287,10 +469,11 @@ Player *Game::getNextPlayerForToken(Player *playerWithToken){
     return chosenPlayer;
 }
 
-/**
+/** ***********************************************************************************************
+ * Vrací hráče dle zadaného uživatele v této hře.
  * @brief Game::getPlayer
- * @param user
- * @return
+ * @param user ukazatel na uživatele svázaného s hráčem (může být null)
+ * @return NULL / pointer na nalezeného hráče
  */
 Player *Game::getPlayer(User *user){
    if(player1 != NULL && player1->getUser() == user){
@@ -333,6 +516,7 @@ Player *Game::getPlayer(int index){
         case 3:
         return player4;
     }
+    return NULL;
 }
 
 /**
@@ -344,12 +528,27 @@ bool Game::isStarted()
     return started;
 }
 
-bool Game::playCard(GameCards cardToPlay, std::string userId, GameCards tip)
+
+/**
+ * @brief Game::toString
+ * @return
+ */
+std::string Game::toString()
 {
-    //todo implementation =============================================*************************************
-    return true;
+    std::string tmp;
+    tmp += uid;
+    tmp += "&&";
+    tmp += std::to_string(player_count);
+    tmp += "&&";
+    tmp += std::to_string(started);
+    return tmp;
 }
 
+/**
+ * @brief Game::sendCardToPlayers
+ * @param playedCard
+ * @param player
+ */
 void Game::sendCardToPlayers(GameCards playedCard, Player *player)
 {
     if(playedCard != GameCards::none ){
@@ -379,18 +578,73 @@ void Game::sendCardToPlayers(GameCards playedCard, Player *player)
 }
 
 /**
- * @brief Game::toString
- * @return
+ * @brief Game::sendCardsToPlayers
+ * @param playedCard
+ * @param player
  */
-std::string Game::toString()
+void Game::sendCardsToPlayers()
 {
-    std::string tmp;
-    tmp += uid;
-    tmp += "&&";
-    tmp += std::to_string(player_count);
-    tmp += "&&";
-    tmp += std::to_string(started);
-    return tmp;
+    for (int index = 0; index < 4; ++index) {
+        if((*players[index]) != NULL){
+            (*players[index])->sendCards();
+        }
+    }
+}
+
+void Game::sendResult(Player *who, Player *whom, GameCards cardToPlay, std::string resultS)
+{
+    switch(cardToPlay){
+    case guardian:
+    case baron:
+    case prince:
+    case princess:
+        if(resultS.compare("KILL")){
+            this->sendPlayersState(cardToPlay, who, whom);
+        }
+        who->sendResult(cardToPlay, resultS, true);
+        if(whom != NULL){
+            whom->sendResult(cardToPlay, resultS, false);
+        }
+        break;
+    case priest:
+    case countess:
+    case king:
+    case komorna:
+        who->sendResult(cardToPlay, resultS, true);
+        if(whom != NULL){
+            whom->sendResult(cardToPlay, resultS, false);
+        }
+        break;
+    default:
+        LOG_ERROR_P1("Nesmyslna karta k provedeni vysledku efektu :", cardToPlay);
+        break;
+    }
+}
+
+/**
+ * Odešli stav hráčů na všechny klienty
+ * @brief Game::sendPlayersState
+ * @param cardToPlay
+ * @param who
+ * @param whom
+ */
+void Game::sendPlayersState(GameCards cardToPlay, Player *who, Player *whom){
+    std::string msgS = "";
+    for (int index = 0; index < 4; ++index) {
+        if((*players[index]) != NULL){
+            msgS += (*players[index])->getStateMsg();
+        }
+    }
+
+    for (int index = 0; index < 4; ++index) {
+        if((*players[index]) != NULL){
+            Message *msg = new Message((*players[index])->getUser()->getSocket()
+                                      ,MessageType::game
+                                      ,Event::PLS
+                                      , msgS);
+            MessageQueue::sendInstance()->push_msg(msg);
+        }
+    }
 }
 
 

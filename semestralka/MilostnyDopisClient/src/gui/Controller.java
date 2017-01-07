@@ -3,6 +3,7 @@ package gui;
 
 import constants.Constants;
 import game.Player;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -62,12 +63,19 @@ public class Controller implements Initializable {
     @FXML
     public void onConnect(){
         disableForm();
+            //todo start loading gui
+        App.loginWorker = new Thread(() -> {
+            if(!NetService.isRunning()){
+                connect();
+            }
 
-        if(!NetService.isRunning()){
-            connect();
-        }
+            if (!Thread.currentThread().isInterrupted()) {//todo handle interuption
 
-        sendLogin();
+            }
+
+            sendLogin();
+        });
+        App.loginWorker.start();
     }
 
     @FXML

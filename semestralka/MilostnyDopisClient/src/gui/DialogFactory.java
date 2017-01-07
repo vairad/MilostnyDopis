@@ -1,6 +1,7 @@
 package gui;
 
 import game.Card;
+import game.Player;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceDialog;
@@ -63,5 +64,27 @@ public class DialogFactory {
             return result.get();
         }
         return null;
+    }
+
+    public static void returnedCard(Card card) {
+        Alert alert  = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle(App.bundle.getString("returnedCardTitle"));
+        alert.setHeaderText(App.bundle.getString("returnedCardHeadline"));
+        alert.setContentText(App.bundle.getString("returnedCardText") + " : " + card);
+        alert.showAndWait();
+    }
+
+    public static void resultDialog(Card playedCard, Player playerWhoPlays, boolean isMyTarget, String cardResult) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Výsledek karty");
+        if(!isMyTarget){
+            alert.setHeaderText("Čelil jsi efektu karty s tímto výsledkem");
+        } else{
+            alert.setHeaderText("Záhrál jsi kartu s tímto výsledkem:");
+        }
+        alert.setContentText(playedCard.toString() + " " + playerWhoPlays.getDisplayName() + " " + cardResult);
+        alert.showAndWait();
+        //todo resources
+        //todo resolvecard result
     }
 }

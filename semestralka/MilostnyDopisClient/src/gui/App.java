@@ -36,6 +36,8 @@ public class App extends Application {
 
     public static GameWindow win = null;
 
+    static Thread loginWorker;
+
     private Stage stage;
 
     protected static ResourceBundle bundle;
@@ -178,4 +180,5 @@ public class App extends Application {
     public static void moveTokenTo(Player player) {
         App.win.movePointerTo(player.getDisplay_order());
     }
+
 }

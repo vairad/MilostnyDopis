@@ -215,8 +215,8 @@ void GameHandler::handleGamePLA(Message *msg){
     }
 
     GameCards cardToPlay = GameCards::none;
-    std::string userId = "";
     GameCards cardTip = GameCards::none;
+    Player *affectedPlayer = NULL;
 
     vector<std::string> messageParts;
     char tmpMsg[254];
@@ -236,7 +236,8 @@ void GameHandler::handleGamePLA(Message *msg){
     }
 
     if(messageParts.size() >= 2){
-        userId = messageParts[1];
+        std::string userId = messageParts[1];
+        affectedPlayer = game->getPlayer(UserDatabase::getInstance()->getUserById(userId));
     }
 
     if(messageParts.size() >= 3){
@@ -244,16 +245,22 @@ void GameHandler::handleGamePLA(Message *msg){
         cardTip = GameDeck::getCardByInt(card);
     }
 
-    bool result = game->playCard(cardToPlay, userId, cardTip);
+    bool result;
+    std::string resultS = game->playCard(&result, cardToPlay, player, affectedPlayer, cardTip);
     if(result == false){
         std::string msgS = "CANCEL";
         msgS += "&&";
         msgS += std::to_string(cardToPlay);
+        msgS += "&&";
+        msgS += resultS;
         msg->setMsg(msgS);
         MessageQueue::sendInstance()->push_msg(msg);
     }
     player->playCard(cardToPlay);
     game->sendCardToPlayers(cardToPlay, player);
+    game->sendResult(player, affectedPlayer, cardToPlay, resultS);
+    game->sendPlayersState(GameCards::none, NULL, NULL);
+    game->sendCardsToPlayers();
 }
 
 /**

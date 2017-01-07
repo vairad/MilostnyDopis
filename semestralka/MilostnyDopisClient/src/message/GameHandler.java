@@ -5,6 +5,7 @@ import game.Game;
 import game.GameStatus;
 import game.Player;
 import gui.App;
+import gui.DialogFactory;
 import gui.GameRecord;
 import javafx.application.Platform;
 import netservice.NetService;
@@ -45,6 +46,12 @@ public class GameHandler {
             case PLA:
                 handleGamePLA(msg);
                 break;
+            case RES:
+                handleGameRES(msg);
+                break;
+            case PLS:
+                handleGamePLS(msg);
+                break;
             case UNK:
                 logger.error("UNKNOWN GAME EVENT TYPE");
                 break;
@@ -52,6 +59,51 @@ public class GameHandler {
                 logger.error("UNIMPLEMENTED GAME EVENT TYPE: " + msg.getEvent());
                 break;
         }
+    }
+
+    private static void handleGamePLS(Message msg) {
+        String[] playersParts = msg.getMessage().split("@@");
+        for (String playerRec : playersParts ) {
+            handlePlayerPLS(playerRec);
+        }
+        Platform.runLater(() -> App.win.updatePlayers());
+    }
+
+    private static void handlePlayerPLS(String playerRec) {
+        String[] attributes = playerRec.split("&&");
+
+        boolean guarded = Boolean.parseBoolean(attributes[1]);
+        boolean token = Boolean.parseBoolean(attributes[2]);
+        boolean alive = Boolean.parseBoolean(attributes[3]);
+
+        Game.getPlayer(attributes[0]).
+                setAttributes(alive, token, guarded);
+    }
+
+    private static void handleGameRES(Message msg) {
+        logger.debug("start method");
+        String[] messageParts = msg.getMessage().split("&&");
+        if(messageParts.length > 2){
+            Card playedCard = Card.getCardFromInt(Integer.parseInt(messageParts[0]));
+            if(playedCard == Card.NONE){
+                logger.error("nonsense card");
+                return;
+            }
+            Player playerWhoPlays = Game.getPlayer(messageParts[1]);
+            if(playerWhoPlays == null){
+                logger.error("affect player out of game");
+                return;
+            }
+            boolean isMyTarget = Boolean.parseBoolean(messageParts[2]);
+
+            if(messageParts.length == 4){
+                Platform.runLater(() -> DialogFactory.resultDialog(playedCard, playerWhoPlays, isMyTarget, messageParts[3]));
+            }else {
+                Platform.runLater(() -> DialogFactory.resultDialog(playedCard, playerWhoPlays, isMyTarget, null));
+            }
+
+        }
+        logger.error("wrong format of res message " + messageParts.length);
     }
 
     private static void handleGamePLA(Message msg) {
@@ -62,7 +114,11 @@ public class GameHandler {
             return;
         }
         if(messageParts[0].equals("CANCEL")){
-            logger.trace("větev neuznané karty"); // TODO server zatím vše uzná
+            logger.trace("větev neuznané karty");
+            Card card = Card.getCardFromInt(Integer.parseInt(messageParts[1]));
+            logger.debug("Vracím do ruky kartu :"+card);
+            Platform.runLater(() -> DialogFactory.returnedCard(card));
+            Player.giveCard(card);
             return;
         }
 
@@ -79,9 +135,11 @@ public class GameHandler {
 
         Platform.runLater(() -> App.win.addCard());
 
-        // pokud jsem obdržel výsledek své karty... předávám token hry
+        // pokud jsem obdržel výsledek své karty... předávám token hry (pokud ho mám)
         if(Game.getPlayer(messageParts[1]).equals(Player.getLocalPlayer())){
-            giveTokenToServer();
+            if(Player.getLocalPlayer().haveToken()) {
+                giveTokenToServer();
+            }
         }
     }
 

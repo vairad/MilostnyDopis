@@ -51,6 +51,11 @@ public:
     void sendCards();
     GameCards getSecondCard() const;
     void playCard(GameCards card);
+    bool haveCountess();
+    bool haveRoyalMan();
+    void sendResult(GameCards cardToPlay, std::string result, bool myCard);
+    bool haveThisCard(GameCards card);
+    std::string getStateMsg();
 };
 
 #endif // PLAYER_H

@@ -38,8 +38,13 @@ bool Player::compareCard(GameCards card)
 
 GameCards Player::cardOnDesk()
 {
-    played_list.push_back(myCard);
-    return myCard;
+    GameCards tmpCard = myCard;
+    myCard = GameCards::none;
+    played_list.push_back(tmpCard);
+    if(tmpCard == GameCards::princess){
+        alive = false;
+    }
+    return tmpCard;
 }
 
 GameCards Player::showCard()
@@ -49,6 +54,7 @@ GameCards Player::showCard()
 
 void Player::giveToken()
 {
+    guarded = false;
     token = true;
 }
 
@@ -95,6 +101,67 @@ void Player::playCard(GameCards card)
     played_list.push_back(card);
 }
 
+bool Player::haveCountess()
+{
+    if(myCard == GameCards::countess || secondCard == GameCards::countess){
+        return true;
+    }
+    return false;
+}
+
+bool Player::haveRoyalMan()
+{
+    if(myCard == GameCards::king || secondCard == GameCards::king){
+        return true;
+    }
+    if(myCard == GameCards::prince || secondCard == GameCards::prince){
+        return true;
+    }
+    return false;
+}
+
+void Player::sendResult(GameCards cardToPlay, std::string result, bool myCard)
+{
+   std::string msgS = std::to_string(cardToPlay);
+   msgS += "&&";
+   msgS += this->getUser()->getUID();
+   msgS += "&&";
+   msgS += myCard ? "true" : "false";
+   msgS += "&&";
+   msgS += result;
+
+   Message *msg = new Message(this->getUser()->getSocket()
+                              , MessageType::game
+                              , Event::RES
+                              , msgS);
+    MessageQueue::sendInstance()->push_msg(msg);
+}
+
+bool Player::haveThisCard(GameCards card)
+{
+    if(myCard == card){
+        return true;
+    }
+    if(secondCard == card){
+        return true;
+    }
+    return false;
+}
+
+std::string Player::getStateMsg()
+{
+    std::string msg;
+    msg += user->getUID();
+    msg += "&&";
+    msg += guarded ? "true" : "false";
+    msg += "&&";
+    msg += token ? "true" : "false";
+    msg += "&&";
+    msg += alive ? "true" : "false";
+    msg += "@@";
+    return msg;
+}
+
 std::string Player::xmlCards()
 {
     std::string cardsCollection = "<cardsCollection>";
@@ -135,6 +202,10 @@ std::string Player::xmlPlayer(int order)
     playerAtributes += token ? "true" : "false";
     playerAtributes += "</token>";
 
+    playerAtributes += "<guarded>";
+    playerAtributes += guarded ? "true" : "false";
+    playerAtributes += "</guarded>";
+
     playerAtributes += xmlCards();
 
     playerAtributes += "</player>";
@@ -157,8 +228,12 @@ void Player::sendCards()
     MessageQueue::sendInstance()->push_msg(msg);
 }
 
-Player::Player(User *user) : user(user)
+Player::Player(User *user) :
+   user(user)
+  ,guarded(false)
   ,alive(true)
+  ,token(false)
+  ,score(0)
   ,myCard(GameCards::none)
   ,secondCard(GameCards::none)
 {

@@ -37,5 +37,7 @@
 #define OPT_CAR "CAR" /*new card*/
 #define OPT_TOK "TOK" /*token */
 #define OPT_PLA "PLA" /*played card */
+#define OPT_PLS "PLS" /*players state*/
+#define OPT_RES "RES" /*card result*/
 
 #endif // OPTCODE_H

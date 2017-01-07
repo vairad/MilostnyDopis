@@ -164,6 +164,12 @@ void Sender::fillEvent(char *msg, Event event){
     case Event::PLA:
         strcpy(eventS, OPT_PLA);
         break;
+    case Event::PLS:
+        strcpy(eventS, OPT_PLS);
+        break;
+    case Event::RES:
+        strcpy(eventS, OPT_RES);
+        break;
     case Event::UNK:
         LOG_ERROR("Nelze nastavit typ unknown");
         break;
