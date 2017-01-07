@@ -158,7 +158,7 @@ bool Game::effectBaron(Player *who, Player *whom, std::string *result)
         this->sendCardToPlayers(losersCard, loser);
     }if( whom->showCard() == who->showCard() && who->showCard() != GameCards::none ){
         //draw case
-        losersCard = whom->cardOnDesk();
+        losersCard = whom->showCard();
         loser = whom;
         winnerCard = who->showCard();
         winner = who;
