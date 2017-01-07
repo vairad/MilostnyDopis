@@ -22,6 +22,8 @@ class Player
     GameCards myCard;
     GameCards secondCard;
 
+    int points;
+
     std::vector<GameCards> played_list;
     std::string xmlCards();
 public:
@@ -60,6 +62,7 @@ public:
     std::string getPointsMessage();
     void clear();
     int getPoints();
+    void givePoint();
 };
 
 #endif // PLAYER_H

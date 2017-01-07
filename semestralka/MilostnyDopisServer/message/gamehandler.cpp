@@ -139,25 +139,24 @@ void GameHandler::handleGameTOK(Message *msg){
         return;
     }
 
+
+    game->moveTokenToNextPlayer(user);
+    msg->setMsg("OK");
+    MessageQueue::sendInstance()->push_msg(msg);
+
+    if(game->isEndOfRound()){
+        LOG_DEBUG_PS("ENG OF ROUND IN",game->getUid().c_str())
+        game->restartGame();
+    }
+
     if(game->isEndOfGame()){
         LOG_DEBUG_PS("ENG OF GAME: ",game->getUid().c_str())
         game->finishGame();
         GameServices::getInst()->removeGame(game);
         game = NULL;
-        delete msg;
         return;
     }
 
-    if(game->isEndOfRound()){
-        LOG_DEBUG_PS("ENG OF ROUND IN",game->getUid().c_str())
-        game->restartGame();
-        for (int var = 0; var < 3000000; ++var) {
-            //wait
-        }
-    }
-    game->moveTokenToNextPlayer(user);
-    msg->setMsg("OK");
-    MessageQueue::sendInstance()->push_msg(msg);
 }
 
 /**

@@ -154,15 +154,23 @@ bool Game::effectBaron(Player *who, Player *whom, std::string *result)
         loser = whom;
         winnerCard = who->showCard();
         winner = who;
+        loser->setAlive(false);
+        this->sendCardToPlayers(losersCard, loser);
+    }if( whom->showCard() == who->showCard() && who->showCard() != GameCards::none ){
+        //draw case
+        losersCard = whom->cardOnDesk();
+        loser = whom;
+        winnerCard = who->showCard();
+        winner = who;
     }else{
         //lose case
         losersCard = who->cardOnDesk();
         loser = who;
         winnerCard = whom->showCard();
         winner = whom;
+        loser->setAlive(false);
+        this->sendCardToPlayers(losersCard, loser);
     }
-
-    loser->setAlive(false);
 
     *result = "RESULT";
     *result += "@@";
@@ -174,7 +182,7 @@ bool Game::effectBaron(Player *who, Player *whom, std::string *result)
     *result += "@@";
     *result += winner->getUser()->getUID();
 
-    this->sendCardToPlayers(losersCard, loser);
+
     return true;
 }
 
@@ -694,6 +702,10 @@ bool Game::isEndOfGame()
 }
 
 void Game::finishGame(){
+    // říct kdo vyhrál kolo
+    this->sendRoundResult();
+    this->sendGameStateToAllPlayers();
+
     this->sendGoodBye();
     this->unlinkUsers();
 }
@@ -701,7 +713,7 @@ void Game::finishGame(){
 void Game::restartGame()
 {
     // říct kdo vyhrál kolo
-    this->sendRoundPoints();
+    this->sendRoundResult();
 
     // resetovat stav
     this->resetState();
@@ -764,15 +776,47 @@ void Game::sendGoodBye()
     }
 }
 
-void Game::sendRoundPoints(){
+void Game::sendRoundResult(){
+    GameCards winnerCard = GameCards::none;
+
+    // find best card
     for (int index = 0; index < MAX_PLAYER_COUNT; ++index) {
-        if((*players[index]) != NULL){
-            std::string msgS = "";
-                    msgS += this->getRoundPoints();
+        if((*players[index]) != NULL && (*players[index])->isAlive()){
+            if(winnerCard == GameCards::none){
+               winnerCard = (*players[index])->showCard();
+               continue;
+            }
+            if((*players[index])->showCard() > winnerCard){
+                winnerCard = (*players[index])->showCard();
+                continue;
+            }
+        }
+    }
+
+    //find all winners
+    std::string msgS = "";
+    msgS += std::to_string(winnerCard);
+    msgS += "&&";
+    for (int index = 0; index < MAX_PLAYER_COUNT; ++index) {
+        if((*players[index]) != NULL
+                && (*players[index])->isAlive()
+                && (*players[index])->showCard() == winnerCard){
+            (*players[index])->givePoint();
+            msgS += (*players[index])->getUser()->getUID();
+            msgS += "&&";
+        }
+    }
+
+    //send results
+    for (int index = 0; index < MAX_PLAYER_COUNT; ++index) {
+        if((*players[index]) != NULL
+                && (*players[index])->isAlive()
+                && (*players[index])->showCard() == winnerCard){
+            (*players[index])->givePoint();
             Message *msg = new Message((*players[index])->getUser()->getSocket()
-                                       ,MessageType::game
-                                       ,Event::PTS
-                                       ,msgS);
+                                           ,MessageType::game
+                                           ,Event::PTS
+                                           ,msgS);
             MessageQueue::sendInstance()->push_msg(msg);
         }
     }

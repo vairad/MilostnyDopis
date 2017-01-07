@@ -40,6 +40,7 @@ public class GameController {
 
     @FXML public Button playButton;
     @FXML public TextField chosenPlayer;
+    @FXML public TableView gameResults;
 
 
     public void onClose(ActionEvent actionEvent) {

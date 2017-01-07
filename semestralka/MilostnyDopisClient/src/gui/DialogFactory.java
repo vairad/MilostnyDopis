@@ -107,4 +107,25 @@ public class DialogFactory {
         }
         return -1;
     }
+
+    public static void roundEndDialog(List<Player> winners, Card winCard){
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(App.bundle.getString("roundWinnerTitle"));
+        String headline = App.bundle.getString("roundWinnerHeadline") + " " + winCard;
+        alert.setHeaderText(headline);
+        String text = App.bundle.getString("roundWinnerText");
+        text += "\n";
+        for (Player p: winners) {
+            text += p.getDisplayName() + "\n";
+        }
+        alert.setContentText(text);
+        alert.showAndWait();
+    }
+
+    public static void gameStandingsDialog() {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Konec hry"); //todo resources
+        alert.showAndWait();
+    }
+
 }

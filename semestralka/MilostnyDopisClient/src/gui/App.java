@@ -96,8 +96,17 @@ public class App extends Application {
         tree.setRoot(rootItem);
         tree.setOnMouseClicked(mouseEvent -> {
             if(mouseEvent.getClickCount() == 2)
-            {
-                GameRecord item = tree.getSelectionModel().getSelectedItem().getValue();
+            {   GameRecord item;
+                try {
+                    item = tree.getSelectionModel().getSelectedItem().getValue();
+                }catch (NullPointerException e){
+                    logger.debug("nothing selected");
+                    return;
+                }
+                if(item == null){
+                    logger.debug("null selected");
+                    return;
+                }
                 logger.debug("Byla zvolena hra pro přihlášení:" + item);
                 boolean result = DialogFactory.yesNoQuestion(bundle.getString("loginGameQTitle")
                                             , bundle.getString("loginGameQ") + " " + item);

@@ -17,7 +17,8 @@ public enum Event {
     STA ("STA"),
     PLS ("PLS"),
     RES ("RES"),
-    PLA("PLA");
+    PLA("PLA"),
+    PTS("PTS");
 
     private final String name;
 

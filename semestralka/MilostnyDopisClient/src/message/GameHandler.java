@@ -8,6 +8,7 @@ import gui.App;
 import gui.DialogFactory;
 import gui.GameRecord;
 import javafx.application.Platform;
+import javafx.stage.Stage;
 import netservice.NetService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -52,6 +53,9 @@ public class GameHandler {
             case PLS:
                 handleGamePLS(msg);
                 break;
+            case PTS:
+                handleGamePTS(msg);
+                break;
             case UNK:
                 logger.error("UNKNOWN GAME EVENT TYPE");
                 break;
@@ -59,6 +63,21 @@ public class GameHandler {
                 logger.error("UNIMPLEMENTED GAME EVENT TYPE: " + msg.getEvent());
                 break;
         }
+    }
+
+    private static void handleGamePTS(Message msg) {
+        logger.debug("stard method");
+        String[] messageParts = msg.getMessage().split("&&");
+        Card winnerCard = Card.getCardFromInt(Integer.parseInt(messageParts[0]));
+
+        List<Player> winners = new LinkedList<>();
+        for (int index = 1; index < messageParts.length; index++){
+            Player player = Game.getPlayer(messageParts[index]);
+            if(player != null){
+                winners.add(player);
+            }
+        }
+        Platform.runLater(() -> DialogFactory.roundEndDialog(winners, winnerCard ));
     }
 
     private static void handleGamePLS(Message msg) {
@@ -207,7 +226,22 @@ public class GameHandler {
     }
 
     private static void handleGameSTA(Message msg) {
-        Game.reinitialize(new GameStatus(msg.getMessage()));
+        //todo handle GAMSTA#GAMEbm&&OVER
+        if(Game.getUid().equals(msg.getMessage().substring(0,6))){
+            logger.debug("game is over");
+            //todo show dialog with absolute winner last points
+            Platform.runLater(() -> {
+                DialogFactory.gameStandingsDialog();
+                App.win.hide();
+            });
+            return;
+        }
+        try {
+            Game.reinitialize(new GameStatus(msg.getMessage()));
+        }catch (NullPointerException e){
+            logger.error("game is not initialized");
+            return;
+        }
         if(Game.isReady()){
             Platform.runLater(App::showGameWindow);
         }

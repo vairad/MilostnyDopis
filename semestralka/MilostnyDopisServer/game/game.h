@@ -82,7 +82,7 @@ public:
 private:
     void sendTokenTo(Player *player);
     void sendGoodBye();
-    void sendRoundPoints();
+    void sendRoundResult();
 
    std::string getRoundPoints();
 

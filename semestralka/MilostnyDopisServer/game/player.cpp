@@ -180,14 +180,11 @@ void Player::clear()
 }
 
 int Player::getPoints(){
-    int points = 0;
-    for(auto card = played_list.begin(); card != played_list.end(); ++card) {
-        points += *card;
-    }
-    if(myCard != GameCards::none){
-        points += myCard;
-    }
     return points;
+}
+
+void Player::givePoint(){
+    points++;
 }
 
 std::string Player::xmlCards()
@@ -264,6 +261,7 @@ Player::Player(User *user) :
   ,score(0)
   ,myCard(GameCards::none)
   ,secondCard(GameCards::none)
+  ,points(0)
 {
 }
 

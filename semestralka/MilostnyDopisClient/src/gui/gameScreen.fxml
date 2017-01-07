@@ -55,6 +55,18 @@
 
     <!-- Společný prostor ====================================================================================== -->
 
+    <VBox GridPane.columnIndex="2"
+          GridPane.rowIndex="0"
+          GridPane.columnSpan="1">
+        <Label text="%results"/>
+        <Label text="%round"/>
+
+        <ScrollPane>
+            <TableView fx:id="gameResults"
+                        />
+        </ScrollPane>
+    </VBox>
+
     <StackPane fx:id="sharedPlace"
                GridPane.columnIndex="1"
                GridPane.rowIndex="1"
