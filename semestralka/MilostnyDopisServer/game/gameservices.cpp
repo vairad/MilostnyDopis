@@ -51,6 +51,23 @@ Game *GameServices::createNewGame(int round_count)
     return game;
 }
 
+/** ************************************************************************************
+ * Odstraní hru z mapy rozehraných her a uvolní její paměť
+ * @brief GameServices::removeGame
+ * @param game
+ */
+void GameServices::removeGame(Game *game)
+{
+    pthread_mutex_lock(&map_lock);
+
+    if(game != NULL){
+        games_by_id.erase(game->getUid());
+    }
+
+    pthread_mutex_unlock(&map_lock);
+    delete game;
+}
+
 /** **************************************************************************************
  * @brief GameServices::getGameByUid
  * @param uid

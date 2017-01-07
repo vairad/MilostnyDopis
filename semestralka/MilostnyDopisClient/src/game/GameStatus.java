@@ -265,4 +265,8 @@ public class GameStatus {
     public String getUid() {
         return uid;
     }
+
+    public Long getSeqNumber() {
+        return seqNumber;
+    }
 }

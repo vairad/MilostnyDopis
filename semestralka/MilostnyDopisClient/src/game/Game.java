@@ -3,9 +3,6 @@ package game;
 import gui.App;
 import gui.GameRecord;
 import javafx.application.Platform;
-import message.Event;
-import message.Message;
-import message.MessageType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -24,11 +21,13 @@ public class Game {
     private static List<Player> players;
     private static List<Game> allGameRecords;
     private static boolean ready;
+    private static Long lastStatusSeq;
 
     public static void initialize(GameRecord gameRecord){
         players = new LinkedList<>();
         Game.gameRecord = gameRecord;
         ready = false;
+        lastStatusSeq = (long) 0;
     }
 
     public static String getUid() {
@@ -40,6 +39,10 @@ public class Game {
             logger.error("Nesouhlasi id stavu hry a hry inicializované");
             return;
         }
+        if(lastStatusSeq > gameStatus.getSeqNumber()){
+            logger.debug("ignorovan stary zaznam o hre");
+            return;
+        }
 
         setUpPlayers(gameStatus.players);
 
@@ -49,7 +52,9 @@ public class Game {
     private static void setUpPlayers(List<Player> players) {
         Game.players.clear();
         Game.players = players;
+        Player.resetCards(Card.NONE, Card.NONE);
         Platform.runLater(App::setUpPlayers);
+        Platform.runLater(App::updateCards);
     }
 
     public static boolean isReady() {

@@ -87,4 +87,24 @@ public class DialogFactory {
         //todo resources
         //todo resolvecard result
     }
+
+    public static int gameCountDialog() {
+        List<Integer> choices = new ArrayList<>();
+        choices.add(1);
+        choices.add(3);
+        choices.add(5);
+        choices.add(7);
+        choices.add(9);
+
+        ChoiceDialog<Integer> dialog = new ChoiceDialog<>(1, choices);
+        dialog.setTitle(App.bundle.getString("gameCountTitle"));
+        dialog.setHeaderText(App.bundle.getString("gameCountQuestion"));
+        dialog.setContentText(App.bundle.getString("gameCountText"));
+
+        Optional<Integer> result = dialog.showAndWait();
+        if (result.isPresent()){
+            return result.get();
+        }
+        return -1;
+    }
 }

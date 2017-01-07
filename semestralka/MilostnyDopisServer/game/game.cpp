@@ -4,6 +4,8 @@
 
 #include "message/messagequeue.h"
 
+#define MAX_PLAYER_COUNT 4
+
 std::string Game::getUid() const
 {
     return uid;
@@ -11,6 +13,7 @@ std::string Game::getUid() const
 
 Game::Game(std::string uid, int round_count) : uid(uid)
   , round_count(round_count)
+  , playedRounds(0)
   , status_sequence_id(0)
   , player_count(0)
   , full(false)
@@ -24,6 +27,21 @@ Game::Game(std::string uid, int round_count) : uid(uid)
     players[1] = &player2;
     players[2] = &player3;
     players[3] = &player4;
+
+    game_deck = new GameDeck();
+}
+
+Game::~Game(){
+    if(player1 != NULL)
+       delete player1;
+    if(player2 != NULL)
+        delete player2;
+    if(player3 != NULL)
+        delete player3;
+    if(player4 != NULL)
+        delete player4;
+
+    delete game_deck;
 }
 
 //============================================================================================================================
@@ -203,7 +221,7 @@ bool Game::effectPrince(Player *who, Player *whom, std::string *result)
                         // ============================================ TODO TODO
     this->sendCardToPlayers(whom->cardOnDesk(), whom);
     if(whom->isAlive()){
-        whom->giveFirstCard(game_deck.getNextCard());
+        whom->giveFirstCard(game_deck->getNextCard());
     }
     return true;
 }
@@ -343,6 +361,7 @@ std::string Game::playCard(bool *result, GameCards cardToPlay, Player *who, Play
     return resultS;
 }
 
+
 /**
  * @brief Game::addPlayer
  * @param who
@@ -406,7 +425,7 @@ bool Game::addPlayer(User *who)
 bool Game::giveCard(Player *who)
 {
     if(who->getSecondCard() == GameCards::none){
-        who->setSecondCard(game_deck.getNextCard());
+        who->setSecondCard(game_deck->getNextCard());
         return true;
     }
     return false;
@@ -424,7 +443,7 @@ void Game::start(){
     }
     started = true;
     for(int playerIndex = 0; playerIndex < player_count; playerIndex++){
-        getPlayer(playerIndex)->giveFirstCard(game_deck.getNextCard());
+        getPlayer(playerIndex)->giveFirstCard(game_deck->getNextCard());
     }
     player1->giveToken();
     sendTokenTo(player1);
@@ -450,7 +469,7 @@ void Game::moveTokenToNextPlayer(User *user)
  */
 Player *Game::getNextPlayerForToken(Player *playerWithToken){
     short indexWithToken = 0;
-    for(; indexWithToken < 4; indexWithToken++){
+    for(; indexWithToken < MAX_PLAYER_COUNT; indexWithToken++){
         if(*players[indexWithToken] == playerWithToken){
             break;
         }
@@ -459,7 +478,7 @@ Player *Game::getNextPlayerForToken(Player *playerWithToken){
     Player *chosenPlayer = NULL;
     while(chosenPlayer == NULL){
         indexWithToken++;
-        indexWithToken = indexWithToken % 4;
+        indexWithToken = indexWithToken % MAX_PLAYER_COUNT;
         Player *p = *players[indexWithToken];
         if(p != NULL && p->isAlive()){
             chosenPlayer = p;
@@ -584,7 +603,7 @@ void Game::sendCardToPlayers(GameCards playedCard, Player *player)
  */
 void Game::sendCardsToPlayers()
 {
-    for (int index = 0; index < 4; ++index) {
+    for (int index = 0; index < MAX_PLAYER_COUNT; ++index) {
         if((*players[index]) != NULL){
             (*players[index])->sendCards();
         }
@@ -630,13 +649,13 @@ void Game::sendResult(Player *who, Player *whom, GameCards cardToPlay, std::stri
  */
 void Game::sendPlayersState(GameCards cardToPlay, Player *who, Player *whom){
     std::string msgS = "";
-    for (int index = 0; index < 4; ++index) {
+    for (int index = 0; index < MAX_PLAYER_COUNT; ++index) {
         if((*players[index]) != NULL){
             msgS += (*players[index])->getStateMsg();
         }
     }
 
-    for (int index = 0; index < 4; ++index) {
+    for (int index = 0; index < MAX_PLAYER_COUNT; ++index) {
         if((*players[index]) != NULL){
             Message *msg = new Message((*players[index])->getUser()->getSocket()
                                       ,MessageType::game
@@ -645,6 +664,50 @@ void Game::sendPlayersState(GameCards cardToPlay, Player *who, Player *whom){
             MessageQueue::sendInstance()->push_msg(msg);
         }
     }
+}
+
+bool Game::isEndOfRound(){
+    if(game_deck->getGivedCount() > 14){
+        return true;
+    }
+
+    short alivePlayersCount = 0;
+    for (int index = 0; index < MAX_PLAYER_COUNT; ++index) {
+        if((*players[index]) != NULL){
+            if((*players[index])->isAlive()){
+                alivePlayersCount ++ ;
+            }
+        }
+    }
+    if(alivePlayersCount == 1){
+        return true;
+    }
+    return false;
+}
+
+bool Game::isEndOfGame()
+{
+    if(playedRounds < round_count){
+        return false;
+    }
+    return true;
+}
+
+void Game::finishGame(){
+    this->sendGoodBye();
+    this->unlinkUsers();
+}
+
+void Game::restartGame()
+{
+    // říct kdo vyhrál kolo
+    this->sendRoundPoints();
+
+    // resetovat stav
+    this->resetState();
+    this->sendGameStateToAllPlayers();
+    // zvýšit čítač
+    playedRounds++;
 }
 
 
@@ -672,6 +735,96 @@ void Game::sendTokenTo(Player *player)
         }
         if(player4 != NULL){
             Message *msg = new Message(player4->getUser()->getSocket(),MessageType::game, Event::TOK, msgS);
+            MessageQueue::sendInstance()->push_msg(msg);
+        }
+    }
+}
+
+void Game::sendGoodBye()
+{
+    std::string msgS = getUid();
+    msgS += "&&";
+    msgS += "OVER";
+
+    if(player1 != NULL){
+        Message *msg = new Message(player1->getUser()->getSocket(),MessageType::game, Event::STA, msgS);
+        MessageQueue::sendInstance()->push_msg(msg);
+    }
+    if(player2 != NULL){
+        Message *msg = new Message(player2->getUser()->getSocket(),MessageType::game, Event::STA, msgS);
+        MessageQueue::sendInstance()->push_msg(msg);
+    }
+    if(player3 != NULL){
+        Message *msg = new Message(player3->getUser()->getSocket(),MessageType::game, Event::STA, msgS);
+        MessageQueue::sendInstance()->push_msg(msg);
+    }
+    if(player4 != NULL){
+        Message *msg = new Message(player4->getUser()->getSocket(),MessageType::game, Event::STA, msgS);
+        MessageQueue::sendInstance()->push_msg(msg);
+    }
+}
+
+void Game::sendRoundPoints(){
+    for (int index = 0; index < MAX_PLAYER_COUNT; ++index) {
+        if((*players[index]) != NULL){
+            std::string msgS = "";
+                    msgS += this->getRoundPoints();
+            Message *msg = new Message((*players[index])->getUser()->getSocket()
+                                       ,MessageType::game
+                                       ,Event::PTS
+                                       ,msgS);
+            MessageQueue::sendInstance()->push_msg(msg);
+        }
+    }
+}
+
+std::string Game::getRoundPoints()
+{
+    std::string pointsS = "";
+    for (int index = 0; index < MAX_PLAYER_COUNT; ++index) {
+        if((*players[index]) != NULL){
+            pointsS += (*players[index])->getPointsMessage();
+            pointsS += "&&";
+        }
+    }
+    return pointsS;
+}
+
+void Game::unlinkUsers()
+{
+    for (int index = 0; index < MAX_PLAYER_COUNT; ++index) {
+        if((*players[index]) != NULL){
+            (*players[index])->getUser()->setGame(NULL);
+        }
+    }
+}
+
+/**
+ * Nastaví všechny stavové proměnné tykající se kola do výchozího stavu.
+ * @brief Game::resetState
+ */
+void Game::resetState()
+{
+    for (int index = 0; index < MAX_PLAYER_COUNT; ++index) {
+        if((*players[index]) != NULL){
+            (*players[index])->clear();
+        }
+    }
+    game_deck = new GameDeck();
+
+    for(int playerIndex = 0; playerIndex < player_count; playerIndex++){
+        getPlayer(playerIndex)->giveFirstCard(game_deck->getNextCard());
+    }
+}
+
+void Game::sendGameStateToAllPlayers()
+{
+    std::string gameStatus = this->getStatus();
+    for (int index = 0; index < MAX_PLAYER_COUNT; ++index) {
+        if((*players[index]) != NULL){
+            Message *msg = new Message((*players[index])->getUser()->getSocket()
+                                       ,MessageType::game, Event::STA
+                                       ,gameStatus);
             MessageQueue::sendInstance()->push_msg(msg);
         }
     }

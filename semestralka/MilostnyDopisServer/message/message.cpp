@@ -43,6 +43,10 @@ Message::Message(int socket, MessageType type, Event event, std::string msg):
     
 }
 
+Message::~Message()
+{
+}
+
 void Message::print()
 {
     MSG(msg.c_str());

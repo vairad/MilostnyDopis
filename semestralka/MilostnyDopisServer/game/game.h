@@ -16,6 +16,7 @@ class Game
     std::string uid;
 
     int round_count;
+    int playedRounds;
     unsigned long status_sequence_id;
     short player_count;
 
@@ -29,10 +30,11 @@ class Game
 
     Player **players[4];
 
-    GameDeck game_deck;
+    GameDeck *game_deck;
 
 public:
     Game(std::string uid, int round_count = 5);
+    ~Game();
 
     bool addPlayer(User *who);
 
@@ -71,8 +73,23 @@ public:
     void sendCardsToPlayers();
     void sendResult(Player *who, Player *whom, GameCards cardToPlay, std::string resultS);
     void sendPlayersState(GameCards cardToPlay, Player *who, Player *whom);
+
+    bool isEndOfRound();
+    bool isEndOfGame();
+
+    void finishGame();
+    void restartGame();
 private:
     void sendTokenTo(Player *player);
+    void sendGoodBye();
+    void sendRoundPoints();
+
+   std::string getRoundPoints();
+
+    void unlinkUsers();
+
+    void resetState();
+    void sendGameStateToAllPlayers();
 
     std::string xmlPlayerCollection();
     std::string xmlGameId();

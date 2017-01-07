@@ -23,6 +23,7 @@ class GameDeck
     short gived_count;
 public:
     GameDeck();
+    ~GameDeck();
     static const int size;
     GameCards getNextCard();
     std::string static cardToXml(GameCards card);

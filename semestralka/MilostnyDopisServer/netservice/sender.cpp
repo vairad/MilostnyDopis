@@ -167,6 +167,9 @@ void Sender::fillEvent(char *msg, Event event){
     case Event::PLS:
         strcpy(eventS, OPT_PLS);
         break;
+    case Event::PTS:
+        strcpy(eventS, OPT_PTS);
+        break;
     case Event::RES:
         strcpy(eventS, OPT_RES);
         break;

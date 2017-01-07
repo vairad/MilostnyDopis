@@ -207,6 +207,8 @@ public class Player implements Comparable<Player> {
 
     public static void updateLocalPlayer(Player player) {
         local_player.setAttributes(player.alive, player.token, player.guarded);
+        local_player.playedCards.clear();
+        local_player.playedCards.addAll(player.getPlayedCards());
     }
 
     public void setAttributes(boolean alive, boolean token, boolean guarded) {

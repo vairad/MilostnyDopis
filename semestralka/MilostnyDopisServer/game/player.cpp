@@ -162,6 +162,34 @@ std::string Player::getStateMsg()
     return msg;
 }
 
+std::string Player::getPointsMessage(){
+    std::string msg = "";
+    msg += getUser()->getUID();
+    msg += "@@";
+    msg += std::to_string(this->getPoints());
+    return msg;
+}
+
+void Player::clear()
+{
+    myCard = GameCards::none;
+    secondCard = GameCards::none;
+    played_list.clear();
+    alive = true;
+    guarded = false;
+}
+
+int Player::getPoints(){
+    int points = 0;
+    for(auto card = played_list.begin(); card != played_list.end(); ++card) {
+        points += *card;
+    }
+    if(myCard != GameCards::none){
+        points += myCard;
+    }
+    return points;
+}
+
 std::string Player::xmlCards()
 {
     std::string cardsCollection = "<cardsCollection>";
@@ -237,4 +265,8 @@ Player::Player(User *user) :
   ,myCard(GameCards::none)
   ,secondCard(GameCards::none)
 {
+}
+
+Player::~Player(){
+    user->setGame(NULL);
 }

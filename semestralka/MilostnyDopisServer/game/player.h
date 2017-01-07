@@ -26,6 +26,7 @@ class Player
     std::string xmlCards();
 public:
     Player(User *user);
+    ~Player();
 
     bool isGuarded() const;
     void setGuarded(bool value);
@@ -56,6 +57,9 @@ public:
     void sendResult(GameCards cardToPlay, std::string result, bool myCard);
     bool haveThisCard(GameCards card);
     std::string getStateMsg();
+    std::string getPointsMessage();
+    void clear();
+    int getPoints();
 };
 
 #endif // PLAYER_H

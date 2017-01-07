@@ -114,7 +114,11 @@ public class Controller implements Initializable {
 
     @FXML
     public void onNewGame() {
-        Message msg = new Message(Event.NEW, MessageType.game, "");
+        int round_count = -1;
+        while (round_count == -1){
+            round_count = DialogFactory.gameCountDialog();
+        }
+        Message msg = new Message(Event.NEW, MessageType.game, ""+round_count);
         NetService.getInstance().sender.addItem(msg);
         onRefresh();
     }

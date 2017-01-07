@@ -25,6 +25,7 @@ enum Event{
     PLA, // played card
     PLS, // player status
     RES, // result of played card
+    PTS, // points
     CAR //new card
 
 };
@@ -38,6 +39,7 @@ class Message
 
 public:
     Message(int socket, MessageType type, Event event, std::string msg);
+    ~Message();
     void print();
 
     MessageType getType();

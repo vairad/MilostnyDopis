@@ -139,8 +139,23 @@ void GameHandler::handleGameTOK(Message *msg){
         return;
     }
 
-    game->moveTokenToNextPlayer(user);
+    if(game->isEndOfGame()){
+        LOG_DEBUG_PS("ENG OF GAME: ",game->getUid().c_str())
+        game->finishGame();
+        GameServices::getInst()->removeGame(game);
+        game = NULL;
+        delete msg;
+        return;
+    }
 
+    if(game->isEndOfRound()){
+        LOG_DEBUG_PS("ENG OF ROUND IN",game->getUid().c_str())
+        game->restartGame();
+        for (int var = 0; var < 3000000; ++var) {
+            //wait
+        }
+    }
+    game->moveTokenToNextPlayer(user);
     msg->setMsg("OK");
     MessageQueue::sendInstance()->push_msg(msg);
 }
@@ -348,11 +363,12 @@ void GameHandler::handleGameNEW(Message *msg){
     User *user = UserDatabase::getInstance()->getUserBySocket(msg->getSocket());
     MSG_PS("Vytvařím hru na žádost uživatele", user->toString().c_str());
 
-    int round_count;
+    int round_count = 0;
     bool res = Utilities::readNumber(msg->getMsg(), &round_count);
     if(res == false && round_count <= 0){
         msg->setEvent(Event::NAK);
         MessageQueue::sendInstance()->push_msg(msg);
+        return;
     }
     Game *g = GameServices::getInst()->createNewGame(round_count);
     msg->setEvent(Event::ACK);

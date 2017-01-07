@@ -38,6 +38,10 @@ GameDeck::GameDeck() : gived_count(0)
     std::random_shuffle (cards.begin(), cards.end());
 }
 
+GameDeck::~GameDeck(){
+    cards.clear();
+}
+
 GameCards GameDeck::getNextCard()
 {
     GameCards nextCard = cards.front();
@@ -45,6 +49,9 @@ GameCards GameDeck::getNextCard()
     gived_count++;
     return nextCard;
 }
+
+//============== STATICKE METODY TYKAJICI SE KARET =====================================================================
+
 
 std::string GameDeck::cardToXml(GameCards card)
 {

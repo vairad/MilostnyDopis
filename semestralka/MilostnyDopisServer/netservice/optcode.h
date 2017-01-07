@@ -39,5 +39,6 @@
 #define OPT_PLA "PLA" /*played card */
 #define OPT_PLS "PLS" /*players state*/
 #define OPT_RES "RES" /*card result*/
+#define OPT_PTS "PTS" /*points*/
 
 #endif // OPTCODE_H

@@ -24,6 +24,8 @@ public:
     Game *getGameByUid(std::string uid);
     bool existGameByUid(std::string uid);
 
+    void removeGame(Game *game);
+
     std::string listGames();
 
     ~GameServices();
