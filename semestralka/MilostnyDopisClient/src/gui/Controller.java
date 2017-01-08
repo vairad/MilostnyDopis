@@ -3,8 +3,6 @@ package gui;
 
 import constants.Constants;
 import game.Player;
-import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -185,7 +183,13 @@ public class Controller implements Initializable {
      */
     private String checkNickname(){
         logger.debug("Start method");
-        String messageS = nickField.getText().trim();
+        String messageS;
+        try {
+             messageS = nickField.getText().trim();
+        }catch (NullPointerException e){
+            logger.error("null from text field");
+            return null;
+        }
 
         if(messageS.length() < Constants.NICKNAME_MIN_LENGTH){
             DialogFactory.alertError( bundle.getString("nickErrTitle")

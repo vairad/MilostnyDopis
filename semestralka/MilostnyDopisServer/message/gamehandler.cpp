@@ -269,6 +269,9 @@ void GameHandler::handleGamePLA(Message *msg){
         msgS += resultS;
         msg->setMsg(msgS);
         MessageQueue::sendInstance()->push_msg(msg);
+        if(resultS.compare("WRONG") == 0 || resultS.compare("SAME") == 0){
+            return;
+        }
     }
     player->playCard(cardToPlay);
     game->sendCardToPlayers(cardToPlay, player);

@@ -128,4 +128,11 @@ public class DialogFactory {
         alert.showAndWait();
     }
 
+    public static void wastedCard() { //todo to resources
+        Alert alert  = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle(App.bundle.getString("returnedCardTitle"));
+        alert.setHeaderText("Vyhodil jsi kartu z okna, nebo jsi neměl jinou možnost.");
+        alert.setContentText(App.bundle.getString("returnedCardText") + " : ");
+        alert.showAndWait();
+    }
 }

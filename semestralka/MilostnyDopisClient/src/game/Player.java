@@ -1,17 +1,22 @@
 package game;
 
 import constants.PlayerPosition;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.Semaphore;
 
 /**
  * Created by XXXXXXXXXXXXXXXX on 16.11.16.
  */
 public class Player implements Comparable<Player> {
+    /** instance loggeru hlavni tridy */
+    private static Logger logger =	LogManager.getLogger(Player.class.getName());
+
     private static Player local_player = null;
     private static String localUid = null;
-
 
     /** Player properties */
     private String nick;
@@ -33,6 +38,8 @@ public class Player implements Comparable<Player> {
     private boolean token;
     private boolean guarded;
 
+    private Semaphore collection_lock;
+
     public Player(String nick, String serverUid, int order, boolean alive, boolean token, boolean guarded){
         this.nick = nick;
         this.serverUid = serverUid;
@@ -47,7 +54,24 @@ public class Player implements Comparable<Player> {
 
         myCard = Card.NONE;
         secondCard = Card.NONE;
+        collection_lock = new Semaphore(1);
     }
+
+    public void acquireCollection(){
+        try {
+            logger.debug("get mutex player collection");
+            collection_lock.acquire();
+        } catch (InterruptedException e) {
+            logger.trace("interrupted");
+        }
+    }
+
+    public void releaseCollection(){
+        logger.debug("give mutex player collection");
+        collection_lock.release();
+    }
+
+
     public  Player(String nick, String serverUid, int order){
         this(nick, serverUid, order, false, false, false);
     }
@@ -60,12 +84,14 @@ public class Player implements Comparable<Player> {
         return local_player;
     }
 
+
+
     /**
      * Lokální hráč bude nastaven, pokud je null.
      * Pokud není null, převezmou se servrem hlavní data o ráči ze serveru, zbytek se ponechá lokání.
      * @param local_player nastavovaný hráč
      */
-    public static void setLocalPlayer(Player local_player) {
+    public static void  setLocalPlayer(Player local_player) {
         if(local_player.equals(Player.getLocalPlayer())){
             //todo porovnej informace serveru a lokálního hráče
             return;
@@ -162,8 +188,10 @@ public class Player implements Comparable<Player> {
     }
 
     public void resetCards(List<Card> cardList) {
+        acquireCollection();
         playedCards.clear();
         playedCards.addAll(cardList);
+        releaseCollection();
     }
 
     public void giveToken() {
@@ -188,7 +216,9 @@ public class Player implements Comparable<Player> {
      * @param card
      */
     public void addCard(Card card) {
+        acquireCollection();
         playedCards.add(card);
+        releaseCollection();
     }
 
     public void playMyCard() {
@@ -206,9 +236,11 @@ public class Player implements Comparable<Player> {
     }
 
     public static void updateLocalPlayer(Player player) {
+        local_player.acquireCollection();
         local_player.setAttributes(player.alive, player.token, player.guarded);
         local_player.playedCards.clear();
         local_player.playedCards.addAll(player.getPlayedCards());
+        local_player.releaseCollection();
     }
 
     public void setAttributes(boolean alive, boolean token, boolean guarded) {
@@ -216,4 +248,5 @@ public class Player implements Comparable<Player> {
         this.token = token;
         this.guarded = guarded;
     }
+    
 }

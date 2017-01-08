@@ -8,7 +8,6 @@ import gui.App;
 import gui.DialogFactory;
 import gui.GameRecord;
 import javafx.application.Platform;
-import javafx.stage.Stage;
 import netservice.NetService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -132,33 +131,59 @@ public class GameHandler {
             logger.debug("špatný formát zprávy... málo částí");
             return;
         }
+        Card receivedCard = null;
+        Player player = null;
         if(messageParts[0].equals("CANCEL")){
             logger.trace("větev neuznané karty");
-            Card card = Card.getCardFromInt(Integer.parseInt(messageParts[1]));
-            logger.debug("Vracím do ruky kartu :"+card);
-            Platform.runLater(() -> DialogFactory.returnedCard(card));
-            Player.giveCard(card);
-            return;
+
+            switch (messageParts[2]) {
+                case "WRONG":
+                    receivedCard = Card.getCardFromInt(Integer.parseInt(messageParts[1]));
+                    logger.debug("Vracím do ruky kartu :" + receivedCard);
+                    Player.giveCard(receivedCard);
+                    return;
+                case "SAME":
+                    receivedCard = Card.getCardFromInt(Integer.parseInt(messageParts[1]));
+                    logger.debug("Vracím do ruky kartu :" + receivedCard);
+                    Card tmpCard = receivedCard;
+                    Platform.runLater(() -> DialogFactory.returnedCard(tmpCard));
+                    Player.giveCard(receivedCard);
+                    return;
+                default:
+                    Platform.runLater(DialogFactory::wastedCard);
+                    break;
+            }
+            player = Player.getLocalPlayer();
+        }else{
+            player = Game.getPlayer(messageParts[1]);
+            try {
+                receivedCard = Card.getCardFromInt(Integer.parseInt(messageParts[2]));
+                logger.debug("Přijata zahraná karta: " + receivedCard);
+            }catch (NumberFormatException e){
+                logger.error("nesmysl ve zprávě: " + messageParts[2]);
+                return;
+            }
         }
 
-        //todo compare first part of message to equal game
-
-        Card receivedCard = Card.getCardFromInt(Integer.parseInt(messageParts[2]));
-        logger.debug("Přijata zahraná karta: " + receivedCard);
-
         try {
-            Game.getPlayer(messageParts[1]).addCard(receivedCard);
+            player.addCard(receivedCard);
         }catch (NullPointerException e){
-            logger.error("Id hráče ve zprávě není v seznamu hráčů lokální hry.");
+            logger.error("Id hráče ve zprávě není v seznamu hráčů lokální hry. Nebo je karta nullová");
         }
 
         Platform.runLater(() -> App.win.addCard());
 
         // pokud jsem obdržel výsledek své karty... předávám token hry (pokud ho mám)
-        if(Game.getPlayer(messageParts[1]).equals(Player.getLocalPlayer())){
-            if(Player.getLocalPlayer().haveToken()) {
-                giveTokenToServer();
+        try{
+            if(player.equals(Player.getLocalPlayer())){
+                if(Player.getLocalPlayer().haveToken()) {
+                    giveTokenToServer();
+                }
             }
+
+        }catch (NullPointerException e){
+            logger.error("Null pointer při předání tokenu");
+            giveTokenToServer();
         }
     }
 

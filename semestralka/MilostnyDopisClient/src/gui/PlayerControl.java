@@ -62,9 +62,11 @@ public class PlayerControl extends BorderPane {
 
     private void updateCardsBox() {
         cards.getChildren().clear();
+        player.acquireCollection();
         for (Card card: player.getPlayedCards()) {
             cards.getChildren().add(new CardControl(card));
         }
+        player.releaseCollection();
     }
 
     private void checkPlayerToken() {

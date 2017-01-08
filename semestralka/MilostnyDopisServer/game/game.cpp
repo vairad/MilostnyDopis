@@ -66,18 +66,18 @@ bool Game::effectGuardian(Player *who, Player *whom, GameCards tip, std::string 
     /* CHECK PREREQUISITES */
     if(whom->isGuarded()){
         LOG_TRACE("effectGuardian() - cíl je chráněný");
-        return false;
         *result = "GUARDED";
+        return false;
     }
     if(tip == GameCards::guardian){
         LOG_TRACE("effectGuardian() - tip strazne proti pravidlům");
-        return false;
         *result = "WRONG";
+        return false;
     }
     if(who == whom){
         LOG_TRACE("effectGuardian() - nelze určit sebe");
-        return false;
         *result = "SAME";
+        return false;
     }
 
     /* CARD EFFECT */
@@ -108,13 +108,13 @@ bool Game::effectPriest(Player *who, Player *whom, std::string *result)
     /* CHECK PREREQUISITES */
     if(whom->isGuarded()){
         LOG_TRACE("effectPriest() - cíl je chráněný");
-        return false;
         *result = "GUARDED";
+        return false;
     }
     if(who == whom){
         LOG_TRACE("effectPriest() - nelze určit sebe");
-        return false;
         *result = "SAME";
+        return false;
     }
     /* DO EFFECT */
     LOG_TRACE("effectPriest() - effect");
@@ -137,13 +137,13 @@ bool Game::effectBaron(Player *who, Player *whom, std::string *result)
     /* CHECK PREREQUISITES */
     if(whom->isGuarded()){
         LOG_TRACE("effectBaron() - cíl je chráněný");
-        return false;
         *result = "GUARDED";
+        return false;
     }
     if(who == whom){
         LOG_TRACE("effectBaron() - nelze určit sebe");
-        return false;
         *result = "SAME";
+        return false;
     }
     /* DO EFFECT */
     GameCards losersCard, winnerCard;
@@ -159,7 +159,7 @@ bool Game::effectBaron(Player *who, Player *whom, std::string *result)
         winner = who;
         loser->setAlive(false);
         this->sendCardToPlayers(losersCard, loser);
-    }if( whom->showCard() == who->showCard() && who->showCard() != GameCards::none ){
+    }else if( whom->showCard() == who->showCard() && who->showCard() != GameCards::none ){
         //draw case
         losersCard = whom->showCard();
         loser = whom;
@@ -221,20 +221,20 @@ bool Game::effectPrince(Player *who, Player *whom, std::string *result)
     /* CHECK PREREQUISITES */
     if(who->haveCountess()){
         LOG_TRACE("effectPrince() - musíš zahrát komornou");
-        return false;
         *result = "WRONG";
+        return false;
     }
     if(whom->isGuarded()){
         LOG_TRACE("effectPrince() - cíl je chráněný");
-        return false;
         *result = "GUARDED";
+        return false;
     }
 
     if(who == whom){
         who->effectCardSecond(GameCards::prince);
     }
 
-    *result += std::to_string(who->showCard());
+    *result += std::to_string(whom->showCard());
 
     this->sendCardToPlayers(whom->cardOnDesk(), whom);
     if(whom->isAlive()){
@@ -272,6 +272,7 @@ bool Game::effectKing(Player *who, Player *whom, std::string *result)
         *result = "SAME";
     }
     /* DO EFFECT */
+    who->effectCardSecond(GameCards::king);
     GameCards tmpCard = whom->showCard();
     whom->giveFirstCard(who->showCard());
     who->giveFirstCard(tmpCard);
