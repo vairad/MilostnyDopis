@@ -248,5 +248,5 @@ public class Player implements Comparable<Player> {
         this.token = token;
         this.guarded = guarded;
     }
-    
+
 }
