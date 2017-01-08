@@ -63,6 +63,7 @@ public:
     void clear();
     int getPoints();
     void givePoint();
+    void effectCardSecond(GameCards card);
 };
 
 #endif // PLAYER_H

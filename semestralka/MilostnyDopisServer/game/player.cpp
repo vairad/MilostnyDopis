@@ -187,6 +187,13 @@ void Player::givePoint(){
     points++;
 }
 
+void Player::effectCardSecond(GameCards card){
+    if(myCard == card){
+        myCard = secondCard;
+        secondCard = card;
+    }
+}
+
 std::string Player::xmlCards()
 {
     std::string cardsCollection = "<cardsCollection>";

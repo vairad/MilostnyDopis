@@ -148,6 +148,9 @@ bool Game::effectBaron(Player *who, Player *whom, std::string *result)
     /* DO EFFECT */
     GameCards losersCard, winnerCard;
     Player *loser, *winner;
+
+    who->effectCardSecond(GameCards::baron);
+
     if(whom->showCard() < who->showCard() && who->showCard() != GameCards::none){
         //win case
         losersCard = whom->cardOnDesk();
@@ -226,11 +229,18 @@ bool Game::effectPrince(Player *who, Player *whom, std::string *result)
         return false;
         *result = "GUARDED";
     }
-                        // ============================================ TODO TODO
+
+    if(who == whom){
+        who->effectCardSecond(GameCards::prince);
+    }
+
+    *result += std::to_string(who->showCard());
+
     this->sendCardToPlayers(whom->cardOnDesk(), whom);
     if(whom->isAlive()){
         whom->giveFirstCard(game_deck->getNextCard());
     }
+
     return true;
 }
 
@@ -618,6 +628,13 @@ void Game::sendCardsToPlayers()
     }
 }
 
+/**
+ * @brief Game::sendResult
+ * @param who
+ * @param whom
+ * @param cardToPlay
+ * @param resultS
+ */
 void Game::sendResult(Player *who, Player *whom, GameCards cardToPlay, std::string resultS)
 {
     switch(cardToPlay){
@@ -674,6 +691,10 @@ void Game::sendPlayersState(GameCards cardToPlay, Player *who, Player *whom){
     }
 }
 
+/**
+ * @brief Game::isEndOfRound
+ * @return
+ */
 bool Game::isEndOfRound(){
     if(game_deck->getGivedCount() > 14){
         return true;
@@ -693,6 +714,10 @@ bool Game::isEndOfRound(){
     return false;
 }
 
+/**
+ * @brief Game::isEndOfGame
+ * @return
+ */
 bool Game::isEndOfGame()
 {
     if(playedRounds < round_count){
@@ -701,6 +726,9 @@ bool Game::isEndOfGame()
     return true;
 }
 
+/**
+ * @brief Game::finishGame
+ */
 void Game::finishGame(){
     // říct kdo vyhrál kolo
     this->sendRoundResult();
@@ -710,6 +738,10 @@ void Game::finishGame(){
     this->unlinkUsers();
 }
 
+
+/**
+ * @brief Game::restartGame
+ */
 void Game::restartGame()
 {
     // říct kdo vyhrál kolo
@@ -752,6 +784,9 @@ void Game::sendTokenTo(Player *player)
     }
 }
 
+/**
+ * @brief Game::sendGoodBye
+ */
 void Game::sendGoodBye()
 {
     std::string msgS = getUid();
@@ -776,6 +811,9 @@ void Game::sendGoodBye()
     }
 }
 
+/**
+ * @brief Game::sendRoundResult
+ */
 void Game::sendRoundResult(){
     GameCards winnerCard = GameCards::none;
 
@@ -822,6 +860,10 @@ void Game::sendRoundResult(){
     }
 }
 
+/**
+ * @brief Game::getRoundPoints
+ * @return
+ */
 std::string Game::getRoundPoints()
 {
     std::string pointsS = "";
@@ -834,6 +876,9 @@ std::string Game::getRoundPoints()
     return pointsS;
 }
 
+/**
+ * @brief Game::unlinkUsers
+ */
 void Game::unlinkUsers()
 {
     for (int index = 0; index < MAX_PLAYER_COUNT; ++index) {
@@ -861,6 +906,9 @@ void Game::resetState()
     }
 }
 
+/**
+ * @brief Game::sendGameStateToAllPlayers
+ */
 void Game::sendGameStateToAllPlayers()
 {
     std::string gameStatus = this->getStatus();
