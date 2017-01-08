@@ -847,10 +847,7 @@ void Game::sendRoundResult(){
 
     //send results
     for (int index = 0; index < MAX_PLAYER_COUNT; ++index) {
-        if((*players[index]) != NULL
-                && (*players[index])->isAlive()
-                && (*players[index])->showCard() == winnerCard){
-            (*players[index])->givePoint();
+        if((*players[index]) != NULL){
             Message *msg = new Message((*players[index])->getUser()->getSocket()
                                            ,MessageType::game
                                            ,Event::PTS
