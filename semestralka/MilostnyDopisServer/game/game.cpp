@@ -732,7 +732,7 @@ bool Game::isEndOfGame()
  */
 void Game::finishGame(){
     // říct kdo vyhrál kolo
-    this->sendRoundResult();
+  //  this->sendRoundResult();
     this->sendGameStateToAllPlayers();
 
     this->sendGoodBye();

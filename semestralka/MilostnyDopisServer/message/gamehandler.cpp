@@ -344,7 +344,7 @@ void GameHandler::handleGameCOD(Message *msg){
     }
     MessageQueue::sendInstance()->push_msg(msg);
 
-    if(game->getPlayer_count() == 2){
+    if(game->getPlayer_count() == 4){
         game->start();
     }
 }
