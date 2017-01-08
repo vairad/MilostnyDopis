@@ -78,11 +78,12 @@ public class DialogFactory {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Výsledek karty");
         if(!isMyTarget){
-            alert.setHeaderText("Čelil jsi efektu karty s tímto výsledkem");
+            alert.setHeaderText(App.bundle.getString("foreignCard"));
         } else{
-            alert.setHeaderText("Záhrál jsi kartu s tímto výsledkem:");
+            alert.setHeaderText(App.bundle.getString("myCard"));
         }
-        alert.setContentText(playedCard.toString() + " " + playerWhoPlays.getDisplayName() + " " + cardResult);
+        String text = App.resolvePlayedCardResult(playedCard, playerWhoPlays, cardResult);
+        alert.setContentText(text);
         alert.showAndWait();
         //todo resources
         //todo resolvecard result
@@ -109,7 +110,7 @@ public class DialogFactory {
     }
 
     public static void roundEndDialog(List<Player> winners, Card winCard){
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle(App.bundle.getString("roundWinnerTitle"));
         String headline = App.bundle.getString("roundWinnerHeadline") + " " + winCard;
         alert.setHeaderText(headline);
@@ -128,11 +129,11 @@ public class DialogFactory {
         alert.showAndWait();
     }
 
-    public static void wastedCard() { //todo to resources
+    public static void wastedCard(Card card) {
         Alert alert  = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle(App.bundle.getString("returnedCardTitle"));
-        alert.setHeaderText("Vyhodil jsi kartu z okna, nebo jsi neměl jinou možnost.");
-        alert.setContentText(App.bundle.getString("returnedCardText") + " : ");
+        alert.setTitle(App.bundle.getString("wastedCardTitle"));
+        alert.setHeaderText(App.bundle.getString("wastedCardHeadline"));
+        alert.setContentText(App.bundle.getString("wastedCardText") + " : " + card);
         alert.showAndWait();
     }
 }

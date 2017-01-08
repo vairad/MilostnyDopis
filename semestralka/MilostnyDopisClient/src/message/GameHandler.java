@@ -150,7 +150,9 @@ public class GameHandler {
                     Player.giveCard(receivedCard);
                     return;
                 default:
-                    Platform.runLater(DialogFactory::wastedCard);
+                    receivedCard = Card.getCardFromInt(Integer.parseInt(messageParts[1]));
+                    tmpCard = receivedCard;
+                    Platform.runLater(() -> DialogFactory.wastedCard(tmpCard));
                     break;
             }
             player = Player.getLocalPlayer();

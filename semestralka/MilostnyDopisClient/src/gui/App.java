@@ -190,4 +190,101 @@ public class App extends Application {
         App.win.movePointerTo(player.getDisplay_order());
     }
 
+    public static String resolvePlayedCardResult(Card playedCard, Player playerWhoPlays, String cardResult) {
+        String text = "";
+        if(!playerWhoPlays.equals(Player.getLocalPlayer())){
+            text += bundle.getString("playerPlays") + ": " + playerWhoPlays.getDisplayName();
+            text += "\n";
+        }
+        text += bundle.getString("playedCard") + ": " + playedCard;
+        text += "\n";
+
+        text += resoveCardResult(playedCard, cardResult);
+
+        return text;
+    }
+
+    private static String resoveCardResult(Card playedCard, String cardResult) {
+        String text = null;
+        switch (playedCard){
+            case GUARDIAN:
+                text = "Chyba";
+                if(cardResult.equals("KILL")){
+                    text = App.bundle.getString("guardianKill");
+                }
+                if(cardResult.equals("MISS")){
+                    text = App.bundle.getString("guardianMiss");
+                }
+                break;
+            case PRIEST:
+                text = App.bundle.getString("priestResult") + ": ";
+                try {
+                    text += Card.getCardFromInt(Integer.parseInt(cardResult)).toString();
+                }catch (NumberFormatException | NullPointerException e){
+                    text += App.bundle.getString("CARD9");
+                }
+                break;
+            case BARON:
+                text = App.bundle.getString("baronResult");
+                text += "\n";
+                text += resolveBaronResult(cardResult);
+                break;
+            case KOMORNA:
+                text = App.bundle.getString("komornaResult");
+                break;
+            case PRINCE:
+                text = App.bundle.getString("princeResult") + ": ";
+                try {
+                    text += Card.getCardFromInt(Integer.parseInt(cardResult)).toString();
+                }catch (NumberFormatException | NullPointerException e){
+                    text += App.bundle.getString("CARD9");
+                }
+                break;
+            case KING:
+                text = App.bundle.getString("kingResult");
+                break;
+            case COUNTESS:
+                text = App.bundle.getString("countessResult");
+                break;
+            case PRINCESS:
+                text = App.bundle.getString("princessEnd");
+                break;
+            default:
+                logger.error("Snaha vyplnit výsledek karty neexistující kartou");
+                text = "Asi špatněj oddíl nic se u nás nehraje";
+                break;
+        }
+        return text;
+    }
+
+    private static String resolveBaronResult(String cardResult) {
+        String[] baronParts = cardResult.split("@@");
+        String text = "";
+        if(baronParts.length == 5 && baronParts[0].equals("RESULT")){
+            try {
+                Card winCard = Card.getCardFromInt(Integer.parseInt(baronParts[3]));
+                Player winner = Game.getPlayer(baronParts[4]);
+                text += App.bundle.getString("winner")
+                        + "\t"
+                        + winner.getDisplayName()
+                        + "\t"
+                        + App.bundle.getString("withCard")
+                        + winCard;
+                text += "\n";
+
+                Card loseCard = Card.getCardFromInt(Integer.parseInt(baronParts[1]));
+                Player loser = Game.getPlayer(baronParts[2]);
+                text += App.bundle.getString("loser")
+                        + "\t"
+                        + loser.getDisplayName()
+                        + "\t"
+                        + App.bundle.getString("withCard")
+                        + loseCard;
+            }catch (NullPointerException | NumberFormatException e){
+                logger.error("Chyba ve zprávě výsledku baronů");
+                text = "Chyba";
+            }
+        }
+        return text;
+    }
 }
