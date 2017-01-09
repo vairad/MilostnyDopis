@@ -46,6 +46,9 @@ public class Controller implements Initializable {
     public ProgressBar progressBar;
 
     @FXML
+    public UsersControl userControl;
+
+    @FXML
     private Text statusText;
 
     @FXML
@@ -127,6 +130,7 @@ public class Controller implements Initializable {
         nickField.setDisable(true);
         defaultConnectionButton.setDisable(true);
         connectButton.setDisable(true);
+        userControl.setDisable(true);
         statusText.setText(bundle.getString("loggedIn"));
     }
 
@@ -139,6 +143,7 @@ public class Controller implements Initializable {
         nickField.setDisable(false);
         connectButton.setDisable(false);
         defaultConnectionButton.setDisable(false);
+        userControl.setDisable(false);
         //statusText.setText(bundle.getString("headline"));
     }
 
@@ -214,5 +219,11 @@ public class Controller implements Initializable {
 
     public void startProgress(){
         progressBar.setVisible(true);
+    }
+
+    public void setUpUser(UserRecord user) {
+        nickField.setText(user.getNick());
+        port.setText(user.getPort());
+        address.setText(user.getServerName());
     }
 }

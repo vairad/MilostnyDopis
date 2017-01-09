@@ -22,8 +22,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.ResourceBundle;
 
 /**
@@ -73,12 +73,19 @@ public class UsersControl extends HBox{
             this.setDisable(true);
         }
 
-    }
+        users.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if(observable.getValue() != null && !isDisable()) {
+                DialogFactory.loginInfo(observable.getValue());
+                App.loginWorker = new Thread(() -> App.login(observable.getValue()));
+                App.loginWorker.start();
+            }
+        });
+        }
 
     private boolean loadOldPlayers() {
-        List<UserRecord> usersList = loadXML();
+        HashSet<UserRecord> usersList = loadXML();
 
-        if(usersList.size() <= 0){
+        if(usersList == null || usersList.size() <= 0){
             return false;
         }
 
@@ -89,7 +96,7 @@ public class UsersControl extends HBox{
         return true;
     }
 
-    private List<UserRecord> loadXML() {
+    private HashSet<UserRecord> loadXML() {
         InputStream xsdIS = null;
         InputStream xmlIS = null;
         FileInputStream xmlSource = null;
@@ -99,7 +106,7 @@ public class UsersControl extends HBox{
             xmlSource = new FileInputStream(file);
         }catch (IOException e){
             logger.trace("file load problem");
-            return new LinkedList<>();
+            return null;
         }
 
         try {
@@ -110,7 +117,7 @@ public class UsersControl extends HBox{
                 xmlIS = new FileInputStream(file);
                 return parseXML(xmlIS);
             }else{
-                return new LinkedList<>();
+                return null;
             }
 
         } catch (Exception e) {
@@ -129,12 +136,12 @@ public class UsersControl extends HBox{
                 logger.debug("IO chyba xml", e);
             }
         }
-        return new LinkedList<>();
+        return null;
     }
 
-    private List<UserRecord> parseXML(InputStream xmlIS) throws ParserConfigurationException, IOException, SAXException {
+    private HashSet<UserRecord> parseXML(InputStream xmlIS) throws ParserConfigurationException, IOException, SAXException {
         logger.debug("start method");
-        LinkedList<UserRecord> usersList  = new LinkedList<>();
+        LinkedHashSet<UserRecord> usersList  = new LinkedHashSet<>();
         Document serverXmlDocument = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(xmlIS);
 
      //   Node userCollection = serverXmlDocument.getElementsByTagName(USER_RECORDS).item(0);
@@ -158,8 +165,8 @@ public class UsersControl extends HBox{
         String idS = "";
         String serverS = "";
         String nickS = "";
+        String portS = "";
         int idAttr = 0;
-
         while (idAttr < playerNodes.getLength()){
             Node playerAttribute = playerNodes.item(idAttr);
             if(playerAttribute.getNodeName().equals("id")){
@@ -174,13 +181,20 @@ public class UsersControl extends HBox{
                 nickS = playerAttribute.getFirstChild().getNodeValue();
                 logger.trace("NICK : " + nickS);
             }
+            if(playerAttribute.getNodeName().equals("port")){
+                portS = playerAttribute.getFirstChild().getNodeValue();
+                logger.trace("PORT : " + portS);
+            }
             idAttr++;
         }
 
-        return new UserRecord(idS, nickS, serverS);
+        return new UserRecord(idS, nickS, serverS, portS);
     }
 
     public void refresh(){
+        if(UserRecord.allRecords.size() <= 0){
+            this.setDisable(true);
+        }
         ObservableList<UserRecord> options = FXCollections.observableArrayList(UserRecord.allRecords);
         users.setItems(options);
     }

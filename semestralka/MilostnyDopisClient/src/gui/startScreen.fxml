@@ -1,10 +1,8 @@
+<?import gui.UsersControl?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
-
-
-<?import gui.UsersControl?>
 <GridPane fx:controller="gui.Controller"
           xmlns:fx="http://javafx.com/fxml" alignment="center" hgap="10" vgap="10">
 
@@ -18,7 +16,7 @@
         <Text text="%headline"
               fx:id="labelTitle"
                 />
-        <UsersControl/>
+        <UsersControl fx:id="userControl"/>
     </VBox>
     <Label text="%serverAddressTitle" fx:id="labelServer"
            GridPane.columnIndex="0" GridPane.rowIndex="1"/>

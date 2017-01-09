@@ -136,4 +136,12 @@ public class DialogFactory {
         alert.setContentText(App.bundle.getString("wastedCardText") + " : " + card);
         alert.showAndWait();
     }
+
+    public static void loginInfo(UserRecord value) {
+        Alert alert  = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(App.bundle.getString("loginTitle"));
+        alert.setHeaderText(App.bundle.getString("loginHeadline"));
+        alert.setContentText(value.toString());
+        alert.showAndWait();
+    }
 }

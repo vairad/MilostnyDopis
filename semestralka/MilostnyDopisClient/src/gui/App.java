@@ -2,7 +2,6 @@ package gui;
 
 import game.Card;
 import game.Game;
-import game.GameStatus;
 import game.Player;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -19,15 +18,11 @@ import message.MessageType;
 import netservice.NetService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import sun.nio.ch.Net;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
-
-import static java.lang.Thread.activeCount;
-import static java.lang.Thread.sleep;
 
 public class App extends Application {
 
@@ -44,6 +39,8 @@ public class App extends Application {
     static Thread loginWorker;
 
     private Stage stage;
+
+    public static UserRecord userRecord = null;
 
     protected static ResourceBundle bundle;
     private static Controller controller;
@@ -390,4 +387,30 @@ public class App extends Application {
         Platform.runLater(() -> {controller.setStatusText(text);});
         return true;
     }
+
+    public static void login(UserRecord value) {
+        controller.disableForm();
+        controller.startProgress();
+        controller.setUpUser(value);
+
+        boolean result = false;
+        if(!NetService.isRunning()){
+            result = connectServer();    //pripoj server
+        }
+        if(!result){  // když se nepovedlo připojení uvolni a skonči
+            NetService.getInstance().destroy();
+            controller.prepareLogin();
+            controller.stopProgress();
+            return;
+        }
+
+        userRecord = value;
+        Message msg = new Message(Event.COD, MessageType.login, value.getId().trim());
+        NetService.getInstance().sender.addItem(msg);
+    }
+
+    public static void refreshOldPlayers() {
+        controller.userControl.refresh();
+    }
+
 }

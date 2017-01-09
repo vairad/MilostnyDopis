@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ROOT>
-    <userRecords>
-        <userRecord>
-            <id>ID12345</id>
-            <nick>Muj nick woe</nick>
-            <server>aspofms.awfawf.wq</server>
-        </userRecord>
-    </userRecords>
+	<userRecords>
+<userRecord>
+<id>ogHFZ</id>
+<nick>Uni</nick>
+<server>localhost</server>
+<port>2525</port>
+</userRecord>
+	</userRecords>
 </ROOT>

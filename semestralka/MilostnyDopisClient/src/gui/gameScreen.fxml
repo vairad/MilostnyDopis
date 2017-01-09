@@ -1,10 +1,9 @@
-<?import gui.CardControl?>
+<?import gui.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.Polygon?>
 <?import javafx.scene.text.Text?>
 <?import java.lang.*?>
-<?import gui.PlayerControl?>
 <GridPane fx:controller="gui.GameController"
           xmlns:fx="http://javafx.com/fxml"
           hgap="20"

@@ -1,9 +1,12 @@
 package message;
 
 import constants.PlayerPosition;
+import constants.XMLHelper;
 import game.Player;
 import gui.App;
+import gui.UserRecord;
 import javafx.application.Platform;
+import netservice.NetService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -47,8 +50,11 @@ public class LoginHandler {
         logger.debug("Start method - " + message);
 
         if(message.equals("NO ID")){
-            exit(46);
-            //todo handle no id
+            UserRecord.allRecords.remove(App.userRecord);
+            App.userRecord = null;
+            Platform.runLater(App::refreshOldPlayers);
+            Platform.runLater(App::logout);
+            new Thread(XMLHelper::fillOldUsersXml).start();
         }
 
         String[] messageParts = message.split("&&");
@@ -73,11 +79,7 @@ public class LoginHandler {
             nick = messageParts[1];
         }
 
-        Player.setLocalPlayer(new Player(nick, messageParts[0]));
-        Player.getLocalPlayer().setLogged(true);
-
-        // affect GUI
-        Platform.runLater(App::userLogged);
+       loginPlayerUlitity(nick, messageParts[0]);
     }
 
 
@@ -97,9 +99,22 @@ public class LoginHandler {
             nick = messageParts[1];
         }
 
+        loginPlayerUlitity(nick, messageParts[0]);
+
+    }
+
+    private static void loginPlayerUlitity(String nick, String uid){
         // affect logic
-        Player.setLocalPlayer(new Player(nick, messageParts[0]));
+        Player.setLocalPlayer(new Player(nick, uid));
         Player.getLocalPlayer().setLogged(true);
+
+        // save login
+        UserRecord u = new UserRecord(Player.getLocalPlayer().getServerUid(),
+                Player.getLocalPlayer().getNick(),
+                NetService.getInstance().getServerName(),
+                NetService.getInstance().getServerPort());
+        UserRecord.allRecords.add(u);
+        new Thread(XMLHelper::fillOldUsersXml).start();
 
         // affect GUI
         Platform.runLater(App::userLogged);

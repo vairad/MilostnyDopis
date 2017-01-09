@@ -3,6 +3,7 @@
     <xs:element name="id" type="xs:string"/>
     <xs:element name="nick" type="xs:string"/>
     <xs:element name="server" type="xs:string"/>
+    <xs:element name="port" type="xs:integer"/>
 
     <xs:element name="userRecord">
         <xs:complexType>
@@ -10,6 +11,7 @@
                 <xs:element ref="id"/>
                 <xs:element ref="nick"/>
                 <xs:element ref="server"/>
+                <xs:element ref="port"/>
             </xs:sequence>
         </xs:complexType>
     </xs:element>
