@@ -95,10 +95,14 @@ public class Controller implements Initializable {
     @FXML
     public void onNewGame() {
         int round_count = -1;
+        int player_count = -1;
         while (round_count == -1){
             round_count = DialogFactory.gameCountDialog();
         }
-        Message msg = new Message(Event.NEW, MessageType.game, ""+round_count);
+        while (player_count == -1){
+            player_count = DialogFactory.playerCountDialog();
+        }
+        Message msg = new Message(Event.NEW, MessageType.game, ""+round_count+"&&"+player_count);
         NetService.getInstance().sender.addItem(msg);
         onRefresh();
     }

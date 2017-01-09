@@ -11,6 +11,7 @@ public:
     static std::string *ltrim(std::string *s);
     static std::string *rtrim(std::string *s);
     static std::string *trim(std::string *s);
+    static bool readNumberChar(char *numberS, int *number);
 };
 
 #endif // UTILITIES_H

@@ -109,6 +109,24 @@ public class DialogFactory {
         return -1;
     }
 
+    public static int playerCountDialog() {
+        List<Integer> choices = new ArrayList<>();
+        choices.add(2);
+        choices.add(3);
+        choices.add(4);
+
+        ChoiceDialog<Integer> dialog = new ChoiceDialog<>(1, choices);
+        dialog.setTitle(App.bundle.getString("playerCountTitle"));
+        dialog.setHeaderText(App.bundle.getString("playerCountQuestion"));
+        dialog.setContentText(App.bundle.getString("playerCountText"));
+
+        Optional<Integer> result = dialog.showAndWait();
+        if (result.isPresent()){
+            return result.get();
+        }
+        return -1;
+    }
+
     public static void roundEndDialog(List<Player> winners, Card winCard){
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle(App.bundle.getString("roundWinnerTitle"));

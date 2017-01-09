@@ -366,13 +366,23 @@ void GameHandler::handleGameNEW(Message *msg){
     MSG_PS("Vytvařím hru na žádost uživatele", user->toString().c_str());
 
     int round_count = 0;
-    bool res = Utilities::readNumber(msg->getMsg(), &round_count);
-    if(res == false && round_count <= 0){
+    int player_count = 0;
+    char buffer[124];
+
+    strcpy(buffer, msg->getMsg().c_str());
+
+    std::string tmpRound(strtok(buffer, "&&"));
+    std::string tmpPlayer(strtok(NULL, "&&"));
+
+    bool res = Utilities::readNumber(tmpRound, &round_count );
+    res &= Utilities::readNumber(tmpPlayer, &player_count);
+
+    if(res == false && round_count <= 0 && player_count <= 0){
         msg->setEvent(Event::NAK);
         MessageQueue::sendInstance()->push_msg(msg);
         return;
     }
-    Game *g = GameServices::getInst()->createNewGame(round_count);
+    Game *g = GameServices::getInst()->createNewGame(round_count, player_cout);
     msg->setEvent(Event::ACK);
     msg->setMsg(g->getUid());
     MessageQueue::sendInstance()->push_msg(msg);

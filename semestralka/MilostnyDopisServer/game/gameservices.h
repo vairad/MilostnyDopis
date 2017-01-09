@@ -20,7 +20,7 @@ class GameServices
 public:
     static GameServices *getInst();
 
-    Game *createNewGame(int round_count);
+    Game *createNewGame(int round_count, int player_count);
     Game *getGameByUid(std::string uid);
     bool existGameByUid(std::string uid);
 

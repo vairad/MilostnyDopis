@@ -18,6 +18,7 @@ void Utilities::replaceAll(std::string& str, const std::string& from, const std:
     }
 }
 
+
 bool Utilities::readNumber(std::string numberS, int *number)
 {
    long readed;

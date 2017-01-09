@@ -41,11 +41,11 @@ GameServices::~GameServices(){
  * @param round_count
  * @return
  */
-Game *GameServices::createNewGame(int round_count)
+Game *GameServices::createNewGame(int round_count, int player_count)
 {
     pthread_mutex_lock(&map_lock);
     std::string uid = getNextID();
-    Game *game = new Game(uid, round_count);
+    Game *game = new Game(uid, round_count, player_count);
     games_by_id[uid] = game;
     pthread_mutex_unlock(&map_lock);
     return game;
