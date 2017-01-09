@@ -2,8 +2,14 @@
 <ROOT>
 	<userRecords>
 <userRecord>
-<id>fa37J</id>
+<id>hMFSv</id>
 <nick>Uni</nick>
+<server>localhost</server>
+<port>2525</port>
+</userRecord>
+<userRecord>
+<id>8kP07</id>
+<nick>Radek</nick>
 <server>localhost</server>
 <port>2525</port>
 </userRecord>

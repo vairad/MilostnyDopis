@@ -14,6 +14,7 @@
     <!--   gridLinesVisible="true" -->
 
     <ListView fx:id="gameStatus"
+              visible="false"
     />
 
     <columnConstraints>

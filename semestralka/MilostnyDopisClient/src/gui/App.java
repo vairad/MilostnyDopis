@@ -80,6 +80,11 @@ public class App extends Application {
     public void stop() throws Exception{
         NetService.getInstance().destroy();
         NetService.getInstance().joinThreads();
+        try{
+            App.win.hide();
+        }catch (NullPointerException e){
+            logger.trace("win not initialised");
+        }
 
         super.stop();
     }
@@ -122,8 +127,6 @@ public class App extends Application {
                                             , bundle.getString("noLoggedText"));
                     return;
                 }
-
-                Platform.runLater(() -> App.newGame(item));
 
                 Message msg = new Message(Event.COD, MessageType.game, item.getUid());
                 NetService.getInstance().sender.addItem(msg);

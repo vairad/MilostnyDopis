@@ -45,6 +45,13 @@ public class Game {
         }
 
         setUpPlayers(gameStatus.players);
+        Platform.runLater(() -> {
+            try{
+                App.win.setTitle(Game.getUid());
+            }catch (Exception e){
+                logger.error("Něco špatného sestalo ve státě dánském");
+            }
+        });
 
         ready = true;
     }

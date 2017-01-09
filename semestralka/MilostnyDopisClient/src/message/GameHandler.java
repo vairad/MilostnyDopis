@@ -319,11 +319,17 @@ public class GameHandler {
             logger.debug("Unknown game id returned from server");
             return;
         }
-        if(Game.getUid() == null
-                ||  !Game.getUid().equals(gameRecord.getUid())){
-            Game.initialize(gameRecord);
-            Platform.runLater(() -> DialogFactory.differentGame(gameRecord));
+        try {
+            if(!Game.getUid().equals(gameRecord.getUid())){
+                Platform.runLater(() -> DialogFactory.differentGame(gameRecord));
+            }
+        }catch (NullPointerException e){
+            logger.trace("null");
         }
+        Platform.runLater(() -> App.newGame(gameRecord));
+
+
+
     }
 
     private static void giveTokenToServer(){

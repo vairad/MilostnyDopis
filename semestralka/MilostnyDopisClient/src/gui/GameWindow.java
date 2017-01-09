@@ -56,18 +56,16 @@ public class GameWindow extends Window {
     GameWindow(GameRecord gameRecord){
         statusMessages = new LinkedList<>();
 
-
         Message msg = new Message(Event.STA, MessageType.game, gameRecord.getUid());
         NetService.getInstance().sender.addItem(msg);
 
         stage = new Stage();
 
-        loadView();
+        loadView(gameRecord.getUid());
         statusMessages.add(bundle.getString("statusMessages"));
         statusMessages.add(bundle.getString("connectGame")+ " " +gameRecord.getUid());
 
         appendStatusMessages();
-
 
         createTransitions();
         createListeners();
@@ -237,7 +235,7 @@ public class GameWindow extends Window {
         statusMessages.add(message);
     }
 
-    private void loadView() {
+    private void loadView(String gameName) {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader();
             bundle = App.bundle;
@@ -250,13 +248,17 @@ public class GameWindow extends Window {
             Scene scene = new Scene(root);
             scene.getStylesheets().add(GameWindow.class.getResource("app.css").toExternalForm());
 
-            stage.setTitle(bundle.getString("TITLE")
-                            + " " + bundle.getString("onServer") + " "
-                            + NetService.getInstance().getServerName());
+            setTitle(gameName);
             stage.setScene(scene);
         } catch (IOException ex) {
             ex.printStackTrace();
         }
+    }
+
+    public void setTitle(String gameName) {
+        stage.setTitle(bundle.getString("game") + " " + gameName
+                + " " + bundle.getString("onServer") + " "
+                + NetService.getInstance().getServerName());
     }
 
     void setUpPlayers() {
