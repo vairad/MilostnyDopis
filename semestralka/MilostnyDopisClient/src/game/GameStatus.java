@@ -1,6 +1,7 @@
 package game;
 
 import constants.PlayerPosition;
+import constants.XMLHelper;
 import message.Event;
 import message.Message;
 import message.MessageType;
@@ -233,33 +234,7 @@ public class GameStatus {
 
     private static boolean validateAgainstXSD(InputStream xml, InputStream xsd) {
         logger.debug("start method");
-        try {
-            SchemaFactory factory =
-                    SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            Schema schema = factory.newSchema(new StreamSource(xsd));
-            Validator validator = schema.newValidator();
-            validator.validate(new StreamSource(xml));
-            return true;
-        } catch (SAXException e) {
-            logger.debug("Nevalidní xml", e);
-            return false;
-
-        } catch (IOException e) {
-            logger.debug("IO chyba", e);
-            return false;
-        } finally {
-            try {
-                xml.close();
-            } catch (IOException e) {
-                logger.debug("IO chyba", e);
-            }
-            try {
-                xsd.close();
-            } catch (IOException e) {
-                logger.debug("IO chyba", e);
-            }
-        }
-
+        return XMLHelper.validateAgainstXSD(xml,xsd);
     }
 
     public String getUid() {

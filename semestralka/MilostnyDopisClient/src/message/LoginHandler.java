@@ -7,6 +7,8 @@ import javafx.application.Platform;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import static java.lang.System.exit;
+
 /**
  * Created by XXXXXXXXXXXXXXXX on 14.12.16.
  */
@@ -43,6 +45,12 @@ public class LoginHandler {
 
     private static void handleLoginNAK(String message) {
         logger.debug("Start method - " + message);
+
+        if(message.equals("NO ID")){
+            exit(46);
+            //todo handle no id
+        }
+
         String[] messageParts = message.split("&&");
         if(messageParts.length < 2){
             logger.error("Špatný formát obsahu zprávy LOG ACK :" + message);
