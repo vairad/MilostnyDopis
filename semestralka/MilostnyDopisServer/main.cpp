@@ -1,6 +1,7 @@
 #include <iostream>
 #include <csignal>
 #include <cstring>
+#include <time.h>
 
 #include "errornumber.h"
 #include "log/log.h"
@@ -335,6 +336,8 @@ int start_server(){
  */
 int main(int argc, char *argv[])
 {
+    std::srand(time(0));
+
     int result = 1;
 
     MSG("Zpracovávám argumenty");
