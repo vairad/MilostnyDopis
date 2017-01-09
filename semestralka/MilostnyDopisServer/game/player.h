@@ -64,6 +64,7 @@ public:
     int getPoints();
     void givePoint();
     void effectCardSecond(GameCards card);
+    void removeUser();
 };
 
 #endif // PLAYER_H

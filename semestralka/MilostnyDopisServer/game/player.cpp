@@ -82,6 +82,10 @@ bool Player::isAlive() const
 
 void Player::setAlive(bool value)
 {
+    if(user == NULL){
+        alive = false;
+        return;
+    }
     alive = value;
 }
 
@@ -192,6 +196,11 @@ void Player::effectCardSecond(GameCards card){
         myCard = secondCard;
         secondCard = card;
     }
+}
+
+void Player::removeUser(){
+    user->setGame(NULL);
+    user = NULL;
 }
 
 std::string Player::xmlCards()

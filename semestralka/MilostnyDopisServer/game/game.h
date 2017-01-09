@@ -73,7 +73,7 @@ public:
     void sendCardToPlayers(GameCards playedCard, Player *player);
     void sendCardsToPlayers();
     void sendResult(Player *who, Player *whom, GameCards cardToPlay, std::string resultS);
-    void sendPlayersState(GameCards cardToPlay, Player *who, Player *whom);
+    void sendPlayersState();
 
     bool isEndOfRound();
     bool isEndOfGame();

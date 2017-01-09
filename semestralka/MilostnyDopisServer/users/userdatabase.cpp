@@ -102,6 +102,11 @@ bool UserDatabase::removeUser(string key)
 
     User *u = getUserById(key);
     if(u != NULL){
+        if(u->getGame() != NULL && u->getGame()->getPlayer(u) != NULL){
+            u->getGame()->getPlayer(u)->setAlive(false);
+            u->getGame()->getPlayer(u)->removeUser();
+            u->getGame()->sendPlayersState();
+        }
         keys_by_socket.erase(u->getSocket());
         users_by_id.erase(key);
     }

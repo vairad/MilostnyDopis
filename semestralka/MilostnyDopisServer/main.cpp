@@ -301,7 +301,7 @@ int start_server(){
 
     if(Receiver::listen_thread_p == NULL){
         MSG("Nedostatek paměti pro vytvoření serverového vlákna, ukončuji program");
-        LOG_ERROR("Nedostatek paměti pro vytvoření Receiver::listen_thread_p")
+        LOG_ERROR("Nedostatek paměti pro vytvoření Receiver::listen_thread_p");
     }
 
     pthread_create(Receiver::listen_thread_p, NULL, Receiver::listenerStart, receiver);
@@ -337,6 +337,7 @@ int start_server(){
 int main(int argc, char *argv[])
 {
     std::srand(time(0));
+    openLogFile();
 
     int result = 1;
 
@@ -366,5 +367,6 @@ int main(int argc, char *argv[])
     }
 
     MSG("Konec programu");
+    closeLogFile();
     return result;
 }

@@ -27,3 +27,15 @@ void test_log_macros(){
  MSG_PS("Zprává se string parametrem" , "parametr")
 
 }
+
+FILE *logfile;
+
+void openLogFile(){
+    if(logfile == NULL){
+        logfile = fopen ("serverLog.txt","a");
+    }
+}
+
+void closeLogFile(){
+    fclose(logfile);
+}

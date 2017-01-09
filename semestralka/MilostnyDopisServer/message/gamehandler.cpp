@@ -276,7 +276,7 @@ void GameHandler::handleGamePLA(Message *msg){
     player->playCard(cardToPlay);
     game->sendCardToPlayers(cardToPlay, player);
     game->sendResult(player, affectedPlayer, cardToPlay, resultS);
-    game->sendPlayersState(GameCards::none, NULL, NULL);
+    game->sendPlayersState();
     game->sendCardsToPlayers();
 }
 

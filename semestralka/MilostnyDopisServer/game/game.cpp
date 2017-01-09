@@ -646,7 +646,7 @@ void Game::sendResult(Player *who, Player *whom, GameCards cardToPlay, std::stri
     case prince:
     case princess:
         if(resultS.compare("KILL")){
-            this->sendPlayersState(cardToPlay, who, whom);
+            this->sendPlayersState();
         }
         who->sendResult(cardToPlay, resultS, true);
         if(whom != NULL){
@@ -671,11 +671,8 @@ void Game::sendResult(Player *who, Player *whom, GameCards cardToPlay, std::stri
 /**
  * Odešli stav hráčů na všechny klienty
  * @brief Game::sendPlayersState
- * @param cardToPlay
- * @param who
- * @param whom
  */
-void Game::sendPlayersState(GameCards cardToPlay, Player *who, Player *whom){
+void Game::sendPlayersState(){
     std::string msgS = "";
     for (int index = 0; index < MAX_PLAYER_COUNT; ++index) {
         if((*players[index]) != NULL){
