@@ -382,7 +382,7 @@ void GameHandler::handleGameNEW(Message *msg){
         MessageQueue::sendInstance()->push_msg(msg);
         return;
     }
-    Game *g = GameServices::getInst()->createNewGame(round_count, player_cout);
+    Game *g = GameServices::getInst()->createNewGame(round_count, player_count);
     msg->setEvent(Event::ACK);
     msg->setMsg(g->getUid());
     MessageQueue::sendInstance()->push_msg(msg);
