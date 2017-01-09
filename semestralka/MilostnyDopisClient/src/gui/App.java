@@ -182,6 +182,9 @@ public class App extends Application {
     }
 
 
+    /**
+     * Aktualiuje zobrazené karty v okně
+     */
     public static void updateCards() {
         if(win != null){
             win.updateCards();

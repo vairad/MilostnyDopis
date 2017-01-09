@@ -115,7 +115,7 @@ public class DialogFactory {
         choices.add(3);
         choices.add(4);
 
-        ChoiceDialog<Integer> dialog = new ChoiceDialog<>(1, choices);
+        ChoiceDialog<Integer> dialog = new ChoiceDialog<>(2, choices);
         dialog.setTitle(App.bundle.getString("playerCountTitle"));
         dialog.setHeaderText(App.bundle.getString("playerCountQuestion"));
         dialog.setContentText(App.bundle.getString("playerCountText"));

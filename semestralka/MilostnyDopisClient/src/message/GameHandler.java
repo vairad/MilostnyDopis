@@ -141,6 +141,7 @@ public class GameHandler {
                     receivedCard = Card.getCardFromInt(Integer.parseInt(messageParts[1]));
                     logger.debug("Vracím do ruky kartu :" + receivedCard);
                     Player.giveCard(receivedCard);
+                    Platform.runLater(App::updateCards);
                     return;
                 case "SAME":
                     receivedCard = Card.getCardFromInt(Integer.parseInt(messageParts[1]));

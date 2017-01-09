@@ -33,7 +33,7 @@
 			<ThresholdFilter level="DEBUG" onMatch="ACCEPT" onMismatch="DENY" />
 		</File>
 
-		<File name="file-all" filename="${traceLog}" append="false">
+		<File name="file-all" filename="${traceLog}" append="true">
 			<PatternLayout pattern="${pFormat}" />
 			<ThresholdFilter level="ALL" onMatch="ACCEPT" onMismatch="DENY" />
 		</File>
@@ -62,7 +62,8 @@
 	<Loggers>
 
 		<Root level="ALL">
-			 <AppenderRef ref="screen"/>
+			<AppenderRef ref="screen"/>
+			<AppenderRef ref="file-all"/>
 		</Root>
 
 		<Logger name="netservice.Sender" level="ALL"> <!-- additivity="false" -->
@@ -87,15 +88,6 @@
 			<!--<AppenderRef ref="screen"/> -->
 		</Logger>
 
-		<!--<Logger name="log4joscislo.Generator" level="ALL">
-			<AppenderRef ref="file"/>
-			<AppenderRef ref="file-debug"/>
-		</Logger>-->
-
-		<!--<Logger name="log4joscislo.OsobniCislo" level="ALL">
-			<AppenderRef ref="file-debug"/>
-			<AppenderRef ref="file-all"/>
-		</Logger> -->
 
 	</Loggers>
 </Configuration>

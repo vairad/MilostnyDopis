@@ -362,6 +362,7 @@ public class GameWindow extends Window {
             return;
         }
 
+        chosenPlayer = null;
         sendCardToServer(playCard, chosenPlayer, tip);
         playChosenCard();
         controller.playerMe.requestLayout();
@@ -460,13 +461,10 @@ public class GameWindow extends Window {
     }
 
     public void updateScore() {
-
-
         ObservableList<Player> data = FXCollections.observableArrayList();
         data.addAll(Game.getPlayers());
 
-
         controller.gameResults.setItems(data);
-
+        controller.gameResults.refresh();
     }
 }
