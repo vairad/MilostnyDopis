@@ -119,7 +119,7 @@
                 minWidth="240"
     >
         <top>
-            <Label>Karty na ruce placeholder</Label>
+            <Label text="%myCards"/>
         </top>
         <center>
             <HBox alignment="CENTER"

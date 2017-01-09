@@ -1,5 +1,6 @@
 package gui;
 
+import constants.Constants;
 import game.Card;
 import game.Game;
 import game.Player;
@@ -20,6 +21,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -76,9 +78,27 @@ public class App extends Application {
 
         loadView(new Locale("cs", "CZ"));
 
-        stage.setMinHeight(300);
-        stage.setMinWidth(500);
+        controller.allGamesCheck.setOnAction(event -> {
+            logger.trace("Change property");
+            App.smartFillTree();
+        });
+
+        stage.setMinHeight(Constants.MINH_APP);
+        stage.setMinWidth(Constants.MINW_APP);
         stage.show();
+    }
+
+    public static void smartFillTree() {
+        if(GameRecord.getAllGameRecords() == null){
+            App.fillTree(new LinkedList<>());
+        }
+        if(controller.allGamesCheck.isSelected()){
+            logger.trace("is selected");
+            Platform.runLater(() -> App.fillTree(GameRecord.getAllGameRecords()));
+        }else {
+            logger.trace("is not selected");
+            App.fillTree(GameRecord.getAllConnectableGames());
+        }
     }
 
     private void loadView(Locale locale) {
@@ -91,7 +111,7 @@ public class App extends Application {
 
             controller = (Controller) fxmlLoader.getController();
 
-            Scene scene = new Scene(root, 300, 500);
+            Scene scene = new Scene(root, Constants.MINW_APP, Constants.MINH_APP);
             scene.getStylesheets().add(App.class.getResource("app.css").toExternalForm());
 
             stage.setTitle(bundle.getString("TITLE"));
@@ -114,13 +134,10 @@ public class App extends Application {
         super.stop();
     }
 
-    public static void fillTree(List<GameRecord> gameRecords){
+    private static void fillTree(List<GameRecord> gameRecords){
         TreeItem<GameRecord> rootItem = new TreeItem<GameRecord> (new GameRecord(NetService.serverName, true));
         rootItem.setExpanded(true);
         for (GameRecord gameRecord : gameRecords) {
-            if(gameRecord.isStarted()){
-                continue;
-            }
             TreeItem<GameRecord> item = new TreeItem<GameRecord> (gameRecord);
             rootItem.getChildren().add(item);
         }
@@ -156,8 +173,6 @@ public class App extends Application {
                 Message msg = new Message(Event.COD, MessageType.game, item.getUid());
                 NetService.getInstance().sender.addItem(msg);
                 logger.trace("Proveden pokus o přihlášení do hry: " + item);
-
-
                 }
         }); // end of event handler definition
 

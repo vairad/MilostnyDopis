@@ -1,5 +1,8 @@
 package gui;
 
+import game.Game;
+
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -37,6 +40,16 @@ public class GameRecord {
 
     public static void setAllGameRecords(List<GameRecord> allGameRecords) {
         GameRecord.allGameRecords = allGameRecords;
+    }
+
+    public static List<GameRecord> getAllConnectableGames() {
+        List<GameRecord> playableGames = new LinkedList<>();
+        for (GameRecord gr: allGameRecords) {
+            if(!gr.isStarted()){
+                playableGames.add(gr);
+            }
+        }
+        return playableGames;
     }
 
     public String getUid() {

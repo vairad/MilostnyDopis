@@ -16,4 +16,10 @@ public class Constants{
     public static final Random random = new Random();
 
     public static final String USERS_FILE = "users.xml";
+
+    public static final int MINW_APP = 500;
+    public static final int MINH_APP = 500;
+    public static final int MINW_GAME = 500;
+    public static final int MINH_GAME = 500;
+
 }

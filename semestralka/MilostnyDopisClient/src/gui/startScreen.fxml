@@ -68,7 +68,11 @@
         <TreeView fx:id="treeWiew">
 
         </TreeView>
-        <HBox alignment="top_center">
+        <HBox alignment="top_center"
+                spacing="4">
+            <CheckBox fx:id="allGamesCheck"
+                        />
+            <Text text="%allGames"/>
             <Button fx:id="refreshButton"
                     text="%refresh"
                     onAction="#onRefresh"/>

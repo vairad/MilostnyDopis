@@ -80,7 +80,8 @@ public class UsersControl extends HBox{
                 App.loginWorker.start();
             }
         });
-        }
+        setSpacing(10);
+    }
 
     private boolean loadOldPlayers() {
         HashSet<UserRecord> usersList = loadXML();

@@ -4,10 +4,7 @@ package gui;
 import constants.Constants;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.ProgressBar;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TreeView;
+import javafx.scene.control.*;
 import javafx.scene.text.Text;
 import message.Event;
 import message.Message;
@@ -47,6 +44,9 @@ public class Controller implements Initializable {
 
     @FXML
     public UsersControl userControl;
+
+    @FXML
+    public CheckBox allGamesCheck;
 
     @FXML
     private Text statusText;
@@ -191,12 +191,14 @@ public class Controller implements Initializable {
         treeWiew.setDisable(false);
         refreshButton.setDisable(false);
         newGameButton.setDisable(false);
+        allGamesCheck.setDisable(false);
     }
 
     private void disableGameMenu() {
         treeWiew.setDisable(true);
         refreshButton.setDisable(true);
         newGameButton.setDisable(true);
+        allGamesCheck.setDisable(true);
     }
 
     public void prepareLogin() {

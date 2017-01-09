@@ -306,9 +306,7 @@ public class GameHandler {
             }
         }
         GameRecord.setAllGameRecords(gameRecords);
-        Platform.runLater(() -> {
-            App.fillTree(gameRecords);
-        });
+        Platform.runLater(App::smartFillTree);
     }
 
     private static void handleGameACKResponse(String msg){
