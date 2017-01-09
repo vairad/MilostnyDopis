@@ -259,18 +259,19 @@ bool Game::effectKing(Player *who, Player *whom, std::string *result)
     /* CHECK PREREQUISITES */
     if(who->haveCountess()){
         LOG_TRACE("effectKing() - musíš zahrát komornou");
-        return false;
         *result = "WRONG";
+        return false;
     }
     if(whom->isGuarded()){
         LOG_TRACE("effectKing() - cíl je chráněný");
+         *result = "GUARDED";
         return false;
-        *result = "GUARDED";
+
     }
     if(who == whom){
         LOG_TRACE("effectKing() - nelze určit sebe");
-        return false;
         *result = "SAME";
+        return false;
     }
     /* DO EFFECT */
     who->effectCardSecond(GameCards::king);
