@@ -10,6 +10,7 @@
     <xs:element name="seq" type="xs:unsignedLong"/>
     <xs:element name="round" type="xs:integer"/>
     <xs:element name="roundCount" type="xs:integer"/>
+    <xs:element name="points" type="xs:integer"/>
 
     <!-- ============================== HERNI STRUKTURY ========================== -->
     <xs:element name="card">
@@ -30,6 +31,7 @@
                 <xs:element ref="alive"/>
                 <xs:element ref="token"/>
                 <xs:element ref="guarded"/>
+                <xs:element ref="points"/>
                 <xs:element ref="cardsCollection"/>
             </xs:sequence>
         </xs:complexType>

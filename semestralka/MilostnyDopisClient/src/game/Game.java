@@ -47,6 +47,7 @@ public class Game {
         setUpPlayers(gameStatus.players);
         Platform.runLater(() -> {
             try{
+                App.win.updateScore();
                 App.win.setTitle(Game.getUid());
                 App.win.setRounds(gameStatus.getRound(), gameStatus.getRoundCount());
             }catch (Exception e){

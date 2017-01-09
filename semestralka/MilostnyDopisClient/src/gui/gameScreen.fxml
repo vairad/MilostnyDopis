@@ -64,10 +64,10 @@
             <Label fx:id="roundLabel"/>
             <Label fx:id="roundCountLabel"/>
         </HBox>
-        <ScrollPane>
-            <TableView fx:id="gameResults"
+        <TableView fx:id="gameResults"
+                    VBox.vgrow="ALWAYS"
+                    GridPane.hgrow="ALWAYS"
                         />
-        </ScrollPane>
     </VBox>
 
     <StackPane fx:id="sharedPlace"

@@ -9,9 +9,13 @@ import javafx.animation.RotateTransition;
 import javafx.animation.TranslateTransition;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import javafx.stage.Window;
@@ -434,5 +438,27 @@ public class GameWindow extends Window {
     public void setRounds(int round, int roundCount) {
         controller.roundLabel.setText(" "+round);
         controller.roundCountLabel.setText(" ("+roundCount+")");
+    }
+
+    public void updateScore() {
+        TableColumn playerColumn = new TableColumn(App.bundle.getString("playerPoints"));
+        TableColumn pointsColumn = new TableColumn(App.bundle.getString("pointsPoints"));
+
+        playerColumn.prefWidthProperty().bind(controller.gameResults.widthProperty().divide(3).multiply(1.8)); // w * 1/4
+        pointsColumn.prefWidthProperty().bind(controller.gameResults.widthProperty().divide(3)); // w * 2/4
+
+        playerColumn.setCellValueFactory(
+                new PropertyValueFactory<Player, String>("nick")
+        );
+        pointsColumn.setCellValueFactory(
+                new PropertyValueFactory<Player, Integer>("points")
+        );
+
+        ObservableList<Player> data = FXCollections.observableArrayList();
+        data.addAll(Game.getPlayers());
+
+        controller.gameResults.getColumns().addAll(playerColumn, pointsColumn);
+        controller.gameResults.setItems(data);
+
     }
 }

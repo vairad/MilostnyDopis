@@ -35,11 +35,13 @@ public class GameStatus {
     private static final int ALIVE_ATR_PLAYER = 3;
     private static final int TOKEN_ATR_PLAYER = 4;
     private static final int GUARDED_ATR_PLAYER = 5;
-    private static final int CARDS_ATR_PLAYER = 6;
+    private static final int POINTS_ATR_PLAYER = 6;
+    private static final int CARDS_ATR_PLAYER = 7;
 
     /** pořadí atributů ve členu CARD */
     private static final int TYPE_ATR_CARD = 0;
     private static final int NAME_ATR_CARD = 1;
+
 
     /** instance loggeru hlavni tridy */
     public static Logger logger =	LogManager.getLogger(GameStatus.class.getName());
@@ -198,6 +200,10 @@ public class GameStatus {
         String guardedS = playerAttribute.getFirstChild().getNodeValue();
         logger.trace("Guarded : " + guardedS);
 
+        playerAttribute = playerNodes.item(POINTS_ATR_PLAYER);
+        int points = Integer.parseInt(playerAttribute.getFirstChild().getNodeValue());
+        logger.trace("Body : " + points);
+
         playerAttribute = playerNodes.item(CARDS_ATR_PLAYER);
         List<Card> cardList = parseCardListXML(playerAttribute);
 
@@ -206,7 +212,8 @@ public class GameStatus {
                         , Integer.parseInt(orderS)
                         , Boolean.parseBoolean(aliveS)
                         , Boolean.parseBoolean(tokenS)
-                        , Boolean.parseBoolean(guardedS));
+                        , Boolean.parseBoolean(guardedS)
+                        , points);
         p.resetCards(cardList);
 
         players.add(p);

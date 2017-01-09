@@ -238,6 +238,10 @@ std::string Player::xmlPlayer(int order)
     playerAtributes += guarded ? "true" : "false";
     playerAtributes += "</guarded>";
 
+    playerAtributes += "<points>";
+    playerAtributes += std::to_string(points);
+    playerAtributes += "</points>";
+
     playerAtributes += xmlCards();
 
     playerAtributes += "</player>";

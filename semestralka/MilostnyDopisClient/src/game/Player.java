@@ -17,6 +17,7 @@ public class Player implements Comparable<Player> {
 
     private static Player local_player = null;
     private static String localUid = null;
+    private final int points;
 
     /** Player properties */
     private String nick;
@@ -40,12 +41,13 @@ public class Player implements Comparable<Player> {
 
     private Semaphore collection_lock;
 
-    public Player(String nick, String serverUid, int order, boolean alive, boolean token, boolean guarded){
+    public Player(String nick, String serverUid, int order, boolean alive, boolean token, boolean guarded, int points){
         this.nick = nick;
         this.serverUid = serverUid;
         this.order = order;
         this.alive = alive;
         this.guarded = guarded;
+        this.points = points;
         if(serverUid.equals(localUid)){
             this.local = true;
         }
@@ -73,11 +75,11 @@ public class Player implements Comparable<Player> {
 
 
     public  Player(String nick, String serverUid, int order){
-        this(nick, serverUid, order, false, false, false);
+        this(nick, serverUid, order, false, false, false, 0);
     }
 
     public Player(String nick, String serverUid) {
-        this(nick, serverUid, -1, false, false, false);
+        this(nick, serverUid, -1, false, false, false, 0);
     }
 
     public static Player getLocalPlayer() {
@@ -247,5 +249,9 @@ public class Player implements Comparable<Player> {
         this.alive = alive;
         this.token = token;
         this.guarded = guarded;
+    }
+
+    public int getPoints() {
+        return points;
     }
 }

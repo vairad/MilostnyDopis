@@ -1,5 +1,6 @@
 package gui;
 
+import game.Player;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -40,7 +41,7 @@ public class GameController {
 
     @FXML public Button playButton;
     @FXML public TextField chosenPlayer;
-    @FXML public TableView gameResults;
+    @FXML public TableView<Player> gameResults;
     @FXML public Label roundLabel;
     @FXML public Label roundCountLabel;
 
