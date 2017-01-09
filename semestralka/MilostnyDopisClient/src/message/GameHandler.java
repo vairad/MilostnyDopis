@@ -154,9 +154,8 @@ public class GameHandler {
                     receivedCard = Card.getCardFromInt(Integer.parseInt(messageParts[1]));
                     tmpCard = receivedCard;
                     Platform.runLater(() -> DialogFactory.wastedCard(tmpCard));
-                    break;
+                    return;
             }
-            player = Player.getLocalPlayer();
         }else{
             player = Game.getPlayer(messageParts[1]);
             try {

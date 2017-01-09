@@ -90,10 +90,10 @@ public class Player implements Comparable<Player> {
 
     /**
      * Lokální hráč bude nastaven, pokud je null.
-     * Pokud není null, převezmou se servrem hlavní data o ráči ze serveru, zbytek se ponechá lokání.
+     * Pokud není null, převezmou se servrem hlavní data o hráči ze serveru, zbytek se ponechá lokání.
      * @param local_player nastavovaný hráč
      */
-    public static void  setLocalPlayer(Player local_player) {
+    public static void setLocalPlayer(Player local_player) {
         if(local_player.equals(Player.getLocalPlayer())){
             //todo porovnej informace serveru a lokálního hráče
             return;

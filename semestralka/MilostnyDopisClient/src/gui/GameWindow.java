@@ -362,7 +362,9 @@ public class GameWindow extends Window {
             return;
         }
 
-        chosenPlayer = null;
+        if(!Card.needElectPlayer(playCard)){
+            chosenPlayer = null;
+        }
         sendCardToServer(playCard, chosenPlayer, tip);
         playChosenCard();
         controller.playerMe.requestLayout();

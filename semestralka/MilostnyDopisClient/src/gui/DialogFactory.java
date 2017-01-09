@@ -85,8 +85,7 @@ public class DialogFactory {
         String text = App.resolvePlayedCardResult(playedCard, playerWhoPlays, cardResult);
         alert.setContentText(text);
         alert.showAndWait();
-        //todo resources
-        //todo resolvecard result
+
     }
 
     public static int gameCountDialog() {
@@ -143,7 +142,9 @@ public class DialogFactory {
 
     public static void gameStandingsDialog() {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Konec hry"); //todo resources
+        alert.setTitle(App.bundle.getString("endOfGame"));
+        alert.setHeaderText(App.bundle.getString("endOfGameHeader") + "\n" +App.getWinner());
+        alert.setContentText(App.bundle.getString("endOfGameText") + "\n" + App.getResult());
         alert.showAndWait();
     }
 

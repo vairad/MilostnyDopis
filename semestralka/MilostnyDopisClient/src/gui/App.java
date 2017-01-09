@@ -45,6 +45,31 @@ public class App extends Application {
     protected static ResourceBundle bundle;
     private static Controller controller;
 
+    public static String getWinner() {
+        int maxPoints = -1;
+        for (Player p: Game.getPlayers()) {
+            if(p.getPoints() > maxPoints){
+                maxPoints = p.getPoints();
+            }
+        }
+        String winners = "";
+        for (Player p: Game.getPlayers()) {
+            if(p.getPoints() == maxPoints){
+                winners += p.getDisplayName() + "\n";
+            }
+        }
+        return winners;
+    }
+
+    public static String getResult() {
+        String result = App.bundle.getString("playerPoints") + "\t \t"
+                + App.bundle.getString("pointsPoints") + "\n";
+        for (Player p: Game.getPlayers()) {
+            result += p.getDisplayName() + "\t \t" + p.getPoints() + "\n";
+        }
+        return result;
+    }
+
     @Override
     public void start(Stage primaryStage) throws Exception{
         stage = primaryStage;
