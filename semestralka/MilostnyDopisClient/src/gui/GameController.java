@@ -41,11 +41,9 @@ public class GameController {
     @FXML public Button playButton;
     @FXML public TextField chosenPlayer;
     @FXML public TableView gameResults;
+    @FXML public Label roundLabel;
+    @FXML public Label roundCountLabel;
 
-
-    public void onClose(ActionEvent actionEvent) {
-        //todo co se stane na konci hry
-    }
 
     void appendStatus(List<String> message){
         gameStatus.getItems().addAll(message);

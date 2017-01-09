@@ -11,11 +11,12 @@ std::string Game::getUid() const
     return uid;
 }
 
-Game::Game(std::string uid, int round_count) : uid(uid)
+Game::Game(std::string uid, int round_count, short maxPlayers) : uid(uid)
   , round_count(round_count)
   , playedRounds(0)
   , status_sequence_id(0)
   , player_count(0)
+  , maxPlayerCount(maxPlayers)
   , full(false)
   , started(false)
   , player1(NULL)
@@ -745,6 +746,7 @@ void Game::finishGame(){
  */
 void Game::restartGame()
 {
+    playedRounds++;
     // říct kdo vyhrál kolo
     this->sendRoundResult();
 
@@ -752,7 +754,11 @@ void Game::restartGame()
     this->resetState();
     this->sendGameStateToAllPlayers();
     // zvýšit čítač
-    playedRounds++;
+}
+
+int Game::getMaxPlayerCount()
+{
+    return maxPlayerCount;
 }
 
 
@@ -944,6 +950,9 @@ std::string Game::getStatus()
 
     msg += xmlPlayerCollection();
 
+    msg += xmlGameRound();
+    msg += xmlGameRoundCount();
+
     msg += "</gameStatus>";
     return msg;
 }
@@ -957,6 +966,28 @@ std::string Game::xmlGameId()
     gameId += "</id>";
 
     return gameId;
+}
+
+std::string Game::xmlGameRound()
+{
+    std::string gameRound = "";
+
+    gameRound += "<round>";
+    gameRound += std::to_string(playedRounds + 1);
+    gameRound += "</round>";
+
+    return gameRound;
+}
+
+std::string Game::xmlGameRoundCount()
+{
+    std::string gameRound = "";
+
+    gameRound += "<roundCount>";
+    gameRound += std::to_string(round_count);
+    gameRound += "</roundCount>";
+
+    return gameRound;
 }
 
 std::string Game::xmlGameSeq()

@@ -19,9 +19,10 @@ class Game
     int playedRounds;
     unsigned long status_sequence_id;
     short player_count;
-
+    short maxPlayerCount;
     bool full;
     bool started;
+
 
     Player *player1 = NULL;
     Player *player2 = NULL;
@@ -33,7 +34,7 @@ class Game
     GameDeck *game_deck;
 
 public:
-    Game(std::string uid, int round_count = 5);
+    Game(std::string uid, int round_count = 5, short maxPlayers = 2);
     ~Game();
 
     bool addPlayer(User *who);
@@ -79,6 +80,7 @@ public:
 
     void finishGame();
     void restartGame();
+    int getMaxPlayerCount();
 private:
     void sendTokenTo(Player *player);
     void sendGoodBye();
@@ -94,6 +96,8 @@ private:
     std::string xmlPlayerCollection();
     std::string xmlGameId();
     std::string xmlGameSeq();
+    std::string xmlGameRound();
+    std::string xmlGameRoundCount();
 };
 
 #endif // GAME_H

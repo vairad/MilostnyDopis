@@ -8,6 +8,8 @@
     <xs:element name="token" type="xs:boolean"/>
     <xs:element name="guarded" type="xs:boolean"/>
     <xs:element name="seq" type="xs:unsignedLong"/>
+    <xs:element name="round" type="xs:integer"/>
+    <xs:element name="roundCount" type="xs:integer"/>
 
     <!-- ============================== HERNI STRUKTURY ========================== -->
     <xs:element name="card">
@@ -56,6 +58,8 @@
                 <xs:element ref="id" minOccurs="1" maxOccurs="1"/>
                 <xs:element ref="seq" minOccurs="1" maxOccurs="1"/>
                 <xs:element ref="playersCollection" minOccurs="1" maxOccurs="1"/>
+                <xs:element ref="round" minOccurs="1" maxOccurs="1"/>
+                <xs:element ref="roundCount" minOccurs="1" maxOccurs="1"/>
             </xs:sequence>
         </xs:complexType>
     </xs:element>

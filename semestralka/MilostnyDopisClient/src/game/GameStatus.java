@@ -51,6 +51,8 @@ public class GameStatus {
     LinkedList<Player> players;
     private String uid;
     private Long seqNumber;
+    private int round;
+    private int roundCount;
 
     public GameStatus(String serverMessage){
         logger.debug("start method");
@@ -131,6 +133,16 @@ public class GameStatus {
         Node seq = serverXmlDocument.getElementsByTagName("seq").item(0).getFirstChild();
         this.seqNumber = Long.parseUnsignedLong(seq.getNodeValue());
         logger.trace("Sequence number of game status: " + this.seqNumber);
+
+        // load sequence number from xml
+        Node round = serverXmlDocument.getElementsByTagName("round").item(0).getFirstChild();
+        this.round = Integer.parseInt(round.getNodeValue());
+        logger.trace("Sequence number of game status: " + this.round);
+
+        // load sequence number from xml
+        Node roundCount = serverXmlDocument.getElementsByTagName("roundCount").item(0).getFirstChild();
+        this.roundCount = Integer.parseInt(roundCount.getNodeValue());
+        logger.trace("Sequence number of game status: " + this.roundCount);
     }
 
     private void setPlayersDisplayOrder() {
@@ -240,5 +252,13 @@ public class GameStatus {
 
     public Long getSeqNumber() {
         return seqNumber;
+    }
+
+    public int getRoundCount() {
+        return roundCount;
+    }
+
+    public int getRound() {
+        return round;
     }
 }

@@ -59,8 +59,11 @@
           GridPane.rowIndex="0"
           GridPane.columnSpan="1">
         <Label text="%results"/>
-        <Label text="%round"/>
-
+        <HBox>
+            <Label text="%round"/>
+            <Label fx:id="roundLabel"/>
+            <Label fx:id="roundCountLabel"/>
+        </HBox>
         <ScrollPane>
             <TableView fx:id="gameResults"
                         />

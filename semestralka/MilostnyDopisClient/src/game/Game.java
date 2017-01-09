@@ -48,6 +48,7 @@ public class Game {
         Platform.runLater(() -> {
             try{
                 App.win.setTitle(Game.getUid());
+                App.win.setRounds(gameStatus.getRound(), gameStatus.getRoundCount());
             }catch (Exception e){
                 logger.error("Něco špatného sestalo ve státě dánském");
             }

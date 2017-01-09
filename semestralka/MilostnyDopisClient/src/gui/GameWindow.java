@@ -430,4 +430,9 @@ public class GameWindow extends Window {
         controller.player3.update();
         controller.playerMe.update();
     }
+
+    public void setRounds(int round, int roundCount) {
+        controller.roundLabel.setText(" "+round);
+        controller.roundCountLabel.setText(" ("+roundCount+")");
+    }
 }
