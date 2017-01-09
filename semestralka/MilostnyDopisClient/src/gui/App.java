@@ -274,7 +274,7 @@ public class App extends Application {
                         + "\t"
                         + winner.getDisplayName()
                         + "\t"
-                        + App.bundle.getString("withCard")
+                        + App.bundle.getString("withCard") + "\t"
                         + winCard;
                 text += "\n";
 
@@ -284,7 +284,7 @@ public class App extends Application {
                         + "\t"
                         + loser.getDisplayName()
                         + "\t"
-                        + App.bundle.getString("withCard")
+                        + App.bundle.getString("withCard")+ "\t"
                         + loseCard;
             }catch (NullPointerException | NumberFormatException e){
                 logger.error("Chyba ve zprávě výsledku baronů");

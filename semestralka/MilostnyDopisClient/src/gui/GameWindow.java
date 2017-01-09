@@ -74,6 +74,8 @@ public class GameWindow extends Window {
         createTransitions();
         createListeners();
 
+        initTable();
+
         stage.setMinHeight(600);
         stage.setMinWidth(600);
     }
@@ -440,7 +442,7 @@ public class GameWindow extends Window {
         controller.roundCountLabel.setText(" ("+roundCount+")");
     }
 
-    public void updateScore() {
+    private void initTable(){
         TableColumn playerColumn = new TableColumn(App.bundle.getString("playerPoints"));
         TableColumn pointsColumn = new TableColumn(App.bundle.getString("pointsPoints"));
 
@@ -454,10 +456,16 @@ public class GameWindow extends Window {
                 new PropertyValueFactory<Player, Integer>("points")
         );
 
+        controller.gameResults.getColumns().addAll(playerColumn, pointsColumn);
+    }
+
+    public void updateScore() {
+
+
         ObservableList<Player> data = FXCollections.observableArrayList();
         data.addAll(Game.getPlayers());
 
-        controller.gameResults.getColumns().addAll(playerColumn, pointsColumn);
+
         controller.gameResults.setItems(data);
 
     }
