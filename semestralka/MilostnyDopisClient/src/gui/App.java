@@ -14,15 +14,20 @@ import javafx.scene.control.TreeView;
 import javafx.stage.Stage;
 import message.Event;
 import message.Message;
+import message.MessageHandler;
 import message.MessageType;
 import netservice.NetService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import sun.nio.ch.Net;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
+
+import static java.lang.Thread.activeCount;
+import static java.lang.Thread.sleep;
 
 public class App extends Application {
 
@@ -156,6 +161,7 @@ public class App extends Application {
     }
 
     public static void userLogged(){
+        controller.stopProgress();
         controller.loggedForm();
     }
 
@@ -286,5 +292,102 @@ public class App extends Application {
             }
         }
         return text;
+    }
+
+    private static void sendLogin(){
+        logger.debug("Start method");
+        String messageS = controller.checkNickname();
+        if(messageS == null){
+            logger.trace("no nickname");
+            return;
+        }
+        Message msg = new Message(Event.ECH, MessageType.login, messageS);
+        NetService.getInstance().sender.addItem(msg);
+    }
+
+    public static void connect() {
+        boolean result = false;
+        if(!NetService.isRunning()){
+           result = connectServer();    //pripoj server
+        }
+        if(!result){  // když se nepovedlo připojení uvolni a skonči
+            NetService.getInstance().destroy();
+            controller.prepareLogin();
+            controller.stopProgress();
+            return;
+        }
+        if (Thread.currentThread().isInterrupted()) {
+            controller.prepareLogin(); // když jsi přeušen vše uvolni a skonči
+            controller.stopProgress();
+            return;
+        }
+        sendLogin();
+    }
+
+
+    public static void logout(){
+        if(App.loginWorker.isAlive()){
+            App.loginWorker.interrupt();
+        }
+        try {
+            if(Player.getLocalPlayer().isLogged()){
+                Message msg = new Message(Event.OUT, MessageType.login, Player.getLocalPlayer().getServerUid() );
+                for(int i = 0; i < 10; i++) {
+                    NetService.getInstance().sender.addItem(msg);
+                }
+            }
+        }catch (NullPointerException e){
+            logger.trace("Uzivatel nebyl prihlasen.");
+        }
+
+        controller.prepareLogin();
+        controller.stopProgress();
+        NetService.getInstance().destroy();
+    }
+
+
+    static boolean connectServer() {
+        logger.debug("Start method");
+
+        int resultPort;
+        try {
+            resultPort = NetService.checkPort(controller.port.getText());
+        }catch (NumberFormatException e){
+            logger.error("Error port number", e);
+            resultPort = -1;
+        }
+
+        if(resultPort == -1){
+            logger.error("Wrong range of port");
+
+            DialogFactory.alertError( bundle.getString("portErrorTitle")
+                    , bundle.getString("portErrorHeadline")
+                    , bundle.getString("portErrorText"));
+            return false;
+        }
+
+        try{
+            String text = bundle.getString("connectionTry");
+            Platform.runLater(() -> {controller.setStatusText(text);});
+
+            NetService.getInstance().setup(controller.getAddress(), resultPort);
+            NetService.getInstance().initialize();
+
+            logger.trace("Iinit MessageHandler");
+            NetService.messageHandler = new MessageHandler();
+            logger.trace("start messageHandler");
+            NetService.messageHandler.start();
+            logger.trace("MessageHandler started");
+
+        }catch (IOException e){
+            String text = bundle.getString("notConnected") +" " + e.getLocalizedMessage();
+            Platform.runLater(() -> {controller.setStatusText(text);});
+            logger.error("IO Error", e);
+            return false;
+        }
+
+        String text = bundle.getString("loginInProgress");
+        Platform.runLater(() -> {controller.setStatusText(text);});
+        return true;
     }
 }

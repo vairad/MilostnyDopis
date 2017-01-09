@@ -59,9 +59,11 @@
             GridPane.rowIndex="6"
             GridPane.columnSpan="2"
             >
+        <ProgressBar fx:id="progressBar"
+                     visible="false"
+        />
         <Text fx:id="statusText"/>
-        <!--<ProgressIndicator fx:id="progressIndicator"
-                            />-->
+
 
         <TreeView fx:id="treeWiew">
 
