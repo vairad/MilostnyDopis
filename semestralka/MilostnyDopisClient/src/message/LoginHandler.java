@@ -50,11 +50,13 @@ public class LoginHandler {
         logger.debug("Start method - " + message);
 
         if(message.equals("NO ID")){
+            logger.debug("No ID case");
             UserRecord.allRecords.remove(App.userRecord);
             App.userRecord = null;
             Platform.runLater(App::refreshOldPlayers);
             Platform.runLater(App::logout);
             new Thread(XMLHelper::fillOldUsersXml).start();
+            return;
         }
 
         String[] messageParts = message.split("&&");

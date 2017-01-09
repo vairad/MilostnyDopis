@@ -226,4 +226,10 @@ public class Controller implements Initializable {
         port.setText(user.getPort());
         address.setText(user.getServerName());
     }
+
+    public void resetStatus() {
+        if(statusText.getText().equals(App.bundle.getString("loginInProgress"))){
+            statusText.setText(App.bundle.getString("noLogged"));
+        }
+    }
 }

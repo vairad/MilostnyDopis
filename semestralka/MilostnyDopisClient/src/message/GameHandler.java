@@ -263,11 +263,18 @@ public class GameHandler {
             });
             return;
         }
+        GameStatus status = new GameStatus(msg.getMessage());
         try {
-            Game.reinitialize(new GameStatus(msg.getMessage()));
+            Game.reinitialize(status);
         }catch (NullPointerException e){
             logger.error("game is not initialized");
-            return;
+            GameRecord rec = GameRecord.getGame(status.getUid());
+            if(rec == null){
+                return;
+            }
+            Game.initialize(rec);
+            Game.reinitialize(status);
+            Platform.runLater(() -> App.highlightGame(rec));
         }
         if(Game.isReady()){
             Platform.runLater(App::showGameWindow);
@@ -312,8 +319,11 @@ public class GameHandler {
             logger.debug("Unknown game id returned from server");
             return;
         }
-
-        //todo check correct ID of recieved item
+        if(Game.getUid() == null
+                ||  !Game.getUid().equals(gameRecord.getUid())){
+            Game.initialize(gameRecord);
+            Platform.runLater(() -> DialogFactory.differentGame(gameRecord));
+        }
     }
 
     private static void giveTokenToServer(){

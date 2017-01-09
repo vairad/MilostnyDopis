@@ -13,11 +13,12 @@ public class UserRecord {
     private final String serverName;
     private final String port;
 
-//    public UserRecord(){
-//        id = "...";
-//        nick = "...";
-//        serverName = "...";
-//    }
+    public UserRecord(){
+        id = "...";
+        nick = "...";
+        serverName = "...";
+        port = "...";
+    }
 
     public UserRecord(String id, String nick, String serverName, String port) {
         this.id = id;

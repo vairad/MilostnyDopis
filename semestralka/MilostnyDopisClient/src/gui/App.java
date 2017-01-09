@@ -339,6 +339,7 @@ public class App extends Application {
 
         controller.prepareLogin();
         controller.stopProgress();
+        controller.resetStatus();
         NetService.getInstance().destroy();
     }
 
@@ -357,9 +358,9 @@ public class App extends Application {
         if(resultPort == -1){
             logger.error("Wrong range of port");
 
-            DialogFactory.alertError( bundle.getString("portErrorTitle")
+            Platform.runLater(() -> DialogFactory.alertError( bundle.getString("portErrorTitle")
                     , bundle.getString("portErrorHeadline")
-                    , bundle.getString("portErrorText"));
+                    , bundle.getString("portErrorText")));
             return false;
         }
 
@@ -413,4 +414,7 @@ public class App extends Application {
         controller.userControl.refresh();
     }
 
+    public static void highlightGame(GameRecord record) {
+        // todo highlight element in tree view
+    }
 }

@@ -92,6 +92,7 @@ public class UsersControl extends HBox{
         UserRecord.allRecords = usersList;
 
         ObservableList<UserRecord> options = FXCollections.observableArrayList(usersList);
+        options.add(new UserRecord());
         users.setItems(options);
         return true;
     }
@@ -196,6 +197,7 @@ public class UsersControl extends HBox{
             this.setDisable(true);
         }
         ObservableList<UserRecord> options = FXCollections.observableArrayList(UserRecord.allRecords);
+        options.add(new UserRecord());
         users.setItems(options);
     }
 }

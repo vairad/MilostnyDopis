@@ -80,6 +80,7 @@ void LoginHandler::handleLoginCOD(Message *msg)
         }
         user = UserDatabase::getInstance()->getUserById(id);
         UserDatabase::getInstance()->setSocketUser(id, msg->getSocket());
+        user->setSocket(msg->getSocket());
         msg->setEvent(Event::ACK);
     }
 

@@ -6,6 +6,7 @@ import javafx.application.Platform;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -19,7 +20,6 @@ public class Game {
 
     private static GameRecord gameRecord;
     private static List<Player> players;
-    private static List<Game> allGameRecords;
     private static boolean ready;
     private static Long lastStatusSeq;
 

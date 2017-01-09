@@ -144,4 +144,12 @@ public class DialogFactory {
         alert.setContentText(value.toString());
         alert.showAndWait();
     }
+
+    public static void differentGame(GameRecord game) {
+        Alert alert  = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle(App.bundle.getString("diffGameTitle"));
+        alert.setHeaderText(App.bundle.getString("diffGameHeadline"));
+        alert.setContentText(game.toString());
+        alert.showAndWait();
+    }
 }
