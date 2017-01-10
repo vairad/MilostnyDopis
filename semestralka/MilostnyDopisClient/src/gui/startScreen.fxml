@@ -65,7 +65,8 @@
         <Text fx:id="statusText"/>
 
 
-        <TreeView fx:id="treeWiew">
+        <TreeView fx:id="treeView"
+                    id="treeView">
 
         </TreeView>
         <HBox alignment="top_center"

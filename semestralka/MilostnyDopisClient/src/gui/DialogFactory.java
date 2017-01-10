@@ -5,6 +5,7 @@ import game.Player;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceDialog;
+import javafx.scene.control.DialogPane;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +16,10 @@ import java.util.Optional;
  */
 public class DialogFactory {
 
+    private static void setUpCssToDialog(DialogPane dialogPane){
+        dialogPane.getStylesheets().add(
+                DialogFactory.class.getResource("app.css").toExternalForm());
+    }
 
     /**
      * Create and show alert dialog with defined parameters
@@ -24,6 +29,7 @@ public class DialogFactory {
      */
     public static void alertError(String title, String headline, String text ){
         Alert alert  = new Alert(Alert.AlertType.ERROR);
+        setUpCssToDialog(alert.getDialogPane());
         alert.setTitle(title);
         alert.setHeaderText(headline);
         alert.setContentText(text);
@@ -32,6 +38,7 @@ public class DialogFactory {
 
     public static boolean yesNoQuestion(String title, String question) {
         Alert alert  = new Alert(Alert.AlertType.CONFIRMATION);
+        setUpCssToDialog(alert.getDialogPane());
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(question);
@@ -55,6 +62,7 @@ public class DialogFactory {
         choices.add(Card.PRINCESS);
 
         ChoiceDialog<Card> dialog = new ChoiceDialog<>(Card.PRIEST, choices);
+        setUpCssToDialog(dialog.getDialogPane());
         dialog.setTitle(App.bundle.getString("guardianChooseTitle"));
         dialog.setHeaderText(App.bundle.getString("guardianChooseQuestion"));
         dialog.setContentText(App.bundle.getString("guardianChooseText"));
@@ -68,6 +76,7 @@ public class DialogFactory {
 
     public static void returnedCard(Card card) {
         Alert alert  = new Alert(Alert.AlertType.WARNING);
+        setUpCssToDialog(alert.getDialogPane());
         alert.setTitle(App.bundle.getString("returnedCardTitle"));
         alert.setHeaderText(App.bundle.getString("returnedCardHeadline"));
         alert.setContentText(App.bundle.getString("returnedCardText") + " : " + card);
@@ -76,6 +85,7 @@ public class DialogFactory {
 
     public static void resultDialog(Card playedCard, Player playerWhoPlays, boolean isMyTarget, String cardResult) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        setUpCssToDialog(alert.getDialogPane());
         alert.setTitle("Výsledek karty");
         if(!isMyTarget){
             alert.setHeaderText(App.bundle.getString("foreignCard"));
@@ -97,6 +107,7 @@ public class DialogFactory {
         choices.add(9);
 
         ChoiceDialog<Integer> dialog = new ChoiceDialog<>(1, choices);
+        setUpCssToDialog(dialog.getDialogPane());
         dialog.setTitle(App.bundle.getString("gameCountTitle"));
         dialog.setHeaderText(App.bundle.getString("gameCountQuestion"));
         dialog.setContentText(App.bundle.getString("gameCountText"));
@@ -115,6 +126,7 @@ public class DialogFactory {
         choices.add(4);
 
         ChoiceDialog<Integer> dialog = new ChoiceDialog<>(2, choices);
+        setUpCssToDialog(dialog.getDialogPane());
         dialog.setTitle(App.bundle.getString("playerCountTitle"));
         dialog.setHeaderText(App.bundle.getString("playerCountQuestion"));
         dialog.setContentText(App.bundle.getString("playerCountText"));
@@ -128,6 +140,7 @@ public class DialogFactory {
 
     public static void roundEndDialog(List<Player> winners, Card winCard){
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        setUpCssToDialog(alert.getDialogPane());
         alert.setTitle(App.bundle.getString("roundWinnerTitle"));
         String headline = App.bundle.getString("roundWinnerHeadline") + " " + winCard;
         alert.setHeaderText(headline);
@@ -142,6 +155,7 @@ public class DialogFactory {
 
     public static void gameStandingsDialog() {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        setUpCssToDialog(alert.getDialogPane());
         alert.setTitle(App.bundle.getString("endOfGame"));
         alert.setHeaderText(App.bundle.getString("endOfGameHeader") + "\n" +App.getWinner());
         alert.setContentText(App.bundle.getString("endOfGameText") + "\n" + App.getResult());
@@ -150,6 +164,7 @@ public class DialogFactory {
 
     public static void wastedCard(Card card) {
         Alert alert  = new Alert(Alert.AlertType.WARNING);
+        setUpCssToDialog(alert.getDialogPane());
         alert.setTitle(App.bundle.getString("wastedCardTitle"));
         alert.setHeaderText(App.bundle.getString("wastedCardHeadline"));
         alert.setContentText(App.bundle.getString("wastedCardText") + " : " + card);
@@ -158,6 +173,7 @@ public class DialogFactory {
 
     public static void loginInfo(UserRecord value) {
         Alert alert  = new Alert(Alert.AlertType.INFORMATION);
+        setUpCssToDialog(alert.getDialogPane());
         alert.setTitle(App.bundle.getString("loginTitle"));
         alert.setHeaderText(App.bundle.getString("loginHeadline"));
         alert.setContentText(value.toString());
@@ -166,6 +182,7 @@ public class DialogFactory {
 
     public static void differentGame(GameRecord game) {
         Alert alert  = new Alert(Alert.AlertType.WARNING);
+        setUpCssToDialog(alert.getDialogPane());
         alert.setTitle(App.bundle.getString("diffGameTitle"));
         alert.setHeaderText(App.bundle.getString("diffGameHeadline"));
         alert.setContentText(game.toString());
@@ -174,6 +191,7 @@ public class DialogFactory {
 
     public static void messagesResult(long sendBytes, long recvBytes, long reconnection) {
         Alert alert  = new Alert(Alert.AlertType.INFORMATION);
+        setUpCssToDialog(alert.getDialogPane());
         alert.setTitle(App.bundle.getString("netResult"));
         String results = App.bundle.getString("send") +" : " + sendBytes + "B" + "\n";
         results += App.bundle.getString("received") +" : " + recvBytes + "B" + "\n";

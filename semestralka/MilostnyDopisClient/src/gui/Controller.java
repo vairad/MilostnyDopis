@@ -52,7 +52,7 @@ public class Controller implements Initializable {
     private Text statusText;
 
     @FXML
-    private TreeView<GameRecord> treeWiew;
+    private TreeView<GameRecord> treeView;
 
     private ResourceBundle bundle;
 
@@ -89,7 +89,7 @@ public class Controller implements Initializable {
 
     @FXML
     public void onRefresh() {
-        treeWiew.setDisable(true);
+        treeView.setDisable(true);
         Message msg = new Message(Event.ECH, MessageType.game, "");
         NetService.getInstance().sender.addItem(msg);
     }
@@ -192,18 +192,18 @@ public class Controller implements Initializable {
     }
 
     TreeView<GameRecord> getTreeWiew() {
-        return treeWiew;
+        return treeView;
     }
 
     void enableGameMenu() {
-        treeWiew.setDisable(false);
+        treeView.setDisable(false);
         refreshButton.setDisable(false);
         newGameButton.setDisable(false);
         allGamesCheck.setDisable(false);
     }
 
     private void disableGameMenu() {
-        treeWiew.setDisable(true);
+        treeView.setDisable(true);
         refreshButton.setDisable(true);
         newGameButton.setDisable(true);
         allGamesCheck.setDisable(true);

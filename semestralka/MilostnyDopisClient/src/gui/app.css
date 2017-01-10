@@ -23,6 +23,17 @@
     -fx-border-width: 2px;
 }
 
+#treeView:focused{
+    -fx-border: inherit;
+    -fx-effect: inherit;
+}
+
 #chosenPlayer{
     -fx-opacity: 0.9;
+}
+
+.root {
+    -fx-accent: #d32614;
+
+    -fx-focus-color: #d32614;
 }
