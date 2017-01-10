@@ -5,7 +5,7 @@
 ####### Compiler, tools and options
 
 CXX           = g++
-CXXFLAGS      = -O2 -std=c++0x -Wall -W $(DEFINES)
+CXXFLAGS      = -O2 -std=c++0x -Wall -W -DRELEASE $(DEFINES)
 INCPATH       = -I../MilostnyDopisServer -I. 
 LINK          = g++
 LFLAGS        = -Wl,-O3 -Wl,-rpath, -pthread

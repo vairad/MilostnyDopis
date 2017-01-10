@@ -31,11 +31,15 @@ void test_log_macros(){
 FILE *logfile;
 
 void openLogFile(){
+#ifdef RELEASE
     if(logfile == NULL){
         logfile = fopen ("serverLog.txt","a");
     }
+#endif
 }
 
 void closeLogFile(){
-    fclose(logfile);
+    if(logfile != NULL){
+        fclose(logfile);
+    }
 }
