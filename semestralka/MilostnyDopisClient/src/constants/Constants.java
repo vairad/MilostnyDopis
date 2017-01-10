@@ -22,5 +22,5 @@ public class Constants{
     public static final int MINW_GAME = 500;
     public static final int MINH_GAME = 500;
 
-    public static long RECONNECT_TIMEOUT_MS = 10000;
+    public static long RECONNECT_TIMEOUT_MS = 30000;
 }

@@ -463,6 +463,7 @@ public class App extends Application {
 
     public static void reconnect(){
         reconnections++;
+        Platform.runLater(controller::startProgress);
         Platform.runLater( () -> controller.setStatusText(bundle.getString("reconnect")));
         try {
             sleep(Constants.RECONNECT_TIMEOUT_MS);

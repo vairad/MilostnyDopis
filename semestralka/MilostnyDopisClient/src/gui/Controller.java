@@ -82,6 +82,8 @@ public class Controller implements Initializable {
     @FXML
     public void onLogout() {
         logger.debug("Start method");
+        setStatusText(bundle.getString("loggingOut"));
+        NetService.getInstance().stop();
         new Thread(App::logout).start();
     }
 

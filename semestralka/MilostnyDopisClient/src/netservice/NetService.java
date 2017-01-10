@@ -183,4 +183,8 @@ public class NetService {
     public String getServerPort() {
         return "" + socket.getPort();
     }
+
+    public void stop() {
+        runFlag = false;
+    }
 }
