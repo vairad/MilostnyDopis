@@ -7,6 +7,7 @@ import javafx.scene.control.*;
 import javafx.scene.text.Text;
 import message.Event;
 import message.Message;
+import message.MessageFactory;
 import message.MessageType;
 import netservice.NetService;
 import org.apache.logging.log4j.LogManager;
@@ -105,8 +106,7 @@ public class Controller implements Initializable {
     public void onRefresh() {
         logger.trace("start method");
         treeView.setDisable(true);
-        Message msg = new Message(Event.ECH, MessageType.game, "");
-        NetService.getInstance().sender.addItem(msg);
+        NetService.getInstance().sender.addItem(MessageFactory.getGameList());
     }
 
     /**
@@ -142,7 +142,7 @@ public class Controller implements Initializable {
         logger.trace("start method");
         DialogFactory.messagesResult(NetService.sendBytes
                                      ,NetService.recvBytes
-                                     , App.reconnections);
+                                     , App.reconnection);
     }
 //=============================================================================================================
 //=============================================================================================================
@@ -169,7 +169,7 @@ public class Controller implements Initializable {
         logoutButton.setDisable(false);
         connectButton.setDisable(true);
         disableForm();
-        onRefresh();
+   //     onRefresh(); // TODO: 10.1.17 cause null pointer exception
     }
 
     /**

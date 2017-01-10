@@ -25,7 +25,7 @@ public class Receiver extends Thread {
 
     @Override
     public void run() {
-        while (NetService.runFlag){
+        while (NetService.isRunning()){
             buffer = new byte[NetService.MAX_MSG_LENGTH];
             InputStream in = NetService.getInstance().getInputStream();
 

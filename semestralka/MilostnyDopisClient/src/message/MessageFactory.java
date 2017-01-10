@@ -10,4 +10,7 @@ public class MessageFactory {
     public static Message getStatusMessage(String uid) {
         return new Message(Event.STA, MessageType.game, uid);
     }
+    public static Message getGameList() {
+        return new Message(Event.ECH, MessageType.game, "");
+    }
 }

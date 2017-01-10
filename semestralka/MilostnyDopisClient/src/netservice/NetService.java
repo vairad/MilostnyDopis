@@ -23,14 +23,17 @@ public class NetService {
     public static Logger logger =	LogManager.getLogger(NetService.class.getName());
 
 
-    public static boolean runFlag = false;
-    public static final int MAX_MSG_LENGTH = 2048;
-    public static String serverName;
+    private static boolean runFlag = false;
+    private static boolean userEnd = false;
+
+    static final int MAX_MSG_LENGTH = 2048;
+
     public static long recvBytes = 0;
     public static long sendBytes = 0;
 
 
     private String addressS;
+    private String serverName;
     private int port;
 
     private Socket socket;
@@ -73,8 +76,12 @@ public class NetService {
         return runFlag;
     }
 
-    public String getServerName() {
-        return address.getHostName();
+    public static String getServerName() {
+        return NetService.getInstance().serverName;
+    }
+
+    public static boolean isUserEnd() {
+        return userEnd;
     }
 
     public void initialize() throws IOException {
@@ -83,7 +90,7 @@ public class NetService {
         address = InetAddress.getByName(addressS);
         NetService.logger.trace("initialize() - get inet adress");
         NetService.logger.debug("Pripojuju se na : "+address.getHostAddress()+" se jmenem : "+address.getHostName()+"\n" );
-        NetService.serverName = address.getHostName();
+        serverName = address.getHostName();
 
         socket = new Socket(address, port);
         NetService.logger.trace("initialize() - socket creation");
@@ -95,6 +102,7 @@ public class NetService {
         inputStream = socket.getInputStream();
         NetService.logger.trace("initialize() - input stream");
 
+        userEnd = false;
         runFlag = true;
         startThreads();
 
@@ -186,5 +194,9 @@ public class NetService {
 
     public void stop() {
         runFlag = false;
+    }
+
+    public static void userEnding() {
+        userEnd = false;
     }
 }

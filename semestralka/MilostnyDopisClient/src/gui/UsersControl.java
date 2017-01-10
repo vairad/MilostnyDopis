@@ -76,7 +76,7 @@ public class UsersControl extends HBox{
         users.valueProperty().addListener((observable, oldValue, newValue) -> {
             if(observable.getValue() != null && !isDisable()) {
                 DialogFactory.loginInfo(observable.getValue());
-                App.loginWorker = new Thread(() -> App.login(observable.getValue()));
+                App.loginWorker = new Thread(() -> App.codeLogin(observable.getValue()));
                 App.loginWorker.start();
             }
         });

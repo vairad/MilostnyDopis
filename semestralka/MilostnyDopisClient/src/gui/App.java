@@ -30,17 +30,17 @@ import static java.lang.Thread.sleep;
 
 public class App extends Application {
 
-    static long reconnections = 0;
-
     /*Statický inicializační blok nastavující odkaz (proměnnou) na konfiguraci loggeru*/
     static {
         System.setProperty("log4j.configurationFile","log-conf.xml");
     }
 
     /** instance loggeru hlavni tridy */
-    public static Logger logger =	LogManager.getLogger(App.class.getName());
+    public static Logger logger = LogManager.getLogger(App.class.getName());
 
     public static GameWindow win = null;
+
+    static long reconnection = 0;
 
     static Thread loginWorker;
 
@@ -82,6 +82,14 @@ public class App extends Application {
 
         loadView(new Locale("cs", "CZ"));
 
+        stage.setOnCloseRequest( event -> {
+            try {
+                App.myStop();
+            } catch (Exception e) {
+                logger.fatal("Chyba jako brno");
+            }
+        });
+
         stage.setMinHeight(Constants.MINH_APP);
         stage.setMinWidth(Constants.MINW_APP);
         stage.show();
@@ -120,22 +128,23 @@ public class App extends Application {
         }
     }
 
-    @Override
-    public void stop() throws Exception{
+    public static void myStop() throws Exception{
         NetService.getInstance().destroy();
         NetService.getInstance().joinThreads();
 
         try{
-            App.win.hide();
+            if(App.win == null){
+                logger.fatal("Window not init");
+            }
+            Stage stage = (Stage) App.win.getScene().getWindow();
+            stage.close();
         }catch (NullPointerException e){
             logger.trace("win not initialised");
         }
-
-        super.stop();
     }
 
     private static void fillTree(List<GameRecord> gameRecords){
-        TreeItem<GameRecord> rootItem = new TreeItem<GameRecord> (new GameRecord(NetService.serverName, true));
+        TreeItem<GameRecord> rootItem = new TreeItem<GameRecord> (new GameRecord(NetService.getServerName(), true));
         rootItem.setExpanded(true);
         for (GameRecord gameRecord : gameRecords) {
             TreeItem<GameRecord> item = new TreeItem<GameRecord> (gameRecord);
@@ -193,7 +202,12 @@ public class App extends Application {
     public static void newGame(GameRecord gameRecord) {
         logger.debug("start method");
         Game.initialize(gameRecord);
-        win = new GameWindow(gameRecord);
+        if(win == null){
+            win = new GameWindow(gameRecord);
+        }else{
+            win.show();
+            win.toFront();
+        }
     }
 
     public static void showGameWindow() {
@@ -348,48 +362,6 @@ public class App extends Application {
         NetService.getInstance().sender.addItem(msg);
     }
 
-    public static void connect() {
-        boolean result = false;
-        if(!NetService.isRunning()){
-           result = connectServer();    //pripoj server
-        }
-        if(!result){  // když se nepovedlo připojení uvolni a skonči
-            NetService.getInstance().destroy();
-            controller.noLoggedForm();
-            controller.stopProgress();
-            return;
-        }
-        if (Thread.currentThread().isInterrupted()) {
-            controller.noLoggedForm(); // když jsi přeušen vše uvolni a skonči
-            controller.stopProgress();
-            return;
-        }
-        sendLogin();
-    }
-
-
-    public static void logout(){
-        if(App.loginWorker.isAlive()){
-            App.loginWorker.interrupt();
-        }
-        try {
-            if(Player.getLocalPlayer().isLogged()){
-                Message msg = new Message(Event.OUT, MessageType.login, Player.getLocalPlayer().getServerUid() );
-                for(int i = 0; i < 10; i++) {
-                    NetService.getInstance().sender.addItem(msg);
-                }
-            }
-        }catch (NullPointerException e){
-            logger.trace("Uzivatel nebyl prihlasen.");
-        }
-
-        controller.noLoggedForm();
-        controller.setNoLoggedStatus();
-        controller.stopProgress();
-        NetService.getInstance().destroy();
-    }
-
-
     static boolean connectServer() {
         logger.debug("Start method");
 
@@ -435,16 +407,18 @@ public class App extends Application {
         return true;
     }
 
-    public static void login(UserRecord value) {
+    public static void codeLogin(UserRecord value) {
+        logger.debug("codeLogin");
         controller.loggedForm();
         controller.startProgress();
         controller.setUpUser(value);
 
         boolean result = false;
-        if(!NetService.isRunning()){
+        if(!NetService.isRunning() || NetService.isUserEnd()){
             result = connectServer();    //pripoj server
         }
         if(!result){  // když se nepovedlo připojení uvolni a skonči
+
             NetService.getInstance().destroy();
             controller.noLoggedForm();
             controller.stopProgress();
@@ -454,10 +428,18 @@ public class App extends Application {
         userRecord = value;
         Message msg = new Message(Event.COD, MessageType.login, value.getId().trim());
         NetService.getInstance().sender.addItem(msg);
+
+
+
     }
 
+
     public static void reconnect(){
-        reconnections++;
+        if(NetService.isUserEnd()){ // if close come from user
+            logger.debug("user invoke end of threads - no reconnect");
+            return;
+        }
+        reconnection++;
         Platform.runLater(controller::startProgress);
         Platform.runLater( () -> controller.setStatusText(bundle.getString("reconnect")));
         try {
@@ -465,7 +447,48 @@ public class App extends Application {
         } catch (InterruptedException e) {
             logger.info("interupted sleeping whilereconnect");
         }
-        connectServer();
+        connect();
+    }
+    public static void connect() {
+        boolean result = false;
+        if(!NetService.isRunning() || NetService.isUserEnd()){
+            result = connectServer();    //pripoj server
+        }
+        if(!result){  // když se nepovedlo připojení uvolni a skonči
+            NetService.getInstance().destroy();
+            controller.noLoggedForm();
+            controller.stopProgress();
+            return;
+        }
+        if (Thread.currentThread().isInterrupted()) {
+            controller.noLoggedForm(); // když jsi přeušen vše uvolni a skonči
+            controller.stopProgress();
+            return;
+        }
+        sendLogin();
+    }
+
+
+    public static void logout(){
+        NetService.userEnding();
+        if(App.loginWorker.isAlive()){
+            App.loginWorker.interrupt();
+        }
+        try {
+            if(Player.getLocalPlayer().isLogged()){
+                Message msg = new Message(Event.OUT, MessageType.login, Player.getLocalPlayer().getServerUid() );
+                for(int i = 0; i < 10; i++) {
+                    NetService.getInstance().sender.addItem(msg);
+                }
+            }
+        }catch (NullPointerException e){
+            logger.trace("Uzivatel nebyl prihlasen.");
+        }
+
+        controller.noLoggedForm();
+        controller.setNoLoggedStatus();
+        controller.stopProgress();
+        NetService.getInstance().destroy();
     }
 
     /**
@@ -482,5 +505,14 @@ public class App extends Application {
     public static void addWorker(Thread thread) {
         thread.start();
         //todo handle
+    }
+
+    public static void hideWindow() {
+        logger.debug("hide GameWindow");
+        if(App.win == null){
+            logger.fatal("window not init");
+        }
+        Stage stage = (Stage) App.win.getScene().getWindow();
+        stage.hide();
     }
 }

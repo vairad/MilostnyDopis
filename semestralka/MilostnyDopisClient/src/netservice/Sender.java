@@ -21,7 +21,7 @@ public class Sender extends Thread {
 
     @Override
     public void run() {
-        while(NetService.runFlag){
+        while(NetService.isRunning()){
             Message msg = null;
             try {
                 msg = toSend.take();

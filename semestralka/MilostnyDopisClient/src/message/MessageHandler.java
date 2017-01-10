@@ -15,7 +15,7 @@ public class MessageHandler extends Thread {
     @Override
     public void run() {
         logger.debug("Start thread");
-        while (NetService.runFlag){
+        while (NetService.isRunning()){
             Message msg = NetService.getInstance().getMessageToServe();
             if(msg == null){
                 logger.trace("null from queue");

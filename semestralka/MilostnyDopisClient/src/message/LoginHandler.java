@@ -102,7 +102,7 @@ public class LoginHandler {
         }
 
         loginPlayerUlitity(nick, messageParts[0]);
-
+        NetService.getInstance().sender.addItem(MessageFactory.getGameList());
     }
 
     private static void loginPlayerUlitity(String nick, String uid){
@@ -110,7 +110,7 @@ public class LoginHandler {
         Player.setLocalPlayer(new Player(nick, uid));
         Player.getLocalPlayer().setLogged(true);
 
-        // save login
+        // save codeLogin
         UserRecord u = new UserRecord(Player.getLocalPlayer().getServerUid(),
                 Player.getLocalPlayer().getNick(),
                 NetService.getInstance().getServerName(),

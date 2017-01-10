@@ -17,6 +17,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.transform.Rotate;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.util.Duration;
@@ -32,15 +33,16 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import static gui.App.hideWindow;
+
 /**
  * Created by XXXXXXXXXXXXXXXX on 1.11.16.
  */
-public class GameWindow extends Window {
+public class GameWindow extends Stage {
 
     /** instance loggeru tridy */
     public static Logger logger =	LogManager.getLogger(GameWindow.class.getName());
 
-    private Stage stage;
     private ResourceBundle bundle;
     private GameController controller;
     private List<String> statusMessages;
@@ -58,12 +60,12 @@ public class GameWindow extends Window {
     private Player chosenPlayer;
 
     GameWindow(GameRecord gameRecord){
+        super();
         statusMessages = new LinkedList<>();
 
         Message msg = new Message(Event.STA, MessageType.game, gameRecord.getUid());
         NetService.getInstance().sender.addItem(msg);
 
-        stage = new Stage();
 
         loadView(gameRecord.getUid());
         statusMessages.add(bundle.getString("statusMessages"));
@@ -76,12 +78,14 @@ public class GameWindow extends Window {
 
         initTable();
 
-        stage.setMinHeight(600);
-        stage.setMinWidth(600);
+        setOnCloseRequest( event -> hideWindow());
+
+        setMinHeight(Constants.MINH_GAME);
+        setMinWidth(Constants.MINW_GAME);
     }
 
     private double getChosenCardStep(){
-        return stage.getHeight() / 10.0;
+        return getHeight() / 10.0;
     }
 
     private void moveMyCardToCenter(){
@@ -223,15 +227,6 @@ public class GameWindow extends Window {
     }
 
 
-    @Override
-    public void show(){
-        logger.debug("start Window");
-
-        appendStatusMessages();
-
-        stage.show();
-    }
-
     void appendStatusMessages(){
         controller.appendStatus(statusMessages);
         statusMessages.clear();
@@ -255,14 +250,14 @@ public class GameWindow extends Window {
             scene.getStylesheets().add(GameWindow.class.getResource("app.css").toExternalForm());
 
             setTitle(gameName);
-            stage.setScene(scene);
+            setScene(scene);
         } catch (IOException ex) {
             ex.printStackTrace();
         }
     }
 
-    public void setTitle(String gameName) {
-        stage.setTitle(bundle.getString("game") + " " + gameName
+    public void setMyTitle(String gameName) {
+        setTitle(bundle.getString("game") + " " + gameName
                 + " " + bundle.getString("onServer") + " "
                 + NetService.getInstance().getServerName());
     }

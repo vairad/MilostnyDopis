@@ -325,9 +325,6 @@ public class GameHandler {
             logger.trace("null");
         }
         Platform.runLater(() -> App.newGame(gameRecord));
-
-
-
     }
 
     private static void giveTokenToServer(){
