@@ -22,20 +22,20 @@
            GridPane.columnIndex="0" GridPane.rowIndex="1"/>
     <HBox spacing="2" alignment="bottom_left" GridPane.columnIndex="1" GridPane.rowIndex="1">
         <TextField
-                fx:id="address"
+                fx:id="addressTextField"
                 />
         <Label text=":"/>
         <TextField
-                fx:id="port"
+                fx:id="portTextField"
                 />
     </HBox>
 
     <Label text="%nickName"
            GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-    <TextField fx:id="nickField"
+    <TextField fx:id="nickTextField"
                    GridPane.columnIndex="1" GridPane.rowIndex="2"/>
 
-    <VBox spacing="10"
+    <HBox spacing="5"
           alignment="top_center"
           GridPane.columnIndex="0"
           GridPane.rowIndex="4"
@@ -52,28 +52,41 @@
                 onAction="#onLogout"/>
         <Button text="%stats"
                 onAction="#onStats"/>
-    </VBox>
-    <VBox   spacing="10"
-            alignment="top_center"
-            GridPane.columnIndex="0"
-            GridPane.rowIndex="6"
-            GridPane.columnSpan="2"
-            >
+    </HBox>
+    <HBox alignment="CENTER"
+          GridPane.columnIndex="0"
+          GridPane.rowIndex="5"
+          GridPane.columnSpan="2">
         <ProgressBar fx:id="progressBar"
                      visible="false"
+                     HBox.hgrow="ALWAYS"
         />
-        <Text fx:id="statusText"/>
-
+    </HBox>
+    <HBox alignment="CENTER"
+          GridPane.columnIndex="0"
+          GridPane.rowIndex="6"
+          GridPane.columnSpan="2">
+    <Text fx:id="statusText"
+          />
+    </HBox>
+    <VBox   spacing="10"
+            alignment="center"
+            GridPane.columnIndex="0"
+            GridPane.rowIndex="7"
+            GridPane.columnSpan="2"
+            >
 
         <TreeView fx:id="treeView"
                     id="treeView">
 
         </TreeView>
-        <HBox alignment="top_center"
-                spacing="4">
+        <HBox alignment="center"
+                spacing="5">
             <CheckBox fx:id="allGamesCheck"
                         />
-            <Text text="%allGames"/>
+            <Label text="%allGames"
+                    fx:id="allGamesCheckLabel"
+                    id="allGamesLabel"/>
             <Button fx:id="refreshButton"
                     text="%refresh"
                     onAction="#onRefresh"/>

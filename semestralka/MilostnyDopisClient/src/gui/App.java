@@ -82,11 +82,6 @@ public class App extends Application {
 
         loadView(new Locale("cs", "CZ"));
 
-        controller.allGamesCheck.setOnAction(event -> {
-            logger.trace("Change property");
-            App.smartFillTree();
-        });
-
         stage.setMinHeight(Constants.MINH_APP);
         stage.setMinWidth(Constants.MINW_APP);
         stage.show();
@@ -96,7 +91,7 @@ public class App extends Application {
         if(GameRecord.getAllGameRecords() == null){
             App.fillTree(new LinkedList<>());
         }
-        if(controller.allGamesCheck.isSelected()){
+        if(controller.isAllGames()){
             logger.trace("is selected");
             Platform.runLater(() -> App.fillTree(GameRecord.getAllGameRecords()));
         }else {
@@ -360,12 +355,12 @@ public class App extends Application {
         }
         if(!result){  // když se nepovedlo připojení uvolni a skonči
             NetService.getInstance().destroy();
-            controller.prepareLogin();
+            controller.noLoggedForm();
             controller.stopProgress();
             return;
         }
         if (Thread.currentThread().isInterrupted()) {
-            controller.prepareLogin(); // když jsi přeušen vše uvolni a skonči
+            controller.noLoggedForm(); // když jsi přeušen vše uvolni a skonči
             controller.stopProgress();
             return;
         }
@@ -388,9 +383,9 @@ public class App extends Application {
             logger.trace("Uzivatel nebyl prihlasen.");
         }
 
-        controller.prepareLogin();
+        controller.noLoggedForm();
+        controller.setNoLoggedStatus();
         controller.stopProgress();
-        controller.resetStatus();
         NetService.getInstance().destroy();
     }
 
@@ -400,7 +395,7 @@ public class App extends Application {
 
         int resultPort;
         try {
-            resultPort = NetService.checkPort(controller.port.getText());
+            resultPort = NetService.checkPort(controller.getPort());
         }catch (NumberFormatException e){
             logger.error("Error port number", e);
             resultPort = -1;
@@ -419,7 +414,7 @@ public class App extends Application {
             String text = bundle.getString("connectionTry");
             Platform.runLater(() -> {controller.setStatusText(text);});
 
-            NetService.getInstance().setup(controller.getAddress(), resultPort);
+            NetService.getInstance().setup(controller.getAddressTextField(), resultPort);
             NetService.getInstance().initialize();
 
             logger.trace("Iinit MessageHandler");
@@ -441,7 +436,7 @@ public class App extends Application {
     }
 
     public static void login(UserRecord value) {
-        controller.disableForm();
+        controller.loggedForm();
         controller.startProgress();
         controller.setUpUser(value);
 
@@ -451,7 +446,7 @@ public class App extends Application {
         }
         if(!result){  // když se nepovedlo připojení uvolni a skonči
             NetService.getInstance().destroy();
-            controller.prepareLogin();
+            controller.noLoggedForm();
             controller.stopProgress();
             return;
         }
@@ -473,11 +468,19 @@ public class App extends Application {
         connectServer();
     }
 
+    /**
+     * Vyvolá aktualizaci prvku seznamu dříve přihlášehých hráčů
+     */
     public static void refreshOldPlayers() {
-        controller.userControl.refresh();
+        controller.refreshUserRecords();
     }
 
     public static void highlightGame(GameRecord record) {
         // todo highlight element in tree view
+    }
+
+    public static void addWorker(Thread thread) {
+        thread.start();
+        //todo handle
     }
 }

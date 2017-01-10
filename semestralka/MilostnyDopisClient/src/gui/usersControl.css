@@ -1,3 +1,5 @@
-
+#label:disabled{
+    -fx-opacity: 1;
+}
 
 

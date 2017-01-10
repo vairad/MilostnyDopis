@@ -19,8 +19,16 @@ public class Constants{
 
     public static final int MINW_APP = 500;
     public static final int MINH_APP = 500;
+
     public static final int MINW_GAME = 500;
     public static final int MINH_GAME = 500;
+
+    // CONTROLLER
+    public static final int MIN_POSSIBLE_ROUNDS = 1;
+    public static final int MAX_POSSIBLE_ROUNDS = 20;
+
+    public static final int MIN_POSSIBLE_PLAYERS = 2;
+    public static final int MAX_POSSIBLE_PLAYERS = 4;
 
     public static long RECONNECT_TIMEOUT_MS = 30000;
 }

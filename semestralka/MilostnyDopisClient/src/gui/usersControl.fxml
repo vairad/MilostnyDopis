@@ -5,8 +5,8 @@
 <fx:root type="javafx.scene.layout.HBox"
          xmlns:fx="http://javafx.com/fxml">
 
-    <Label fx:id="label" text="%oldUsers"/>
-    <ComboBox fx:id="users">
+    <Label fx:id="label" text="%oldUsers" id="label"/>
+    <ComboBox fx:id="users" id="combo">
         <items>
             <FXCollections fx:factory="observableArrayList">
             </FXCollections>
