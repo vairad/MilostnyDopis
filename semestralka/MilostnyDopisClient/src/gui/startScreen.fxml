@@ -50,8 +50,8 @@
         <Button fx:id="logoutButton"
                 text="%sendLogout"
                 onAction="#onLogout"/>
-        <!--<Button text="přihlaš mě s přezdivkou"
-                onAction="#onSend"/>-->
+        <Button text="%stats"
+                onAction="#onStats"/>
     </VBox>
     <VBox   spacing="10"
             alignment="top_center"

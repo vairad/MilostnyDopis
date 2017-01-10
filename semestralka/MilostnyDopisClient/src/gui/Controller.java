@@ -107,6 +107,12 @@ public class Controller implements Initializable {
         onRefresh();
     }
 
+    @FXML
+    public void onStats(){
+        DialogFactory.messagesResult(NetService.sendBytes
+                ,NetService.recvBytes
+                , App.reconnections);
+    }
 //=============================================================================================================
 
     void noLoggedForm() {

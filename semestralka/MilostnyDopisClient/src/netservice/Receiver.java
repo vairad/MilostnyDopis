@@ -1,5 +1,6 @@
 package netservice;
 
+import gui.App;
 import message.Event;
 import message.FormatException;
 import message.Message;
@@ -40,12 +41,16 @@ public class Receiver extends Thread {
             }
             catch (IOException e) {
                 logger.error("IO ERROR", e);
+                new Thread(App::reconnect).start();
                 return;
             }
             if (recvBytes == -1){
                 logger.debug("IO disconnect");
+                new Thread(App::reconnect).start();
                 return;
             }
+
+            NetService.recvBytes += recvBytes;
 
             String msgS = new String(buffer);
             logger.trace(msgS);

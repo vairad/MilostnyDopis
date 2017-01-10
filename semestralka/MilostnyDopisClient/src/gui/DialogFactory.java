@@ -171,4 +171,14 @@ public class DialogFactory {
         alert.setContentText(game.toString());
         alert.showAndWait();
     }
+
+    public static void messagesResult(long sendBytes, long recvBytes, long reconnection) {
+        Alert alert  = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(App.bundle.getString("netResult"));
+        String results = App.bundle.getString("send") +" : " + sendBytes + "B" + "\n";
+        results += App.bundle.getString("received") +" : " + recvBytes + "B" + "\n";
+        results += App.bundle.getString("reconnection") +" : " + reconnection + "x" + "\n";
+        alert.setHeaderText(results);
+        alert.showAndWait();
+    }
 }

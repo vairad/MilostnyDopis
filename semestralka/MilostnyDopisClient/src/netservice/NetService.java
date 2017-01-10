@@ -26,6 +26,9 @@ public class NetService {
     public static boolean runFlag = false;
     public static final int MAX_MSG_LENGTH = 2048;
     public static String serverName;
+    public static long recvBytes = 0;
+    public static long sendBytes = 0;
+
 
     private String addressS;
     private int port;
@@ -135,7 +138,6 @@ public class NetService {
         } catch (NullPointerException e){
             logger.error("Vlákna nebyla inicializovaná", e);
         }
-
     }
 
     public synchronized OutputStream getOutputStream() {

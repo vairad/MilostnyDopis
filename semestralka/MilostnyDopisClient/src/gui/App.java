@@ -26,7 +26,11 @@ import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
+import static java.lang.Thread.sleep;
+
 public class App extends Application {
+
+    static long reconnections = 0;
 
     /*Statický inicializační blok nastavující odkaz (proměnnou) na konfiguraci loggeru*/
     static {
@@ -125,6 +129,7 @@ public class App extends Application {
     public void stop() throws Exception{
         NetService.getInstance().destroy();
         NetService.getInstance().joinThreads();
+
         try{
             App.win.hide();
         }catch (NullPointerException e){
@@ -454,6 +459,17 @@ public class App extends Application {
         userRecord = value;
         Message msg = new Message(Event.COD, MessageType.login, value.getId().trim());
         NetService.getInstance().sender.addItem(msg);
+    }
+
+    public static void reconnect(){
+        reconnections++;
+        Platform.runLater( () -> controller.setStatusText(bundle.getString("reconnect")));
+        try {
+            sleep(Constants.RECONNECT_TIMEOUT_MS);
+        } catch (InterruptedException e) {
+            logger.info("interupted sleeping whilereconnect");
+        }
+        connectServer();
     }
 
     public static void refreshOldPlayers() {
