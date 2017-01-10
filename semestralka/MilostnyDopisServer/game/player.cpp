@@ -77,15 +77,14 @@ User *Player::getUser() const
 
 bool Player::isAlive() const
 {
+    if(user->isToDelete()){
+        return false;
+    }
     return alive;
 }
 
 void Player::setAlive(bool value)
 {
-    if(user == NULL){
-        alive = false;
-        return;
-    }
     alive = value;
 }
 
@@ -199,8 +198,7 @@ void Player::effectCardSecond(GameCards card){
 }
 
 void Player::removeUser(){
-    user->setGame(NULL);
-    user = NULL;
+    user->setToDelete();
 }
 
 std::string Player::xmlCards()

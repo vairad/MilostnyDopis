@@ -103,9 +103,16 @@ bool UserDatabase::removeUser(string key)
     User *u = getUserById(key);
     if(u != NULL){
         if(u->getGame() != NULL && u->getGame()->getPlayer(u) != NULL){
-            u->getGame()->getPlayer(u)->setAlive(false);
-            u->getGame()->getPlayer(u)->removeUser();
-            u->getGame()->sendPlayersState();
+            Player *p = u->getGame()->getPlayer(u);
+            Game * g = u->getGame();
+            p->setAlive(false);
+            p->removeUser();
+            g->sendPlayersState();
+            if(p->hasToken()){
+                g->moveTokenToNextPlayer(u);
+            }
+            pthread_mutex_unlock(&map_lock);
+            return true;
         }
         keys_by_socket.erase(u->getSocket());
         users_by_id.erase(key);

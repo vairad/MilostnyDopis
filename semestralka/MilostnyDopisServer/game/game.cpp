@@ -3,6 +3,7 @@
 #include "log/log.h"
 
 #include "message/messagequeue.h"
+#include "users/userdatabase.h"
 
 #define MAX_PLAYER_COUNT 4
 
@@ -732,6 +733,7 @@ bool Game::isEndOfGame()
 void Game::finishGame(){
     // říct kdo vyhrál kolo
   //  this->sendRoundResult();
+    MSG_PS("Ukončuji hru", getUid().c_str());
     this->sendGameStateToAllPlayers();
 
     this->sendGoodBye();
@@ -886,6 +888,10 @@ void Game::unlinkUsers()
     for (int index = 0; index < MAX_PLAYER_COUNT; ++index) {
         if((*players[index]) != NULL){
             (*players[index])->getUser()->setGame(NULL);
+            if((*players[index])->getUser()->isToDelete()){
+                UserDatabase::getInstance()
+                        ->removeUser((*players[index])->getUser()->getUID());
+            }
         }
     }
 }

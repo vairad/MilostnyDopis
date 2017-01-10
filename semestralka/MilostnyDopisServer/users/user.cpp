@@ -55,8 +55,20 @@ void User::setGame(Game *value)
     game = value;
 }
 
+void User::setToDelete()
+{
+    toDelete = true;
+    socket = -1;
+}
+
+bool User::isToDelete()
+{
+    return toDelete;
+}
+
 User::User(std::string *nickname, int socket) :
     socket(socket)
+  , toDelete(false)
 {
     this->nickname = Utilities::trim(nickname);
     this->game = NULL;
@@ -66,5 +78,6 @@ void User::setUID(std::string uid)
 {
     this->uid = uid;
 }
+
 
 

@@ -13,6 +13,7 @@ class User
     int socket;
     std::string uid;
     Game *game;
+    bool toDelete;
 public:
     User(std::string *nickname, int socket);
     void setUID(std::string uid);
@@ -24,6 +25,8 @@ public:
     std::string toNet();
     Game *getGame() const;
     void setGame(Game *value);
+    void setToDelete();
+    bool isToDelete();
 };
 
 #endif // USER_H
