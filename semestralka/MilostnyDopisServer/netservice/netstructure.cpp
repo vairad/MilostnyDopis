@@ -104,12 +104,12 @@ int NetStructure::bind_socket()
 
     my_addr.sin_addr.s_addr = INADDR_ANY;
 
-    /*if(my_addr.sin_addr.s_addr == 0){
-        MSG_PS("Nesprávný formát adresy", c_addr);
-        LOG_ERROR_PS("Neprovedl se překlad adresy do binární podoby", c_addr);
-        exit(ADDRESS_ERROR);
-    }*/
-
+    int param = 1;
+    if (setsockopt(server_socket, SOL_SOCKET, SO_REUSEADDR, (const char*)&param, sizeof(int)) == -1)
+    {
+        LOG_ERROR("Nepodařilo se nastavit reuse parametr ... nemusí uspět bind")
+        MSG("Nepovedlo se nastavit SO_REUSEADDR flag, bind múže selhat");
+    }
 
     int return_value = bind(server_socket, (struct sockaddr *) &my_addr, len_addr);
 
