@@ -301,6 +301,7 @@ public class App extends Application {
         String messageS = controller.checkNickname();
         if(messageS == null){
             logger.trace("no nickname");
+            logout();
             return;
         }
         Message msg = new Message(Event.ECH, MessageType.login, messageS);

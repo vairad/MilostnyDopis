@@ -2,6 +2,7 @@ package gui;
 
 import constants.Constants;
 import game.Player;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -290,6 +291,11 @@ public class Controller implements Initializable {
              messageS = nickTextField.getText().trim();
         }catch (NullPointerException e){
             logger.error("null from text field");
+            return null;
+        }
+
+        if(messageS.contains("&&")){
+            Platform.runLater(DialogFactory::forbiddenCharacterDialog);
             return null;
         }
 

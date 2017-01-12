@@ -50,7 +50,7 @@ public class DialogFactory {
             return false;
         }
     }
-    
+
     public static void returnedCard(Card card) {
         Alert alert  = new Alert(Alert.AlertType.WARNING);
         setUpCssToDialog(alert.getDialogPane());
@@ -183,5 +183,11 @@ public class DialogFactory {
         alert.setTitle(App.bundle.getString("noGame"));
         alert.setHeaderText(App.bundle.getString("noGameText"));
         alert.showAndWait();
+    }
+
+    public static void forbiddenCharacterDialog() {
+        DialogFactory.alertError(App.bundle.getString("nickErrTitle")
+                ,App.bundle.getString("nickErrHeadline")
+                ,App.bundle.getString("nickErrCharacter"));
     }
 }
