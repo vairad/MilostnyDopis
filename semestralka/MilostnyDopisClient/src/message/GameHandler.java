@@ -220,14 +220,12 @@ public class GameHandler {
             logger.debug("Špatné id hry a předávaného tokenu");
             return;
         }
-        App.win.addStatusMessage("Token má:" + msg.getMessage());
         Game.clearToken();
         Player playerForToken = Game.getPlayer(messageParts[1]);
         if(playerForToken != null){
             playerForToken.giveToken();
             Platform.runLater(() -> App.moveTokenTo(playerForToken));
         }
-        Platform.runLater(App::showMessagesGameWindow);
         NetService.getInstance().sender.addItem(MessageFactory.getCards());
     }
 
@@ -240,7 +238,6 @@ public class GameHandler {
                logger.debug("Přerušeno čekání na vytvoření okna");
             }
         }
-        App.win.addStatusMessage("Dostal jsem kartu:" + msg.getMessage()); // todo handle null pointer
         try {
             Player.giveCard(Card.getCardFromInt(Integer.parseInt(msg.getMessage())));
         }catch (NumberFormatException e){
@@ -252,14 +249,11 @@ public class GameHandler {
             Player.resetCards(Card.getCardFromInt(Integer.parseInt(messageParts[0]))
                               ,Card.getCardFromInt(Integer.parseInt(messageParts[1])));
         }
-        Platform.runLater(App::showMessagesGameWindow);
         Platform.runLater(App::updateCards);
     }
 
     private static void handleGameNEP(Message msg) {
         if(App.win != null) {
-            App.win.addStatusMessage(msg.getMessage());
-            Platform.runLater(App::showMessagesGameWindow);
             Message msgR = MessageFactory.getStatusMessage(Game.getUid());
             NetService.getInstance().sender.addItem(msgR);
         }

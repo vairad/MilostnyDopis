@@ -27,6 +27,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -70,17 +71,31 @@ public class GameWindow extends Stage {
         statusMessages.add(bundle.getString("statusMessages"));
         statusMessages.add(bundle.getString("connectGame")+ " " +gameRecord.getUid());
 
-        appendStatusMessages();
 
         createTransitions();
         createListeners();
 
         initTable();
+        initCardsComboBox();
 
         setOnCloseRequest( event -> closeGameWindow());
 
         setMinHeight(Constants.MINH_GAME);
         setMinWidth(Constants.MINW_GAME);
+    }
+
+    private void initCardsComboBox() {
+        List<Card> choices = new ArrayList<>();
+        choices.add(Card.PRIEST);
+        choices.add(Card.BARON);
+        choices.add(Card.KOMORNA);
+        choices.add(Card.PRINCE);
+        choices.add(Card.KING);
+        choices.add(Card.COUNTESS);
+        choices.add(Card.PRINCESS);
+
+        controller.chosenCard.setPromptText(bundle.getString("chooseCard"));
+        controller.chosenCard.setItems(FXCollections.observableArrayList(choices));
     }
 
     private double getChosenCardStep(){
@@ -170,22 +185,29 @@ public class GameWindow extends Stage {
         if(myCardChosen && !secondCardChosen){
             if(Card.needElectPlayer(controller.myCard.getCard())){
                 chosenPlayer = null;
-                controller.chosenPlayer.setText("");
+                controller.chosenPlayer.setText(bundle.getString("choosePlayer"));
                 controller.chosenPlayer.setVisible(true);
+                if(controller.myCard.getCard() == Card.GUARDIAN){
+                    controller.chosenCard.setVisible(true);
+                }
             }
             controller.playButton.setVisible(true);
 
         }else if(!myCardChosen && secondCardChosen){
             if(Card.needElectPlayer(controller.secondCard.getCard())){
                 chosenPlayer = null;
-                controller.chosenPlayer.setText("");
+                controller.chosenPlayer.setText(bundle.getString("choosePlayer"));
                 controller.chosenPlayer.setVisible(true);
+                if(controller.secondCard.getCard() == Card.GUARDIAN){
+                    controller.chosenCard.setVisible(true);
+                }
             }
             controller.playButton.setVisible(true);
 
         }else if(!myCardChosen && !secondCardChosen){
             controller.playButton.setVisible(false);
             controller.chosenPlayer.setVisible(false);
+            controller.chosenCard.setVisible(false);
         }else{
             logger.error("Nesmyslny stav zvolené karty");
         }
@@ -225,15 +247,6 @@ public class GameWindow extends Stage {
         translatePointer = new TranslateTransition(TRANSLATE_DURATION, controller.pointer);
     }
 
-
-    void appendStatusMessages(){
-        controller.appendStatus(statusMessages);
-        statusMessages.clear();
-    }
-
-    public void addStatusMessage(String message){
-        statusMessages.add(message);
-    }
 
     private void loadView(String gameName) {
         try {
@@ -333,7 +346,7 @@ public class GameWindow extends Stage {
         Card playCard = getChosenCard();
         Card tip = null;
         if(playCard == Card.GUARDIAN){
-            tip = DialogFactory.guardianChose();
+            tip = controller.chosenCard.getValue();
             if(tip == null){
                 DialogFactory.alertError(bundle.getString("noGuardianTitle")
                                         ,bundle.getString("noGuardianHeadline")

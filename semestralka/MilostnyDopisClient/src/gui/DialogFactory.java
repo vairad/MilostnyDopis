@@ -50,30 +50,7 @@ public class DialogFactory {
             return false;
         }
     }
-
-    public static Card guardianChose() {
-        List<Card> choices = new ArrayList<>();
-        choices.add(Card.PRIEST);
-        choices.add(Card.BARON);
-        choices.add(Card.KOMORNA);
-        choices.add(Card.PRINCE);
-        choices.add(Card.KING);
-        choices.add(Card.COUNTESS);
-        choices.add(Card.PRINCESS);
-
-        ChoiceDialog<Card> dialog = new ChoiceDialog<>(Card.PRIEST, choices);
-        setUpCssToDialog(dialog.getDialogPane());
-        dialog.setTitle(App.bundle.getString("guardianChooseTitle"));
-        dialog.setHeaderText(App.bundle.getString("guardianChooseQuestion"));
-        dialog.setContentText(App.bundle.getString("guardianChooseText"));
-
-        Optional<Card> result = dialog.showAndWait();
-        if (result.isPresent()){
-            return result.get();
-        }
-        return null;
-    }
-
+    
     public static void returnedCard(Card card) {
         Alert alert  = new Alert(Alert.AlertType.WARNING);
         setUpCssToDialog(alert.getDialogPane());

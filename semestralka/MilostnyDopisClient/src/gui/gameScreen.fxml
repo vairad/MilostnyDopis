@@ -89,6 +89,10 @@
             </points>
         </Polygon>
         <VBox alignment="CENTER" spacing="10">
+            <ComboBox fx:id="chosenCard"
+                       id="chosenCard"
+                       visible="false"
+                       />
             <TextField fx:id="chosenPlayer"
                        id="chosenPlayer"
                         visible="false"

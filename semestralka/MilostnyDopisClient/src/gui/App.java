@@ -155,10 +155,6 @@ public class App extends Application {
         }
     }
 
-    public static void showMessagesGameWindow(){
-        win.appendStatusMessages();
-    }
-
     public static void setUpPlayers(){
         win.setUpPlayers();
     }
