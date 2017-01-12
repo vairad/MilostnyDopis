@@ -19,9 +19,12 @@
 #include "util/utilities.h"
 //=====================================================================================
 
+#define THREAD_MAX_COUNT 9
+
 bool run = false;
 int port_number = 2525;
 int wait_que_len = 20;
+int threads_count = 3;
 char ADDR_ALL[] = {"ALL"};
 char *addr = ADDR_ALL;
 
@@ -74,6 +77,26 @@ int setup_que_len(char* portArg)
     }
 }
 
+/**
+ * Funkce zkontroluje validitu a nastaví číslo z rozsahu 0 - 1,
+ * @param portArg
+ * @return
+ */
+int setup_the_len(char* portArg)
+{
+    int read_int = strtol(portArg, NULL , 10);
+    if(read_int > 0 && read_int <= THREAD_MAX_COUNT)
+    {
+        threads_count = read_int;
+        MSG_PD("Počet vláken MessageHandler bude: ", threads_count)
+        return 0;
+    }else{
+        LOG_ERROR_PS("Neznámé označení kladného čísla: ", portArg);
+        MSG_PS("Neznámé označení kladného čísla: ", portArg);
+        return INT_RANGE_ERROR;
+    }
+}
+
 
 
 /**
@@ -86,6 +109,8 @@ void help(){
     MSG("  -r          ... bude provedeno spuštění serveru")
     MSG("  -p [1-65535]... nastaví port pro naslouchání");
     MSG("  -q [1-...]  ... nastaví délku fronty spojení čekajících na vyřízení");
+    MSG("  -a [ALL / adresa]  ... nastaví adresu pro naslouhání");
+    MSG("  -m [1-10]   ... nastaví počet vláken MessageHandler");
 }
 
 /**
@@ -149,7 +174,7 @@ int read_args(int argc, char** argv)
                       }
                       break;
 
-            case 'a': // nastavení portu =====================
+            case 'a': // nastavení adresy =====================
             case 'A':
                   LOG_TRACE("Case nastaveni adresy naslouchani");
                   if(argc > (i+1))
@@ -161,7 +186,7 @@ int read_args(int argc, char** argv)
                   }
                   break;
 
-            case 'q': // nastavení portu =====================
+            case 'q': // velikost fronty=====================
             case 'Q':
                   LOG_TRACE("Case nastaveni fronty čekajících");
                   if(argc > (i+1))
@@ -169,6 +194,18 @@ int read_args(int argc, char** argv)
                        int result = setup_que_len(argv[i+1]);
                        if(result != 0){
                             MSG_PD("Velikost fronty nebyla nastavena používám výchozí:", wait_que_len);
+                       }
+                  }
+                  break;
+
+            case 'm': // velikost fronty=====================
+            case 'M':
+                  LOG_TRACE("Case nastaveni poctu vlaken");
+                  if(argc > (i+1))
+                  {
+                       int result = setup_the_len(argv[i+1]);
+                       if(result != 0){
+                            MSG_PD("Počet vláken nebyl nastaven používám výchozí:", threads_count);
                        }
                   }
                   break;
@@ -294,7 +331,7 @@ int start_server(){
     Sender::initialize();
     Sender::startThread();
 
-    MessageHandler::initialize(5);
+    MessageHandler::initialize(threads_count);
     MessageHandler::startThreads();
 
     Receiver::listen_thread_p = (pthread_t *) malloc(sizeof(pthread_t));
