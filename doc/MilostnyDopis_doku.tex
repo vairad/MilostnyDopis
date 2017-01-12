@@ -260,6 +260,8 @@ Na začátku běhu serveru se inicializují střídy Sender a Reciever, tyto tř
 
 \subsection{Klient}
 
+Architektura klienta je obdobná serveru. Existují zde dvě základní vlákna pro komunikaci Sender a Reciever obalené třídou NetStructure, která je aplikačním jedináčkem. V této třídě je je umístěna blokující fronta přijatých zpráv ke zpracování.
+
 %========================================
 %========================================
 %========================================
@@ -271,7 +273,7 @@ Na začátku běhu serveru se inicializují střídy Sender a Reciever, tyto tř
 %=====================================================================================================================
 \subsection{Překlad, sestavení a spuštění }
 
-Pro vlastní překlad a sestavení programu ze zdrojových kódů jsou připraveny skripty pro automatické nástroje Ant a Make. Předpokládá se přítomnost Javy (programů java a javac) verze 8 s podporou JavaFX (GUI) pro překlad a spuštění klienta. Pro překlad serveru je v makefile použit překladač gcc respektive g++ a program.
+Pro vlastní překlad a sestavení programu ze zdrojových kódů jsou připraveny skripty pro automatické nástroje Ant a Make. Předpokládá se přítomnost Javy (programů java a javac) verze 8 s podporou JavaFX (GUI) pro korektní překlad a spuštění klienta. Pro překlad serveru je v makefile použit překladač gcc respektive g++.
 
 
 \subsubsection{Klient}
