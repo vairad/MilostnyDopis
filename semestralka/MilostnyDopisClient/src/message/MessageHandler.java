@@ -20,7 +20,7 @@ public class MessageHandler extends Thread {
             try {
                 msg = NetService.getInstance().getMessageToServe();
             } catch (InterruptedException e) {
-                logger.fatal("Message Handler is out -- caused interupted exception");
+                logger.debug("Message Handler is out -- caused interupted exception");
                 return;
             }
             if(msg == null){

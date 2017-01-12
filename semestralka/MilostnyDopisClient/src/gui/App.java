@@ -41,6 +41,8 @@ public class App extends Application {
     static long reconnection = 0;
     /** vlákno určené pro zpracování přihlášení */
     private static Thread loginWorker;
+    /** Vlákno zpracovávající zápis uživatelů do XML */
+    private static Thread xmlWorker;
     /** záznam o uživateli */
     public static UserRecord userRecord = null;
     /** java FX stage tohoto okna */
@@ -320,14 +322,15 @@ public class App extends Application {
         // todo highlight element in tree view
     }
 
-    public static void hideWindow() {
-        logger.debug("hide GameWindow");
-        if(App.win == null){
-            logger.fatal("window not init");
-        }
-        Stage stage = (Stage) App.win.getScene().getWindow();
-        stage.hide();
-    }
+//    public static void hideWindow() {
+//        logger.debug("hide GameWindow");
+//        if(App.win == null){
+//            logger.debug("window not init");
+//            return;
+//        }
+//        Stage stage = (Stage) App.win.getScene().getWindow();
+//        stage.hide();
+//    }
 
     public static String getWinner() {
         int maxPoints = -1;
@@ -449,16 +452,22 @@ public class App extends Application {
 
     public static void reconnect(){
         logger.debug("start reconnect()");
+        boolean stop = false;
         if(Player.getLocalPlayer() == null){
             logger.trace("není kam se opětovně připojit... nemám lokáního uživatele");
-            return;
+            stop = true;
         }
         if(NetService.isUserEnd()){ // if close come from user
             logger.debug("user invoke end of threads - no reconnect");
+            stop = true;
+        }
+        if(stop){
+            logger.fatal("Early end of reconnection");
+            Platform.runLater(() -> App.controller.noLoggedForm());
             return;
         }
         reconnection++;
-        Platform.runLater(App::hideWindow);
+        Platform.runLater(App::closeGameWindow);
         Platform.runLater(controller::startProgress);
         Platform.runLater( () -> controller.setStatusText(bundle.getString("reconnect")));
         try {
@@ -473,6 +482,8 @@ public class App extends Application {
             Platform.runLater(() -> controller.setTime(0));
         } catch (InterruptedException e) {
             logger.info("interupted sleeping whilereconnect");
+            logger.fatal("early end of reconnection");
+            Platform.runLater(() -> App.controller.noLoggedForm());
             return;
         }
         UserRecord userRecord;
@@ -483,7 +494,9 @@ public class App extends Application {
                     , NetService.getPort());
             connectCode(userRecord);
         }catch (NullPointerException e){
-            logger.fatal("problem with netservice");
+            logger.error("problem with netservice");
+            logger.fatal("early end of reconnection");
+            Platform.runLater(() -> App.controller.noLoggedForm());
             return;
         }
         NetService.endOfReconnection();
@@ -545,5 +558,16 @@ public class App extends Application {
         loginWorker.interrupt();
         loginWorker = thread;
         loginWorker.start();
+    }
+
+    public static void addXMLWorker(Thread thread) {
+        if(xmlWorker == null){
+            xmlWorker = thread;
+            xmlWorker.start();
+            return;
+        }
+        xmlWorker.interrupt();
+        xmlWorker = thread;
+        xmlWorker.start();
     }
 }

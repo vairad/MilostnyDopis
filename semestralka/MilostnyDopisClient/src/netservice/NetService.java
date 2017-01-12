@@ -25,15 +25,17 @@ public class NetService {
     public static Logger logger =	LogManager.getLogger(NetService.class.getName());
 
 
-    private static boolean runFlag = false;
-    private static boolean userEnd = false;
-    private static boolean reconnecting = false;
+    /** zda je netservice ve stavu běžícím (podmínka pro vlákna sender, reciever a message handler) */
+    private static boolean runFlag;
+    /** Zda byl konec spojení iniciovaný uživatelem */
+    private static boolean userEnd;
+    /** Informace zda jiné vlákno vyvolalo reconnect */
+    private static boolean reconnecting;
 
     static final int MAX_MSG_LENGTH = 2048;
 
     public static long recvBytes = 0;
     public static long sendBytes = 0;
-
 
     private String addressS;
     private String serverName;
@@ -99,6 +101,7 @@ public class NetService {
 
         userEnd = false;
         runFlag = true;
+        reconnecting = false;
         startThreads();
         NetService.logger.trace("initialize() - end");
     }
@@ -208,10 +211,10 @@ public class NetService {
             return;
         }
         if (reconnecting) {
-            logger.trace("Anothrer thread invoke reconnect");
+            logger.fatal("Anothrer thread invoke reconnect");
             return;
         }
-        logger.debug("invoke reconnect");
+        logger.fatal("Information: Invoke reconnect");
         reconnecting = true;
         App.addLoginWorker(new Thread(App::reconnect));
     }
@@ -229,6 +232,7 @@ public class NetService {
     }
 
     public static void endOfReconnection() {
+        logger.debug("successful reconnection atemp");
         reconnecting = false;
     }
 

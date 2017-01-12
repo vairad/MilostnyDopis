@@ -60,6 +60,9 @@ public class XMLHelper {
                     return;
                 }
             }
+            if(Thread.currentThread().isInterrupted()){
+                return;
+            }
             BufferedWriter writer = new BufferedWriter(new FileWriter( file));
             writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
             writer.newLine();

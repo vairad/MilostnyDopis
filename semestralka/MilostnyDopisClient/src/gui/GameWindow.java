@@ -17,9 +17,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.transform.Rotate;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.Window;
 import javafx.util.Duration;
 import message.Event;
 import message.Message;
@@ -33,7 +31,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import static gui.App.hideWindow;
+import static gui.App.closeGameWindow;
+
 
 /**
  * Created by XXXXXXXXXXXXXXXX on 1.11.16.
@@ -78,7 +77,7 @@ public class GameWindow extends Stage {
 
         initTable();
 
-        setOnCloseRequest( event -> hideWindow());
+        setOnCloseRequest( event -> closeGameWindow());
 
         setMinHeight(Constants.MINH_GAME);
         setMinWidth(Constants.MINW_GAME);

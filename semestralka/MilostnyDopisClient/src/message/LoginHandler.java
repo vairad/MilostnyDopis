@@ -56,7 +56,7 @@ public class LoginHandler {
             Platform.runLater(App::refreshOldPlayers);
             Platform.runLater(App::logout);
             Player.setLocalPlayer(null);
-            App.addLoginWorker(new Thread(XMLHelper::fillOldUsersXml));
+            App.addXMLWorker(new Thread(XMLHelper::fillOldUsersXml));
             return;
         }
 
@@ -117,7 +117,7 @@ public class LoginHandler {
                 NetService.getInstance().getServerName(),
                 NetService.getInstance().getServerPort());
         UserRecord.allRecords.add(u);
-        App.addLoginWorker(new Thread(XMLHelper::fillOldUsersXml));
+        App.addXMLWorker(new Thread(XMLHelper::fillOldUsersXml));
 
         // affect GUI
         Platform.runLater(App::userLogged);
