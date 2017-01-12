@@ -26,3 +26,7 @@
 *.exe
 *.out
 *.app
+
+#ignore private folders
+/prezentace/
+/semestralka/
