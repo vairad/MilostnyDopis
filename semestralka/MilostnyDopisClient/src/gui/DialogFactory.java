@@ -189,7 +189,7 @@ public class DialogFactory {
         alert.showAndWait();
     }
 
-    public static void messagesResult(long sendBytes, long recvBytes, long reconnection) {
+    public static void messagesNetStatistics(long sendBytes, long recvBytes, long reconnection) {
         Alert alert  = new Alert(Alert.AlertType.INFORMATION);
         setUpCssToDialog(alert.getDialogPane());
         alert.setTitle(App.bundle.getString("netResult"));
@@ -197,6 +197,14 @@ public class DialogFactory {
         results += App.bundle.getString("received") +" : " + recvBytes + "B" + "\n";
         results += App.bundle.getString("reconnection") +" : " + reconnection + "x" + "\n";
         alert.setHeaderText(results);
+        alert.showAndWait();
+    }
+
+    public static void noGameDialog() {
+        Alert alert  = new Alert(Alert.AlertType.WARNING);
+        setUpCssToDialog(alert.getDialogPane());
+        alert.setTitle(App.bundle.getString("noGame"));
+        alert.setHeaderText(App.bundle.getString("noGameText"));
         alert.showAndWait();
     }
 }

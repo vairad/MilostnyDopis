@@ -14,6 +14,7 @@ public class GameRecord {
     private String uid;
     private int playersCount;
     private static List<GameRecord> allGameRecords;
+    private boolean server;
 
     private GameRecord(String uid, int playersCount, boolean isRootNode){
         this.uid = uid;
@@ -80,5 +81,9 @@ public class GameRecord {
 
     public boolean isStarted() {
         return started;
+    }
+
+    public boolean isServer() {
+        return server;
     }
 }

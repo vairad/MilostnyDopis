@@ -1,6 +1,8 @@
 package game;
 
 import constants.PlayerPosition;
+import gui.UserRecord;
+import netservice.NetService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -94,6 +96,11 @@ public class Player implements Comparable<Player> {
      * @param local_player nastavovaný hráč
      */
     public static void setLocalPlayer(Player local_player) {
+        if(local_player == null){
+            Player.local_player = null;
+            Player.localUid = null;
+            return;
+        }
         if(local_player.equals(Player.getLocalPlayer())){
             //todo porovnej informace serveru a lokálního hráče
             return;
@@ -253,5 +260,9 @@ public class Player implements Comparable<Player> {
 
     public int getPoints() {
         return points;
+    }
+
+    public static void clean() {
+        setLocalPlayer(null);
     }
 }

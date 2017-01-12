@@ -61,6 +61,7 @@
                      visible="false"
                      HBox.hgrow="ALWAYS"
         />
+        <Text fx:id="time" visible="false"/>
     </HBox>
     <HBox alignment="CENTER"
           GridPane.columnIndex="0"

@@ -55,7 +55,8 @@ public class LoginHandler {
             App.userRecord = null;
             Platform.runLater(App::refreshOldPlayers);
             Platform.runLater(App::logout);
-            new Thread(XMLHelper::fillOldUsersXml).start();
+            Player.setLocalPlayer(null);
+            App.addLoginWorker(new Thread(XMLHelper::fillOldUsersXml));
             return;
         }
 
@@ -110,13 +111,13 @@ public class LoginHandler {
         Player.setLocalPlayer(new Player(nick, uid));
         Player.getLocalPlayer().setLogged(true);
 
-        // save codeLogin
+        // save connectCode
         UserRecord u = new UserRecord(Player.getLocalPlayer().getServerUid(),
                 Player.getLocalPlayer().getNick(),
                 NetService.getInstance().getServerName(),
                 NetService.getInstance().getServerPort());
         UserRecord.allRecords.add(u);
-        new Thread(XMLHelper::fillOldUsersXml).start();
+        App.addLoginWorker(new Thread(XMLHelper::fillOldUsersXml));
 
         // affect GUI
         Platform.runLater(App::userLogged);

@@ -1,6 +1,7 @@
 package gui;
 
 import constants.Constants;
+import game.Player;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -12,7 +13,9 @@ import message.MessageType;
 import netservice.NetService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
 /**
@@ -25,6 +28,7 @@ public class Controller implements Initializable {
 
     /** instance loggeru hlavni tridy */
     private static Logger logger =	LogManager.getLogger(Controller.class.getName());
+
 
     @FXML private Label allGamesCheckLabel;
     @FXML private TextField portTextField;
@@ -41,6 +45,7 @@ public class Controller implements Initializable {
     @FXML private CheckBox allGamesCheck;
     @FXML private Text statusText;
     @FXML private TreeView<GameRecord> treeView;
+    @FXML private Text time;
 
     private ResourceBundle bundle;
 
@@ -59,7 +64,59 @@ public class Controller implements Initializable {
             App.smartFillTree();
         });
 
+        treeView.setOnMouseClicked(mouseEvent -> {
+            if(mouseEvent.getClickCount() == 2)
+            {   GameRecord item;
+                try {
+                    item = treeView.getSelectionModel().getSelectedItem().getValue();
+                }catch (NullPointerException e){
+                    logger.debug("nothing selected");
+                    return;
+                }
+                if(item == null){
+                    logger.debug("null selected");
+                    return;
+                }
+                if(item.isServer()){
+                    logger.debug("Server selected");
+                    return;
+                }
+                logger.debug("Byla zvolena hra pro přihlášení:" + item);
+                boolean result = DialogFactory.yesNoQuestion(bundle.getString("loginGameQTitle")
+                        , bundle.getString("loginGameQ") + " " + item);
+                if(!result){
+                    logger.trace("Uživatel zrušil přihlašování do hry: " + item);
+                    return;
+                }
+                if(!Player.getLocalPlayer().isLogged()){
+                    DialogFactory.alertError(bundle.getString("noLogged")
+                            , bundle.getString("noLoggedHeadline")
+                            , bundle.getString("noLoggedText"));
+                    return;
+                }
+
+                Message msg = new Message(Event.COD, MessageType.game, item.getUid());
+                NetService.getInstance().sender.addItem(msg);
+                logger.trace("Proveden pokus o přihlášení do hry: " + item);
+            }
+        }); // end of event handler definition
+
         noLoggedForm();
+    }
+
+    /**
+     * Naplní strom her předanými herními záznamy
+     * @param gameRecords seznam herních záznamů
+     */
+    void fillTree(List<GameRecord> gameRecords){
+        TreeItem<GameRecord> rootItem = new TreeItem<GameRecord> (new GameRecord(NetService.getServerName(), true));
+        rootItem.setExpanded(true);
+        for (GameRecord gameRecord : gameRecords) {
+            TreeItem<GameRecord> item = new TreeItem<GameRecord> (gameRecord);
+            rootItem.getChildren().add(item);
+        }
+        treeView.setRoot(rootItem);
+        treeView.setDisable(false);
     }
 
     /**
@@ -72,8 +129,7 @@ public class Controller implements Initializable {
         disableForm();
         logoutButton.setDisable(false);
         progressBar.setVisible(true);
-        App.loginWorker = new Thread(App::connect);
-        App.loginWorker.start();
+        App.addLoginWorker(new Thread(App::connectLogin));
     }
 
     /**
@@ -96,7 +152,7 @@ public class Controller implements Initializable {
         setStatusText(bundle.getString("loggingOut"));
         NetService.getInstance().stop();
         Thread thread = new Thread(App::logout);
-        App.addWorker(thread);
+        App.addLoginWorker(thread);
     }
 
     /**
@@ -119,13 +175,13 @@ public class Controller implements Initializable {
 
         round_count = DialogFactory.gameCountDialog();
         if(round_count < Constants.MIN_POSSIBLE_ROUNDS
-                && round_count > Constants.MAX_POSSIBLE_ROUNDS){
+                || round_count > Constants.MAX_POSSIBLE_ROUNDS){
             return;
         }
 
         player_count = DialogFactory.playerCountDialog();
         if(player_count < Constants.MIN_POSSIBLE_PLAYERS
-                && player_count > Constants.MAX_POSSIBLE_PLAYERS){
+                || player_count > Constants.MAX_POSSIBLE_PLAYERS){
             return;
         }
 
@@ -140,7 +196,7 @@ public class Controller implements Initializable {
     @FXML
     public void onStats(){
         logger.trace("start method");
-        DialogFactory.messagesResult(NetService.sendBytes
+        DialogFactory.messagesNetStatistics(NetService.sendBytes
                                      ,NetService.recvBytes
                                      , App.reconnection);
     }
@@ -333,5 +389,19 @@ public class Controller implements Initializable {
      */
     public void refreshUserRecords() {
         userControl.refresh();
+    }
+
+
+    /**
+     * Nastaví a zobrazí počítadlo času... Pokud je hodnotavyšší než nula zobrazí se vlevo vedle progresbaru odpočet
+     * @param time čas v ms
+     */
+    public void setTime(int time) {
+        if(time > 0){
+            this.time.setText(time / 1000 + "s");
+            this.time.setVisible(true);
+        }else{
+            this.time.setVisible(false);
+        }
     }
 }

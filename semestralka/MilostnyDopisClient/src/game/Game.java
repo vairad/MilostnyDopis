@@ -6,7 +6,6 @@ import javafx.application.Platform;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -18,24 +17,27 @@ public class Game {
     /** instance loggeru tridy */
     public static Logger logger =	LogManager.getLogger(Game.class.getName());
 
-    private static GameRecord gameRecord;
+    private static GameRecord actlualyPlayGame;
     private static List<Player> players;
     private static boolean ready;
     private static Long lastStatusSeq;
 
     public static void initialize(GameRecord gameRecord){
         players = new LinkedList<>();
-        Game.gameRecord = gameRecord;
+        Game.actlualyPlayGame = gameRecord;
         ready = false;
-        lastStatusSeq = (long) 0;
+        lastStatusSeq = 0L;
     }
 
     public static String getUid() {
-        return gameRecord.getUid();
+        if(actlualyPlayGame == null){
+            return "NO ID";
+        }
+        return actlualyPlayGame.getUid();
     }
 
     public static void reinitialize(GameStatus gameStatus) {
-        if(!gameStatus.getUid().equals(gameRecord.getUid())){
+        if(!gameStatus.getUid().equals(actlualyPlayGame.getUid())){
             logger.error("Nesouhlasi id stavu hry a hry inicializované");
             return;
         }
@@ -90,5 +92,10 @@ public class Game {
     public static void clearToken() {
         Player.getLocalPlayer().takeToken();
         players.forEach(Player::takeToken);
+    }
+
+    public static void clean() {
+        actlualyPlayGame = null;
+        lastStatusSeq = 0L;
     }
 }

@@ -1,5 +1,7 @@
 package netservice;
 
+import gui.App;
+import javafx.application.Platform;
 import message.Message;
 import message.MessageHandler;
 import org.apache.logging.log4j.LogManager;
@@ -25,6 +27,7 @@ public class NetService {
 
     private static boolean runFlag = false;
     private static boolean userEnd = false;
+    private static boolean reconnecting = false;
 
     static final int MAX_MSG_LENGTH = 2048;
 
@@ -44,58 +47,50 @@ public class NetService {
 
     private static NetService INSTANCE = new NetService();
 
-    public BlockingQueue<Message> toServe = new LinkedBlockingQueue<>();
+    BlockingQueue<Message> toServe = new LinkedBlockingQueue<>();
 
-    public Sender sender;
-    public Receiver receiver;
-    public static MessageHandler messageHandler;
+    public Sender sender = null;
+    Receiver receiver = null;
+    private static MessageHandler messageHandler = null;
 
-    private NetService() {
-        // no code here
-    }
+    // ================ SINGLETON INIT ===========================================================================
+    /** Privátní konstruktor */
+    private NetService() {}
 
+    /** INSTANCE NETSERVICE */
     public static NetService getInstance(){
         return INSTANCE;
     }
 
-    @Deprecated
-    public static boolean checkIpOctet(String ipOctet){
-        int ip = Integer.parseInt(ipOctet);
-        return ip > 0 && ip < 256;
-    }
 
-    public static int checkPort(String portS){
-        int port = Integer.parseInt(portS);
-        if ( port > 0 && port < 65536){
-            return port;
-        }
-        return -1;
-    }
-
-    public static boolean isRunning() {
-        return runFlag;
-    }
-
-    public static String getServerName() {
-        return NetService.getInstance().serverName;
-    }
-
-    public static boolean isUserEnd() {
-        return userEnd;
-    }
-
+    /** Přpiravena pro paralelní volání pokud bude
+     *
+     * @throws IOException
+     */
     public void initialize() throws IOException {
         NetService.logger.debug("initialize() - start");
 
-        address = InetAddress.getByName(addressS);
+        InetAddress address = InetAddress.getByName(addressS);
         NetService.logger.trace("initialize() - get inet adress");
         NetService.logger.debug("Pripojuju se na : "+address.getHostAddress()+" se jmenem : "+address.getHostName()+"\n" );
+
+        Socket socketTMP = new Socket(address, port);
+        NetService.logger.trace("initialize() - socket creation");
+
+        if(Thread.currentThread().isInterrupted()){
+            logger.trace("Umřel přihlašovač");
+            return;
+        }
+
+        logger.debug("clean old mess");
+        NetService.getInstance().destroy();
+        toServe.clear();
+
+        socket = socketTMP;
+        this.address = address;
         serverName = address.getHostName();
 
-        socket = new Socket(address, port);
-        NetService.logger.trace("initialize() - socket creation");
         socket.setSoTimeout(1000);
-
         outputStream = socket.getOutputStream();
         NetService.logger.trace("initialize() - output stream");
 
@@ -105,8 +100,6 @@ public class NetService {
         userEnd = false;
         runFlag = true;
         startThreads();
-
-
         NetService.logger.trace("initialize() - end");
     }
 
@@ -117,6 +110,8 @@ public class NetService {
         sender.start();
         receiver = new Receiver();
         receiver.start();
+        messageHandler = new MessageHandler();
+        messageHandler.start();
     }
 
     public void setup(String address, int port) {
@@ -156,13 +151,9 @@ public class NetService {
         return inputStream;
     }
 
-    public Message getMessageToServe() {
-        try {
-            return toServe.take();
-        } catch (InterruptedException e) {
-            logger.debug("Čekání bylo přerušeno", e);
-        }
-        return null;
+    public Message getMessageToServe() throws InterruptedException {
+        return toServe.take();
+
     }
 
     public void destroy() {
@@ -198,5 +189,79 @@ public class NetService {
 
     public static void userEnding() {
         userEnd = false;
+    }
+
+    public static void initMessageHandler(MessageHandler messageHandler) {
+        if(NetService.messageHandler == null){
+            NetService.messageHandler = messageHandler;
+            logger.debug("new message handler");
+        }
+        if(!NetService.messageHandler.isAlive()){
+            NetService.messageHandler = messageHandler;
+        }
+    }
+
+    synchronized static void reconnect(){
+        logger.debug("Reconnect");
+        if(userEnd){
+            logger.trace("User end");
+            return;
+        }
+        if (reconnecting) {
+            logger.trace("Anothrer thread invoke reconnect");
+            return;
+        }
+        logger.debug("invoke reconnect");
+        reconnecting = true;
+        App.addLoginWorker(new Thread(App::reconnect));
+    }
+
+    public static void startMessageHandler() {
+        try {
+            messageHandler.start();
+        }catch (IllegalThreadStateException e){
+            logger.debug("netservice was already started");
+        }
+    }
+
+    public static String getPort() {
+        return getInstance().getServerPort();
+    }
+
+    public static void endOfReconnection() {
+        reconnecting = false;
+    }
+
+
+    public static boolean isRunning() {
+        return runFlag;
+    }
+
+    public static String getServerName() {
+        return NetService.getInstance().serverName;
+    }
+
+    public static boolean isUserEnd() {
+        return userEnd;
+    }
+
+//================= STATICKE METODY NEZAVISLE NA OBJEKTU==========================================================
+
+    /**
+     * Metoda kontroluje použitelný rozsah portu 0 - 65535
+     * @param portS textová reprezentace čísla portu
+     * @return portn number or -1 if port number is not valid
+     */
+    public static int checkPort(String portS){
+        int port;
+        try {
+            port = Integer.parseInt(portS);
+        }catch (NumberFormatException e){
+            return -1;
+        }
+        if ( port > 0 && port < 65536){
+            return port;
+        }
+        return -1;
     }
 }

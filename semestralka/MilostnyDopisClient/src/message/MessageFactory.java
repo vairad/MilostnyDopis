@@ -7,8 +7,8 @@ public class MessageFactory {
     public static Message getCards(){
         return new Message(Event.CAR, MessageType.game, "CARD");
     }
-    public static Message getStatusMessage(String uid) {
-        return new Message(Event.STA, MessageType.game, uid);
+    public static Message getStatusMessage(String gameUid) {
+        return new Message(Event.STA, MessageType.game, gameUid);
     }
     public static Message getGameList() {
         return new Message(Event.ECH, MessageType.game, "");

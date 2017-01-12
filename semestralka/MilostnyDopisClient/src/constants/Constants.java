@@ -30,5 +30,5 @@ public class Constants{
     public static final int MIN_POSSIBLE_PLAYERS = 2;
     public static final int MAX_POSSIBLE_PLAYERS = 4;
 
-    public static long RECONNECT_TIMEOUT_MS = 30000;
+    public static int RECONNECT_TIMEOUT_MS = 15000;
 }

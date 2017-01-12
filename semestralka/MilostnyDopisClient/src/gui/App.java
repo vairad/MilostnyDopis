@@ -9,8 +9,6 @@ import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeView;
 import javafx.stage.Stage;
 import message.Event;
 import message.Message;
@@ -38,77 +36,60 @@ public class App extends Application {
     /** instance loggeru hlavni tridy */
     public static Logger logger = LogManager.getLogger(App.class.getName());
 
+    /** Odkaz na okno se hrou  */
     public static GameWindow win = null;
-
+    /** čítač pokusů o znovupřipojení */
     static long reconnection = 0;
-
+    /** seznam asynchronních úloh aplikace */
+    private static List<Thread> workerList;
+    /** vlákno určené pro zpracování přihlášení */
     static Thread loginWorker;
-
-    private Stage stage;
-
+    /** záznam o uživateli */
     public static UserRecord userRecord = null;
-
-    protected static ResourceBundle bundle;
+    /** java FX stage tohoto okna */
+    private Stage stage;
+    /** jazyková lokalizace ... databáze textů */
+    static ResourceBundle bundle;
+    /** odkaz na kontroler okna */
     private static Controller controller;
 
-    public static String getWinner() {
-        int maxPoints = -1;
-        for (Player p: Game.getPlayers()) {
-            if(p.getPoints() > maxPoints){
-                maxPoints = p.getPoints();
-            }
-        }
-        String winners = "";
-        for (Player p: Game.getPlayers()) {
-            if(p.getPoints() == maxPoints){
-                winners += p.getDisplayName() + "\n";
-            }
-        }
-        return winners;
-    }
+    //====================================== METODY PRO PRACI S OKNEM ==========================================
 
-    public static String getResult() {
-        String result = App.bundle.getString("playerPoints") + "\t \t"
-                + App.bundle.getString("pointsPoints") + "\n";
-        for (Player p: Game.getPlayers()) {
-            result += p.getDisplayName() + "\t \t" + p.getPoints() + "\n";
-        }
-        return result;
-    }
-
+    /**
+     * Při vytváření okna nastaví všechny potřebné porměnné atp... "pseudo konsrtuktor"
+     * @param primaryStage stage
+     * @throws Exception exception
+     */
     @Override
     public void start(Stage primaryStage) throws Exception{
+        logger.debug("start main window");
         stage = primaryStage;
+
+        Platform.setImplicitExit(false);
 
         loadView(new Locale("cs", "CZ"));
 
         stage.setOnCloseRequest( event -> {
             try {
-                App.myStop();
+                App.closeApp();
             } catch (Exception e) {
-                logger.fatal("Chyba jako brno");
+                logger.fatal("Chyba při ukončování aplikace", e);
             }
         });
 
         stage.setMinHeight(Constants.MINH_APP);
         stage.setMinWidth(Constants.MINW_APP);
         stage.show();
+
+        workerList = new LinkedList<>();
     }
 
-    public static void smartFillTree() {
-        if(GameRecord.getAllGameRecords() == null){
-            App.fillTree(new LinkedList<>());
-        }
-        if(controller.isAllGames()){
-            logger.trace("is selected");
-            Platform.runLater(() -> App.fillTree(GameRecord.getAllGameRecords()));
-        }else {
-            logger.trace("is not selected");
-            App.fillTree(GameRecord.getAllConnectableGames());
-        }
-    }
-
+    /**
+     * Načte fxml definici prvků v okně a soubor s lokalizací
+     * @param locale lokalizace k zobrazení
+     */
     private void loadView(Locale locale) {
+        logger.debug("load main win View");
         try {
             FXMLLoader fxmlLoader = new FXMLLoader();
             bundle = ResourceBundle.getBundle("Texts", locale);
@@ -116,7 +97,7 @@ public class App extends Application {
 
             Parent root = fxmlLoader.load(App.class.getResource("startScreen.fxml").openStream());
 
-            controller = (Controller) fxmlLoader.getController();
+            controller = fxmlLoader.getController();
 
             Scene scene = new Scene(root, Constants.MINW_APP, Constants.MINH_APP);
             scene.getStylesheets().add(App.class.getResource("app.css").toExternalForm());
@@ -124,72 +105,60 @@ public class App extends Application {
             stage.setTitle(bundle.getString("TITLE"));
             stage.setScene(scene);
         } catch (IOException ex) {
-            ex.printStackTrace();
+            logger.fatal("Unnable to load resources for main window", ex);
         }
     }
 
-    public static void myStop() throws Exception{
+    /**
+     * Zajistí korektní ukončení aplikace
+     */
+    private static void closeApp(){
+        logger.debug("Ukončuji aplikaci");
+        try{
+            joinWorkers();
+        }catch (InterruptedException e){
+            logger.trace("čekání na vlákna bylo přerušeno");
+        }
+
         NetService.getInstance().destroy();
         NetService.getInstance().joinThreads();
 
+        closeGameWindow();
+
+        Platform.exit();
+    }
+
+    /**
+     * Zajistí ukončení herního okna a nastaví pointer na null
+     */
+    public static void closeGameWindow() {
         try{
-            if(App.win == null){
-                logger.fatal("Window not init");
-            }
             Stage stage = (Stage) App.win.getScene().getWindow();
-            stage.close();
+            Platform.runLater(stage::close);
         }catch (NullPointerException e){
-            logger.trace("win not initialised");
+            logger.trace("win was not initialised");
         }
-    }
-
-    private static void fillTree(List<GameRecord> gameRecords){
-        TreeItem<GameRecord> rootItem = new TreeItem<GameRecord> (new GameRecord(NetService.getServerName(), true));
-        rootItem.setExpanded(true);
-        for (GameRecord gameRecord : gameRecords) {
-            TreeItem<GameRecord> item = new TreeItem<GameRecord> (gameRecord);
-            rootItem.getChildren().add(item);
-        }
-        TreeView<GameRecord> tree = controller.getTreeWiew();
-        tree.setRoot(rootItem);
-        tree.setOnMouseClicked(mouseEvent -> {
-            if(mouseEvent.getClickCount() == 2)
-            {   GameRecord item;
-                try {
-                    item = tree.getSelectionModel().getSelectedItem().getValue();
-                }catch (NullPointerException e){
-                    logger.debug("nothing selected");
-                    return;
-                }
-                if(item == null){
-                    logger.debug("null selected");
-                    return;
-                }
-                logger.debug("Byla zvolena hra pro přihlášení:" + item);
-                boolean result = DialogFactory.yesNoQuestion(bundle.getString("loginGameQTitle")
-                                            , bundle.getString("loginGameQ") + " " + item);
-                if(!result){
-                    logger.trace("Uživatel zrušil přihlašování do hry: " + item);
-                    return;
-                }
-                if(!Player.getLocalPlayer().isLogged()){
-                    DialogFactory.alertError(bundle.getString("noLogged")
-                                            , bundle.getString("noLoggedHeadline")
-                                            , bundle.getString("noLoggedText"));
-                    return;
-                }
-
-                Message msg = new Message(Event.COD, MessageType.game, item.getUid());
-                NetService.getInstance().sender.addItem(msg);
-                logger.trace("Proveden pokus o přihlášení do hry: " + item);
-                }
-        }); // end of event handler definition
-
-        App.enableTreeView();
+        App.win = null;
     }
 
 
-    //======================== REMOTE EVENTS ================================
+    //======================== REMOTE EVENTS ====================================================================
+
+    /**
+     * Připraví
+     */
+    public static void smartFillTree() {
+        if(GameRecord.getAllGameRecords() == null){
+            controller.fillTree(new LinkedList<>());
+        }
+        if(controller.isAllGames()){
+            logger.trace("is selected");
+            Platform.runLater(() -> controller.fillTree(GameRecord.getAllGameRecords()));
+        }else {
+            logger.trace("is not selected");
+            controller.fillTree(GameRecord.getAllConnectableGames());
+        }
+    }
 
     public static void showMessagesGameWindow(){
         win.appendStatusMessages();
@@ -217,22 +186,7 @@ public class App extends Application {
     public static void userLogged(){
         controller.stopProgress();
         controller.loggedForm();
-    }
-
-    private static void enableTreeView() {
-        controller.enableGameMenu();
-    }
-
-
-    //=====================================================================================================
-    //=========================================================
-    //===========================
-    // MAIN METHOD
-    public static void main(String[] args) {
-        logger.info("Zacatek programu");
-
-        App.launch(args);
-        logger.info("Konec programu");
+        controller.setStatusText(bundle.getString("loggedIn"));
     }
 
 
@@ -245,7 +199,7 @@ public class App extends Application {
         }
     }
 
-    public static void fillHelp(Card card) {
+    static void fillHelp(Card card) {
         App.win.fillHelp(card);
     }
 
@@ -253,7 +207,7 @@ public class App extends Application {
         App.win.movePointerTo(player.getDisplay_order());
     }
 
-    public static String resolvePlayedCardResult(Card playedCard, Player playerWhoPlays, String cardResult) {
+    static String resolvePlayedCardResult(Card playedCard, Player playerWhoPlays, String cardResult) {
         String text = "";
         if(!playerWhoPlays.equals(Player.getLocalPlayer())){
             text += bundle.getString("playerPlays") + ": " + playerWhoPlays.getDisplayName();
@@ -268,7 +222,7 @@ public class App extends Application {
     }
 
     private static String resoveCardResult(Card playedCard, String cardResult) {
-        String text = null;
+        String text;
         switch (playedCard){
             case GUARDIAN:
                 text = "Chyba";
@@ -362,14 +316,85 @@ public class App extends Application {
         NetService.getInstance().sender.addItem(msg);
     }
 
+    /**
+     * Vyvolá aktualizaci prvku seznamu dříve přihlášehých hráčů
+     */
+    public static void refreshOldPlayers() {
+        controller.refreshUserRecords();
+    }
+
+    public static void highlightGame(GameRecord record) {
+        // todo highlight element in tree view
+    }
+
+    private static void joinWorkers() throws InterruptedException {
+        for (Thread th: workerList) {
+            th.interrupt();
+        }
+        try {
+            App.loginWorker.interrupt();
+        }catch (NullPointerException e){
+            logger.trace("login worker was not initialised");
+        }
+        try {
+            for (Thread th : workerList) {
+                th.join();
+            }
+            App.loginWorker.join();
+        }catch (NullPointerException e){
+            logger.trace("something was not initialsed");
+        }
+    }
+
+    public static void hideWindow() {
+        logger.debug("hide GameWindow");
+        if(App.win == null){
+            logger.fatal("window not init");
+        }
+        Stage stage = (Stage) App.win.getScene().getWindow();
+        stage.hide();
+    }
+
+    public static String getWinner() {
+        int maxPoints = -1;
+        for (Player p: Game.getPlayers()) {
+            if(p.getPoints() > maxPoints){
+                maxPoints = p.getPoints();
+            }
+        }
+        String winners = "";
+        for (Player p: Game.getPlayers()) {
+            if(p.getPoints() == maxPoints){
+                winners += p.getDisplayName() + "\n";
+            }
+        }
+        return winners;
+    }
+
+    public static String getResult() {
+        String result = App.bundle.getString("playerPoints") + "\t \t"
+                + App.bundle.getString("pointsPoints") + "\n";
+        for (Player p: Game.getPlayers()) {
+            result += p.getDisplayName() + "\t \t" + p.getPoints() + "\n";
+        }
+        return result;
+    }
+//=======================================================================================================================
+    //******** CONNECTION METHODS ****************************************************************
+
+    /**
+     * Metoda zajistí inicializaci struktur pro síťovou komunikaci
+     * @return informace o úsplěchu inicializace
+     */
     static boolean connectServer() {
         logger.debug("Start method");
 
+        // získání čísla portu
         int resultPort;
         try {
             resultPort = NetService.checkPort(controller.getPort());
         }catch (NumberFormatException e){
-            logger.error("Error port number", e);
+            logger.error("Port není číslo", e);
             resultPort = -1;
         }
 
@@ -381,7 +406,7 @@ public class App extends Application {
                     , bundle.getString("portErrorText")));
             return false;
         }
-
+        if (Thread.currentThread().isInterrupted()) {return false;} // nebyl jsem náhodou ukončen ?
         try{
             String text = bundle.getString("connectionTry");
             Platform.runLater(() -> {controller.setStatusText(text);});
@@ -390,9 +415,9 @@ public class App extends Application {
             NetService.getInstance().initialize();
 
             logger.trace("Iinit MessageHandler");
-            NetService.messageHandler = new MessageHandler();
+            NetService.initMessageHandler(new MessageHandler());
             logger.trace("start messageHandler");
-            NetService.messageHandler.start();
+            NetService.startMessageHandler();
             logger.trace("MessageHandler started");
 
         }catch (IOException e){
@@ -407,16 +432,15 @@ public class App extends Application {
         return true;
     }
 
-    public static void codeLogin(UserRecord value) {
-        logger.debug("codeLogin");
+    public static void connectCode(UserRecord value) {
+        logger.debug("connectCode");
         controller.loggedForm();
         controller.startProgress();
         controller.setUpUser(value);
 
         boolean result = false;
-        if(!NetService.isRunning() || NetService.isUserEnd()){
-            result = connectServer();    //pripoj server
-        }
+        result = connectServer();    //pripoj server
+
         if(!result){  // když se nepovedlo připojení uvolni a skonči
 
             NetService.getInstance().destroy();
@@ -429,31 +453,12 @@ public class App extends Application {
         Message msg = new Message(Event.COD, MessageType.login, value.getId().trim());
         NetService.getInstance().sender.addItem(msg);
 
-
-
     }
 
-
-    public static void reconnect(){
-        if(NetService.isUserEnd()){ // if close come from user
-            logger.debug("user invoke end of threads - no reconnect");
-            return;
-        }
-        reconnection++;
-        Platform.runLater(controller::startProgress);
-        Platform.runLater( () -> controller.setStatusText(bundle.getString("reconnect")));
-        try {
-            sleep(Constants.RECONNECT_TIMEOUT_MS);
-        } catch (InterruptedException e) {
-            logger.info("interupted sleeping whilereconnect");
-        }
-        connect();
-    }
-    public static void connect() {
+    public static void connectLogin() {
         boolean result = false;
-        if(!NetService.isRunning() || NetService.isUserEnd()){
-            result = connectServer();    //pripoj server
-        }
+
+        result = connectServer();    //pripoj server
         if(!result){  // když se nepovedlo připojení uvolni a skonči
             NetService.getInstance().destroy();
             controller.noLoggedForm();
@@ -468,10 +473,51 @@ public class App extends Application {
         sendLogin();
     }
 
+    public static void reconnect(){
+        logger.debug("start reconnect()");
+        if(Player.getLocalPlayer() == null){
+            logger.trace("není kam se opětovně připojit... nemám lokáního uživatele");
+            return;
+        }
+        if(NetService.isUserEnd()){ // if close come from user
+            logger.debug("user invoke end of threads - no reconnect");
+            return;
+        }
+        reconnection++;
+        Platform.runLater(controller::startProgress);
+        Platform.runLater( () -> controller.setStatusText(bundle.getString("reconnect")));
+        try {
+            int remainingMS = Constants.RECONNECT_TIMEOUT_MS;
+            Platform.runLater(() -> controller.setTime(Constants.RECONNECT_TIMEOUT_MS));
+            while(remainingMS > 0) {
+                sleep(1000);
+                int tmpMs = remainingMS;
+                Platform.runLater(() -> controller.setTime(tmpMs));
+                remainingMS -= 1000;
+            }
+            Platform.runLater(() -> controller.setTime(0));
+        } catch (InterruptedException e) {
+            logger.info("interupted sleeping whilereconnect");
+            return;
+        }
+        UserRecord userRecord;
+        try {
+             userRecord = new UserRecord(Player.getLocalPlayer().getServerUid()
+                    , Player.getLocalPlayer().getNick()
+                    , NetService.getServerName()
+                    , NetService.getPort());
+            connectCode(userRecord);
+        }catch (NullPointerException e){
+            logger.fatal("problem with netservice");
+            return;
+        }
+        NetService.endOfReconnection();
+    }
+
 
     public static void logout(){
         NetService.userEnding();
-        if(App.loginWorker.isAlive()){
+        if(App.loginWorker != null && App.loginWorker.isAlive()){
             App.loginWorker.interrupt();
         }
         try {
@@ -489,30 +535,40 @@ public class App extends Application {
         controller.setNoLoggedStatus();
         controller.stopProgress();
         NetService.getInstance().destroy();
+        cleanGameStructures();
+    }
+
+    private static void cleanGameStructures() {
+        Player.clean();
+        Game.clean();
+        closeGameWindow();
     }
 
     /**
-     * Vyvolá aktualizaci prvku seznamu dříve přihlášehých hráčů
+     * Obnoví seznam her na serveru
      */
-    public static void refreshOldPlayers() {
-        controller.refreshUserRecords();
+    public static void refreshGames() {
+        controller.onRefresh();
     }
 
-    public static void highlightGame(GameRecord record) {
-        // todo highlight element in tree view
+    //=====================================================================================================
+    //=========================================================
+    //===========================
+    // MAIN METHOD
+    public static void main(String[] args) {
+        logger.info("Zacatek programu");
+        App.launch(args);
+        logger.info("Konec programu");
     }
 
-    public static void addWorker(Thread thread) {
-        thread.start();
-        //todo handle
-    }
-
-    public static void hideWindow() {
-        logger.debug("hide GameWindow");
-        if(App.win == null){
-            logger.fatal("window not init");
+    public static void addLoginWorker(Thread thread) {
+        if(loginWorker == null){
+            loginWorker = thread;
+            loginWorker.start();
+            return;
         }
-        Stage stage = (Stage) App.win.getScene().getWindow();
-        stage.hide();
+        loginWorker.interrupt();
+        loginWorker = thread;
+        loginWorker.start();
     }
 }

@@ -55,6 +55,9 @@ public class GameHandler {
             case PTS:
                 handleGamePTS(msg);
                 break;
+            case NAK:
+                handleGameNAK(msg);
+                break;
             case UNK:
                 logger.error("UNKNOWN GAME EVENT TYPE");
                 break;
@@ -62,6 +65,12 @@ public class GameHandler {
                 logger.error("UNIMPLEMENTED GAME EVENT TYPE: " + msg.getEvent());
                 break;
         }
+    }
+
+    private static void handleGameNAK(Message msg) {
+        logger.debug("start method");
+        Platform.runLater(DialogFactory::noGameDialog);
+        Platform.runLater(App::refreshGames);
     }
 
     private static void handleGamePTS(Message msg) {
@@ -94,8 +103,12 @@ public class GameHandler {
         boolean token = Boolean.parseBoolean(attributes[2]);
         boolean alive = Boolean.parseBoolean(attributes[3]);
 
-        Game.getPlayer(attributes[0]).
-                setAttributes(alive, token, guarded);
+        try {
+            Game.getPlayer(attributes[0]).
+                    setAttributes(alive, token, guarded);
+        }catch (NullPointerException e){
+            NetService.getInstance().sender.addItem(MessageFactory.getStatusMessage(Game.getUid()));
+        }
     }
 
     private static void handleGameRES(Message msg) {
@@ -253,13 +266,11 @@ public class GameHandler {
     }
 
     private static void handleGameSTA(Message msg) {
-        //todo handle GAMSTA#GAMEbm&&OVER
         if(Game.getUid().equals(msg.getMessage().substring(0,6))){
             logger.debug("game is over");
-            //todo show dialog with absolute winner last points
             Platform.runLater(() -> {
                 DialogFactory.gameStandingsDialog();
-                App.win.hide();
+                App.closeGameWindow();
             });
             return;
         }

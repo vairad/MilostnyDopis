@@ -16,10 +16,19 @@ public class MessageHandler extends Thread {
     public void run() {
         logger.debug("Start thread");
         while (NetService.isRunning()){
-            Message msg = NetService.getInstance().getMessageToServe();
+            Message msg;
+            try {
+                msg = NetService.getInstance().getMessageToServe();
+            } catch (InterruptedException e) {
+                logger.fatal("Message Handler is out -- caused interupted exception");
+                return;
+            }
             if(msg == null){
                 logger.trace("null from queue");
                 continue;
+            }
+            if(Thread.currentThread().isInterrupted()){
+                return;
             }
             handleMessage(msg);
         }

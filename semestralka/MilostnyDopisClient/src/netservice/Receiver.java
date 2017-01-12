@@ -26,9 +26,11 @@ public class Receiver extends Thread {
     @Override
     public void run() {
         while (NetService.isRunning()){
+            if(Thread.currentThread().isInterrupted()){
+                return;
+            }
             buffer = new byte[NetService.MAX_MSG_LENGTH];
             InputStream in = NetService.getInstance().getInputStream();
-
             if(in == null){
                 logger.error("in stream is null");
                 return;
@@ -41,12 +43,12 @@ public class Receiver extends Thread {
             }
             catch (IOException e) {
                 logger.error("IO ERROR", e);
-                new Thread(App::reconnect).start();
+                new Thread(NetService::reconnect).start();
                 return;
             }
             if (recvBytes == -1){
                 logger.debug("IO disconnect");
-                new Thread(App::reconnect).start();
+                new Thread(NetService::reconnect).start();
                 return;
             }
 

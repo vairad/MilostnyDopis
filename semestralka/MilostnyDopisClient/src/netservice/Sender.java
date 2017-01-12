@@ -1,6 +1,5 @@
 package netservice;
 
-import gui.App;
 import message.Message;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -23,6 +22,9 @@ public class Sender extends Thread {
     public void run() {
         while(NetService.isRunning()){
             Message msg = null;
+            if(Thread.currentThread().isInterrupted()){
+                return;
+            }
             try {
                 msg = toSend.take();
             } catch (InterruptedException e) {
@@ -38,7 +40,7 @@ public class Sender extends Thread {
             OutputStream out = NetService.getInstance().getOutputStream();
             if(out == null){
                 logger.error("NUll out stream ... Trying to reconnect");
-                new Thread(App::reconnect).start();
+                new Thread(NetService::reconnect).start();
                 return;
             }
 
@@ -54,12 +56,11 @@ public class Sender extends Thread {
                 out.write(messageToNet.getBytes());
             } catch (IOException e) {
                 logger.error("IO Error ... sending is over ... trying to reconnect");
-                new Thread(App::reconnect).start();
+                new Thread(NetService::reconnect).start();
                 return;
             }
             NetService.sendBytes += messageToNet.getBytes().length;
         }
-
     }
 
     public synchronized boolean addItem(Message msg){
