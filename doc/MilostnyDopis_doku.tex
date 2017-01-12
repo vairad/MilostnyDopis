@@ -248,7 +248,7 @@ NAK & [libovolná ze zpráv klienta] & Nebylo možné provést operaci \\
 
 \subsection{Server}
 
-Na začátku běhu serveru se inicializují střídy Sender a Reciever, tyto třídy jsou samostatná vlákna která zpracovávají příchozí data na soket serveru a zpracovávají frontu zpráv.
+Server pro svůj běh inicializuje minimálně další tři vlákna aplikace. V hlavním toku aplikace se inicializují třídy \texttt{Sender} a \texttt{Reciever}, tyto třídy jsou spuštěny jako samostatná vlákna která zpracovávají příchozí data na soket serveru a zpracovávají frontu zpráv (odesílají data). Dalším inicializovanou částí je konzument příchozích zpráv MessageHandler, který obsahuje zásobník pracujících vláken minimálně 1 maximálně 9. Hlavní vlákno aplikace spravuje požadavky klienta na konzoli.
 
 \begin{figure}[ht]
 \centering
@@ -257,10 +257,27 @@ Na začátku běhu serveru se inicializují střídy Sender a Reciever, tyto tř
 \label{fig:game}
 \end{figure}
 
+Záznamy o přihlášených uživatelích jsou spravovány třídou \texttt{UserDatabase}. Po přihlášení je vytvořen záznam o uživateli (instance třídy \texttt{User}) Obdobně jako u uživatelů záznamy o vytvořených hrách spravuje třída \texttt{GameServices}. Umožňuje vytváření her (instancí třídy \texttt{Game}) a následné přihlašování hráčů. Po přihlášení (pomocí \texttt{GameServices}) do hry je založena obalová struktura \texttt{Player}, která slouží ke korektnímu spravování situací, kdy se odhlásil hráč (neexistuje instance \texttt{User}). Po odstartování hry není možné měnit počet hráčů ve hře.
+
+\subsubsection{Třída Message}
+Objekt pro reprezentaci síťové zprávy v aplikaci. Základními parametry jsou uživatelský soket odesílatele (příjemce), dva typy zpráv \texttt{Event} a \texttt{Message Type} a samotný obsah zprávy ve formátu řetězce.
+
+\subsubsection{Třída Sender}
+Odpovědností třídy \texttt{Server} je korektní odeslání všech objektů. Dle typů zprávy sestaví řetězec, který následně odešle příslušným soketem ke klientovi.
+
+\subsubsection{Třída Receiver}
+Odpovědností třídy \texttt{Receiver} je korektní přijímání zpráv na soketech. Vlákno pravidelně kontroluje stav soketů a v případě nutnosti vytvoří objekt typu zpráva a zařadí ho do fronty ke zpracování. 
+
+\subsection{Třída MessageHandler}
+Odpovědností pracujících vláken třídy \texttt{MessageHandler} je zpracovávat požadavky zařazené do fronty ke zpracování. Během zpracování je pomocí kódů vybraná správná obsluha.
+
 
 \subsection{Klient}
 
-Architektura klienta je obdobná serveru. Existují zde dvě základní vlákna pro komunikaci Sender a Reciever obalené třídou NetStructure, která je aplikačním jedináčkem. V této třídě je je umístěna blokující fronta přijatých zpráv ke zpracování.
+Architektura klienta je obdobná serveru. Existují zde dvě základní vlákna pro komunikaci \texttt{Sender} a \texttt{Reciever} obalené třídou \texttt{NetStructure}, která je aplikačním jedináčkem. V této třídě je umístěna blokující fronta přijatých zpráv ke zpracování. Opět zde herní struktury ovlivňuje třída \texttt{MessageHandler}.
+
+Klient dodržuje základní prvky architektury MVC. Grafické uživatelské rozhraní je pouze obrazem datových struktur, které jsou plněny výsledky síťových operací. Při každé změně datových struktur je vyvolána aktualizace uživatelského rozhraní.
+
 
 %========================================
 %========================================
@@ -280,11 +297,14 @@ Pro vlastní překlad a sestavení programu ze zdrojových kódů jsou připrave
 Soubor \texttt{build.xml}, který slouží k sestavování a spouštění klienta aplikace je umístěn ve složce MilostnýDopisClient. Obsahuje základní cíle pro sestavení aplikace, vytvoření jar souboru a spuštění. Výsledek sestavení naleznete ve složce \texttt{out/ant}.
 
 Po spuštění aplikace se otevře přihlašovací okno, kde je nutné vyplnit přihlašovací údaje k serveru. Po přihlášení se do již vytvořené lze připojit pomocí dvojkliku na zvolenou hru. Pokud nejsou žádné hry viditelné je třeba je vytvořit a nebo zobrazit již rozehrané.
+
 Po úspěšném přihlášení se otevře okno s hrou kde uživatel vidí celkový stav hry. Červený trojúhelník ukazuje na aktivního hráče. Pokud je třeba vybrat hráče a cíl efektu karty učiníme tak kliknutím na zadaného hráče. Pro nápovědu efektu karty je třeba najet myší na kartu o které chceme zobrazit nápovědu.
+
+Při výpadku spojení mezi klientem a serverem se klient po vypršení časovače jednou pokusí o opětovné připojení. Během opětovného připojení je uzavřeno okno hry. Klient se automaticky pokusí přihlásit posledního známého uživatele.
 
 \subsection{Server}
 
-Soubor \texttt{Makefile} pro překlad serveru je umístěn ve složce build vedle složky MilostnyDopisServer, kde jsou umístěny zdrojové kódy aplikace. Výchozím cílem makefile je sestavení serveru, dále lze využít cíle clean a cleaAll pro vymazání souborů potřebných pro sestavení.
+Soubor \texttt{Makefile} pro překlad serveru je umístěn ve složce build vedle složky MilostnyDopisServer, kde jsou umístěny zdrojové kódy aplikace. Výchozím cílem makefile je sestavení serveru, dále lze využít cíle clean a cleaAll pro vymazání souborů potřebných pro sestavení. Hlavním cílem a tedy spustitelným souborem je \texttt{MilostnyDopisServer}.
 
 Server při spuštění reaguje na parametry příkazové řádky, které lze zobrazit pomocí parametru -h. Za běhu serveru lze zjišťovat jeho stav napsáním \texttt{users} pro získání seznamu registrovaných uživatelů, \texttt{games} pro získání seznamu existujících her na serveru a \texttt{konec} pro ukončení serveru. Pro korektní ukončení serveru lze použít i kombinaci kláves Ctr+C, respektive signál SIGINT. 
 
@@ -295,6 +315,6 @@ Server při spuštění reaguje na parametry příkazové řádky, které lze zo
 %========================================
 \newpage
 \section{Závěr}  %======================================================================================================
-
+V rámci této jsem vytvořil dva programy pro simulaci karetní hry Milostný dopis. Prvním programem je server, který je napsán v programovacím jazyce C/C++. Server paralelně obsluhuje více her a hráčů a umožňuje opětovné připojení klienta. Druhým programem je grafický klient k vytvořenému serveru, který je zpracován v programovacím jazyce Java.
 
 \end{document}
