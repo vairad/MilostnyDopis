@@ -331,10 +331,14 @@ void GameHandler::handleGameCOD(Message *msg){
         msg->setEvent(Event::ACK);
         user->setGame(game);
 
-        for(int playerIndex = 0; playerIndex < game->getPlayer_count(); playerIndex++){
+        for(int playerIndex = 0; playerIndex < game->getMaxPlayerCount(); playerIndex++){
             std::string messageS = game->getUid();
             messageS += "&&";
             messageS += user->toNet();
+            if(game->getPlayer(playerIndex) == NULL
+                    || game->getPlayer(playerIndex)->getUser() == NULL){
+                continue;
+            }
             Message *msgP = new Message(game->getPlayer(playerIndex)->getUser()->getSocket()
                                       , MessageType::game
                                       , Event::NEP
@@ -377,7 +381,7 @@ void GameHandler::handleGameNEW(Message *msg){
     bool res = Utilities::readNumber(tmpRound, &round_count );
     res &= Utilities::readNumber(tmpPlayer, &player_count);
 
-    if(res == false && round_count <= 0 && player_count <= 0){
+    if(res == false || round_count <= 0 || player_count <= 0){
         msg->setEvent(Event::NAK);
         MessageQueue::sendInstance()->push_msg(msg);
         return;

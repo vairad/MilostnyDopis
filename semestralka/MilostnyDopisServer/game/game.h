@@ -81,6 +81,7 @@ public:
     void finishGame();
     void restartGame();
     int getMaxPlayerCount();
+    bool removePlayer(Player *player);
 private:
     void sendTokenTo(Player *player);
     void sendGoodBye();

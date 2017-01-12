@@ -464,8 +464,11 @@ void Game::start(){
         return;
     }
     started = true;
-    for(int playerIndex = 0; playerIndex < player_count; playerIndex++){
-        getPlayer(playerIndex)->giveFirstCard(game_deck->getNextCard());
+    for(int playerIndex = 0; playerIndex < getMaxPlayerCount(); playerIndex++){
+        Player * player = getPlayer(playerIndex);
+        if(player != NULL){
+            player->giveFirstCard(game_deck->getNextCard());
+        }
     }
     player1->giveToken();
     sendTokenTo(player1);
@@ -479,6 +482,9 @@ void Game::moveTokenToNextPlayer(User *user)
 {
     Player *playerWithToken = getPlayer(user);
     Player *playerToGetToken = getNextPlayerForToken(playerWithToken);
+    if(playerToGetToken == NULL){
+        return;
+    }
     playerWithToken->takeToken();
     playerToGetToken->giveToken();
     sendTokenTo(playerToGetToken);
@@ -498,6 +504,7 @@ Player *Game::getNextPlayerForToken(Player *playerWithToken){
     }
 
     Player *chosenPlayer = NULL;
+    int counter = 0;
     while(chosenPlayer == NULL){
         indexWithToken++;
         indexWithToken = indexWithToken % MAX_PLAYER_COUNT;
@@ -505,7 +512,10 @@ Player *Game::getNextPlayerForToken(Player *playerWithToken){
         if(p != NULL && p->isAlive()){
             chosenPlayer = p;
         }
-
+        counter ++;
+        if(counter > 5){
+            break;
+        }
     }
     return chosenPlayer;
 }
@@ -761,6 +771,28 @@ int Game::getMaxPlayerCount()
     return maxPlayerCount;
 }
 
+bool Game::removePlayer(Player *player)
+{
+    if(started){
+        return false;
+    }
+    if(player1 == player){
+        player1 = NULL;
+    }
+    if(player2 == player){
+        player2 = NULL;
+    }
+    if(player3 == player){
+        player2 = NULL;
+    }
+    if(player4 == player){
+        player3 = NULL;
+    }
+    player_count--;
+    delete player;
+    return true;
+}
+
 
 /**
  * @brief Game::sendTokenTo
@@ -909,8 +941,11 @@ void Game::resetState()
     }
     game_deck = new GameDeck();
 
-    for(int playerIndex = 0; playerIndex < player_count; playerIndex++){
-        getPlayer(playerIndex)->giveFirstCard(game_deck->getNextCard());
+    for(int playerIndex = 0; playerIndex < getMaxPlayerCount(); playerIndex++){
+        Player *player = getPlayer(playerIndex);
+        if(player != NULL){
+            player->giveFirstCard(game_deck->getNextCard());
+        }
     }
 }
 

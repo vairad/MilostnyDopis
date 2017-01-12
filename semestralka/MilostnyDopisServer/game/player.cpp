@@ -26,6 +26,7 @@ void Player::setScore(long value)
 
 void Player::giveFirstCard(GameCards card)
 {
+    if(user == NULL) return;
     myCard = card;
     Message *msg = new Message(user->getSocket(),MessageType::game, Event::CAR, std::to_string(card));
     MessageQueue::sendInstance()->push_msg(msg);
