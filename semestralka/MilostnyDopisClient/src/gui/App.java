@@ -20,7 +20,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -40,10 +39,8 @@ public class App extends Application {
     public static GameWindow win = null;
     /** čítač pokusů o znovupřipojení */
     static long reconnection = 0;
-    /** seznam asynchronních úloh aplikace */
-    private static List<Thread> workerList;
     /** vlákno určené pro zpracování přihlášení */
-    static Thread loginWorker;
+    private static Thread loginWorker;
     /** záznam o uživateli */
     public static UserRecord userRecord = null;
     /** java FX stage tohoto okna */
@@ -80,8 +77,6 @@ public class App extends Application {
         stage.setMinHeight(Constants.MINH_APP);
         stage.setMinWidth(Constants.MINW_APP);
         stage.show();
-
-        workerList = new LinkedList<>();
     }
 
     /**
@@ -114,10 +109,8 @@ public class App extends Application {
      */
     private static void closeApp(){
         logger.debug("Ukončuji aplikaci");
-        try{
-            joinWorkers();
-        }catch (InterruptedException e){
-            logger.trace("čekání na vlákna bylo přerušeno");
+        if(loginWorker != null){
+            loginWorker.interrupt();
         }
 
         NetService.getInstance().destroy();
@@ -327,25 +320,6 @@ public class App extends Application {
         // todo highlight element in tree view
     }
 
-    private static void joinWorkers() throws InterruptedException {
-        for (Thread th: workerList) {
-            th.interrupt();
-        }
-        try {
-            App.loginWorker.interrupt();
-        }catch (NullPointerException e){
-            logger.trace("login worker was not initialised");
-        }
-        try {
-            for (Thread th : workerList) {
-                th.join();
-            }
-            App.loginWorker.join();
-        }catch (NullPointerException e){
-            logger.trace("something was not initialsed");
-        }
-    }
-
     public static void hideWindow() {
         logger.debug("hide GameWindow");
         if(App.win == null){
@@ -484,6 +458,7 @@ public class App extends Application {
             return;
         }
         reconnection++;
+        Platform.runLater(App::hideWindow);
         Platform.runLater(controller::startProgress);
         Platform.runLater( () -> controller.setStatusText(bundle.getString("reconnect")));
         try {

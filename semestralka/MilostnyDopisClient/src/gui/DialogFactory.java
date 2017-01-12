@@ -186,7 +186,7 @@ public class DialogFactory {
         alert.setTitle(App.bundle.getString("diffGameTitle"));
         alert.setHeaderText(App.bundle.getString("diffGameHeadline"));
         alert.setContentText(game.toString());
-        alert.showAndWait();
+       // alert.showAndWait(); //todo podmínky zobrazení
     }
 
     public static void messagesNetStatistics(long sendBytes, long recvBytes, long reconnection) {
