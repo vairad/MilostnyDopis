@@ -21,7 +21,7 @@
 	<Appenders>
 		<Console name="screen" target="SYSTEM_OUT">
 			<PatternLayout pattern="${pFormat}" />
-			<ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY" />
+			<ThresholdFilter level="FATAL" onMatch="ACCEPT" onMismatch="DENY" />
 		</Console>
 
 		<File name="file" filename="${baseLog}" append="true">
@@ -64,27 +64,24 @@
 
 		<Root level="ALL">
 			<AppenderRef ref="screen"/>
-			<AppenderRef ref="file-all"/>
 			<AppenderRef ref="file"/>
 			<AppenderRef ref="file-debug"/>
+			<AppenderRef ref="file-all"/>
 		</Root>
 
 
-		<Logger name="netservice.Sender" level="ALL"> <!-- additivity="false" -->
+		<Logger name="netservice.Sender" level="ALL">
 			<AppenderRef ref="file-send-messages"/>
 			<AppenderRef ref="file-messages"/>
-			<!--<AppenderRef ref="screen"/> -->
 		</Logger>
 
-		<Logger name="netservice.Receiver" level="ALL"> <!-- additivity="false" -->
+		<Logger name="netservice.Receiver" level="ALL">
 			<AppenderRef ref="file-received-messages"/>
 			<AppenderRef ref="file-messages"/>
-			<!--<AppenderRef ref="screen"/> -->
 		</Logger>
 
-		<Logger name="game.GameStatus" level="ALL"> <!-- additivity="false" -->
+		<Logger name="game.GameStatus" level="ALL">
 			<AppenderRef ref="file-xml-parser"/>
-			<!--<AppenderRef ref="screen"/> -->
 		</Logger>
 
 	</Loggers>
