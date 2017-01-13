@@ -186,7 +186,7 @@ public class GameHandler {
             logger.error("Id hráče ve zprávě není v seznamu hráčů lokální hry. Nebo je karta nullová");
         }
 
-        Platform.runLater(() -> App.win.addCard());
+        Platform.runLater(() -> App.addCard());
 
         // pokud jsem obdržel výsledek své karty... předávám token hry (pokud ho mám)
         try{

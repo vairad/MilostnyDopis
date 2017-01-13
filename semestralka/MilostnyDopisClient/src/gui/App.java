@@ -523,9 +523,14 @@ public class App extends Application {
         cleanGameStructures();
     }
 
+    /**
+     * Pročistí záznamy o předešlé hře.
+     */
     private static void cleanGameStructures() {
         Player.clean();
         Game.clean();
+        GameRecord.clean();
+        smartFillTree();
         closeGameWindow();
     }
 
@@ -566,5 +571,11 @@ public class App extends Application {
         xmlWorker.interrupt();
         xmlWorker = thread;
         xmlWorker.start();
+    }
+
+    public static void addCard() {
+        if(win != null){
+            win.addCard();
+        }
     }
 }

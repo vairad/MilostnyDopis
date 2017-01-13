@@ -86,4 +86,8 @@ public class GameRecord {
     public boolean isServer() {
         return server;
     }
+
+    public static void clean() {
+        allGameRecords.clear();
+    }
 }
