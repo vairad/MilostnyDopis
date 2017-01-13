@@ -53,7 +53,7 @@ public class Sender extends Thread {
             }
 
             try {
-                out.write(messageToNet.getBytes());
+                out.write(messageToNet.getBytes("UTF-8"));
             } catch (IOException e) {
                 logger.error("IO Error ... sending is over ... trying to reconnect");
                 new Thread(NetService::reconnect).start();

@@ -141,7 +141,7 @@ public class Controller implements Initializable {
         logger.trace("Start method");
         addressTextField.setText("localhost");
         portTextField.setText("2525");
-        nickTextField.setText("Řeřicha");
+        nickTextField.setText(bundle.getString("defaultNick"));
     }
 
     /**
