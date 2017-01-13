@@ -6,6 +6,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.Charset;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -53,7 +54,7 @@ public class Sender extends Thread {
             }
 
             try {
-                out.write(messageToNet.getBytes("UTF-8"));
+                out.write(messageToNet.getBytes(Charset.forName("UTF-8")));
             } catch (IOException e) {
                 logger.error("IO Error ... sending is over ... trying to reconnect");
                 new Thread(NetService::reconnect).start();
