@@ -27,6 +27,9 @@
 *.out
 *.app
 
+#ignore build folders
+/*build*/
+
 #ignore private folders
 /prezentace/
 /semestralka*/
