@@ -10,6 +10,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.SocketTimeoutException;
 
 /**
@@ -54,7 +55,13 @@ public class Receiver extends Thread {
 
             NetService.recvBytes += recvBytes;
 
-            String msgS = new String(buffer);
+            String msgS = null;
+            try {
+                msgS = new String(buffer, "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                logger.fatal("Unsupported encoding");
+                msgS = new String(buffer);
+            }
             logger.trace(msgS);
 
             for (String subMessage : msgS.split("###")) {
