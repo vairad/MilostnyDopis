@@ -23,6 +23,9 @@ public class Constants{
     public static final int MINW_GAME = 500;
     public static final int MINH_GAME = 500;
 
+    public static final int PREFW_GAME = 500;
+    public static final int PREFH_GAME = 500;
+
     // CONTROLLER
     public static final int MIN_POSSIBLE_ROUNDS = 1;
     public static final int MAX_POSSIBLE_ROUNDS = 20;

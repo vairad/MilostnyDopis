@@ -93,7 +93,7 @@ public class GameHandler {
         for (String playerRec : playersParts ) {
             handlePlayerPLS(playerRec);
         }
-        Platform.runLater(() -> App.win.updatePlayers());
+        Platform.runLater(() -> App.updatePlayers());
     }
 
     private static void handlePlayerPLS(String playerRec) {
@@ -231,13 +231,6 @@ public class GameHandler {
 
     private static void handleGameCAR(Message msg) {
         logger.debug("Dostal jsem kartu:" + msg.getMessage() );
-        while(App.win == null){
-            try {
-                sleep(500);
-            } catch (InterruptedException e) {
-               logger.debug("Přerušeno čekání na vytvoření okna");
-            }
-        }
         try {
             Player.giveCard(Card.getCardFromInt(Integer.parseInt(msg.getMessage())));
         }catch (NumberFormatException e){

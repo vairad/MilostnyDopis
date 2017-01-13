@@ -156,7 +156,9 @@ public class App extends Application {
     }
 
     public static void setUpPlayers(){
-        win.setUpPlayers();
+        if(win != null){
+            win.setUpPlayers();
+        }
     }
 
     public static void newGame(GameRecord gameRecord) {
@@ -171,7 +173,9 @@ public class App extends Application {
     }
 
     public static void showGameWindow() {
-        win.show();
+        if(win != null) {
+            win.show();
+        }
     }
 
     public static void userLogged(){
@@ -195,7 +199,9 @@ public class App extends Application {
     }
 
     public static void moveTokenTo(Player player) {
-        App.win.movePointerTo(player.getDisplay_order());
+        if(win != null) {
+            App.win.movePointerTo(player.getDisplay_order());
+        }
     }
 
     static String resolvePlayedCardResult(Card playedCard, Player playerWhoPlays, String cardResult) {
@@ -576,6 +582,12 @@ public class App extends Application {
     public static void addCard() {
         if(win != null){
             win.addCard();
+        }
+    }
+
+    public static void updatePlayers() {
+        if(win != null){
+            win.updatePlayers();
         }
     }
 }

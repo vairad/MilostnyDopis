@@ -21,6 +21,12 @@ public class DialogFactory {
                 DialogFactory.class.getResource("app.css").toExternalForm());
     }
 
+
+
+    private static void resizeToContent(DialogPane dialogPane){
+        dialogPane.getScene().getWindow().sizeToScene();
+    }
+
     /**
      * Create and show alert dialog with defined parameters
      * @param title window header
@@ -34,6 +40,8 @@ public class DialogFactory {
         alert.setTitle(title);
         alert.setHeaderText(headline);
         alert.setContentText(text);
+
+        resizeToContent(alert.getDialogPane());
         alert.showAndWait();
     }
 
@@ -44,6 +52,7 @@ public class DialogFactory {
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(question);
+        resizeToContent(alert.getDialogPane());
 
         Optional<ButtonType> result = alert.showAndWait();
         if (result.get() == ButtonType.OK){
@@ -60,6 +69,8 @@ public class DialogFactory {
         alert.setTitle(App.bundle.getString("returnedCardTitle"));
         alert.setHeaderText(App.bundle.getString("returnedCardHeadline"));
         alert.setContentText(App.bundle.getString("returnedCardText") + " : " + card);
+
+        resizeToContent(alert.getDialogPane());
         alert.showAndWait();
     }
 
@@ -75,6 +86,8 @@ public class DialogFactory {
         }
         String text = App.resolvePlayedCardResult(playedCard, playerWhoPlays, cardResult);
         alert.setContentText(text);
+
+        resizeToContent(alert.getDialogPane());
         alert.showAndWait();
 
     }
@@ -93,6 +106,8 @@ public class DialogFactory {
         dialog.setTitle(App.bundle.getString("gameCountTitle"));
         dialog.setHeaderText(App.bundle.getString("gameCountQuestion"));
         dialog.setContentText(App.bundle.getString("gameCountText"));
+        resizeToContent(dialog.getDialogPane());
+
 
         Optional<Integer> result = dialog.showAndWait();
         if (result.isPresent()){
@@ -114,6 +129,7 @@ public class DialogFactory {
         dialog.setTitle(App.bundle.getString("playerCountTitle"));
         dialog.setHeaderText(App.bundle.getString("playerCountQuestion"));
         dialog.setContentText(App.bundle.getString("playerCountText"));
+        resizeToContent(dialog.getDialogPane());
 
         Optional<Integer> result = dialog.showAndWait();
         if (result.isPresent()){
@@ -135,6 +151,8 @@ public class DialogFactory {
             text += p.getDisplayName() + "\n";
         }
         alert.setContentText(text);
+        resizeToContent(alert.getDialogPane());
+
         alert.showAndWait();
     }
 
@@ -145,6 +163,8 @@ public class DialogFactory {
         alert.setTitle(App.bundle.getString("endOfGame"));
         alert.setHeaderText(App.bundle.getString("endOfGameHeader") + "\n" +App.getWinner());
         alert.setContentText(App.bundle.getString("endOfGameText") + "\n" + App.getResult());
+        resizeToContent(alert.getDialogPane());
+
         alert.showAndWait();
     }
 
@@ -155,6 +175,8 @@ public class DialogFactory {
         alert.setTitle(App.bundle.getString("wastedCardTitle"));
         alert.setHeaderText(App.bundle.getString("wastedCardHeadline"));
         alert.setContentText(App.bundle.getString("wastedCardText") + " : " + card);
+        resizeToContent(alert.getDialogPane());
+
         alert.showAndWait();
     }
 
@@ -165,6 +187,8 @@ public class DialogFactory {
         alert.setTitle(App.bundle.getString("loginTitle"));
         alert.setHeaderText(App.bundle.getString("loginHeadline"));
         alert.setContentText(value.toString());
+        resizeToContent(alert.getDialogPane());
+
         alert.showAndWait();
     }
 
@@ -175,6 +199,8 @@ public class DialogFactory {
         alert.setTitle(App.bundle.getString("diffGameTitle"));
         alert.setHeaderText(App.bundle.getString("diffGameHeadline"));
         alert.setContentText(game.toString());
+        resizeToContent(alert.getDialogPane());
+
        // alert.showAndWait(); //todo podmínky zobrazení
     }
 
@@ -187,6 +213,8 @@ public class DialogFactory {
         results += App.bundle.getString("received") +" : " + recvBytes + "B" + "\n";
         results += App.bundle.getString("reconnection") +" : " + reconnection + "x" + "\n";
         alert.setHeaderText(results);
+        resizeToContent(alert.getDialogPane());
+
         alert.showAndWait();
     }
 
@@ -196,6 +224,8 @@ public class DialogFactory {
         setUpCssToDialog(alert.getDialogPane());
         alert.setTitle(App.bundle.getString("noGame"));
         alert.setHeaderText(App.bundle.getString("noGameText"));
+        resizeToContent(alert.getDialogPane());
+
         alert.showAndWait();
     }
 

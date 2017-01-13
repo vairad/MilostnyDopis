@@ -21,7 +21,7 @@
 	<Appenders>
 		<Console name="screen" target="SYSTEM_OUT">
 			<PatternLayout pattern="${pFormat}" />
-			<ThresholdFilter level="FATAL" onMatch="ACCEPT" onMismatch="DENY" />
+			<ThresholdFilter level="ALL" onMatch="ACCEPT" onMismatch="DENY" />
 		</Console>
 
 		<File name="file" filename="${baseLog}" append="true">

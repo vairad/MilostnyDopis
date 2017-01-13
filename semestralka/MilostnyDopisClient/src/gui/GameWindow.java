@@ -82,6 +82,10 @@ public class GameWindow extends Stage {
 
         setMinHeight(Constants.MINH_GAME);
         setMinWidth(Constants.MINW_GAME);
+
+        setWidth(Constants.PREFW_GAME);
+        setHeight(Constants.PREFH_GAME);
+        getScene().getWindow().sizeToScene();
     }
 
     private void initCardsComboBox() {
