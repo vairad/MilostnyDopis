@@ -9,9 +9,10 @@ Server je implementovaný pomocí jazyka C++ pro platformu Linux, pro komunikaci
 Pro automatický překlad je ve složce build připravený Makefile pro nástroj make. Překlad bude proveden pomocí překladače gcc (g++)
 
 Pro překlad a spuštění serveru:
-   cd ./build/
-   make
-   ./MilostnyDopisServer -r
+    
+    cd ./build/
+    make
+    ./MilostnyDopisServer -r
 
 ## Klient
 
@@ -21,8 +22,9 @@ Pro pro automatický překlad je ve složce MilostnyDopisClient připravený sou
 
 Pro překlad a spuštění klienta je třeba nejprve do složky ./MilostnyDopisClient/lib/ umístit využívané knihovny.
 Sekvence příkazů (pro překlad a spuštění):
-    cd ./MilostnyDopisClient/
-    ant runJar
+     
+     cd ./MilostnyDopisClient/
+     ant runJar
 
 
 ### Využívané knihovny
