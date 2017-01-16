@@ -95,6 +95,7 @@ public class Game {
     }
 
     public static void clean() {
+
         actlualyPlayGame = null;
         lastStatusSeq = 0L;
     }

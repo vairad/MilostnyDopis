@@ -277,6 +277,12 @@ public class GameHandler {
         if(Game.isReady()){
             Platform.runLater(App::showGameWindow);
         }
+        try {
+            sleep(3000);
+        } catch (InterruptedException e) {
+            logger.trace("interrupted");
+        }
+
         NetService.getInstance().sender.addItem(MessageFactory.getCards());
     }
 

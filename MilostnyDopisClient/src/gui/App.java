@@ -144,14 +144,15 @@ public class App extends Application {
      */
     public static void smartFillTree() {
         if(GameRecord.getAllGameRecords() == null){
-            controller.fillTree(new LinkedList<>());
+            logger.trace("empty all games");
+            Platform.runLater(() ->controller.fillTree(new LinkedList<>()));
         }
         if(controller.isAllGames()){
             logger.trace("is selected");
             Platform.runLater(() -> controller.fillTree(GameRecord.getAllGameRecords()));
         }else {
             logger.trace("is not selected");
-            controller.fillTree(GameRecord.getAllConnectableGames());
+            Platform.runLater(() -> controller.fillTree(GameRecord.getAllConnectableGames()));
         }
     }
 
@@ -558,7 +559,7 @@ public class App extends Application {
     }
 
     public static void addLoginWorker(Thread thread) {
-        if(loginWorker == null){
+        if(loginWorker == null){    //todo prohodit podmínku a  zkrátit kód
             loginWorker = thread;
             loginWorker.start();
             return;
@@ -569,7 +570,7 @@ public class App extends Application {
     }
 
     public static void addXMLWorker(Thread thread) {
-        if(xmlWorker == null){
+        if(xmlWorker == null){ //todo prohodit podmínku a zkrátit kód
             xmlWorker = thread;
             xmlWorker.start();
             return;

@@ -1,7 +1,5 @@
 package gui;
 
-import game.Game;
-
 import java.util.LinkedList;
 import java.util.List;
 
@@ -45,6 +43,9 @@ public class GameRecord {
 
     public static List<GameRecord> getAllConnectableGames() {
         List<GameRecord> playableGames = new LinkedList<>();
+        if(allGameRecords == null){
+            return playableGames;
+        }
         for (GameRecord gr: allGameRecords) {
             if(!gr.isStarted()){
                 playableGames.add(gr);
@@ -88,6 +89,8 @@ public class GameRecord {
     }
 
     public static void clean() {
-        allGameRecords.clear();
+        if(allGameRecords != null) {
+            allGameRecords.clear();
+        }
     }
 }
