@@ -294,19 +294,19 @@ Pro vlastní překlad a sestavení programu ze zdrojových kódů jsou připrave
 
 
 \subsubsection{Klient}
-Soubor \texttt{build.xml}, který slouží k sestavování a spouštění klienta aplikace je umístěn ve složce MilostnýDopisClient. Obsahuje základní cíle pro sestavení aplikace, vytvoření jar souboru a spuštění. Výsledek sestavení naleznete ve složce \texttt{out/ant}.
+Soubor \texttt{build.xml}, který slouží k sestavování a spouštění klienta aplikace je umístěn ve složce \texttt{MilostnýDopisClient}. Obsahuje základní cíle pro sestavení aplikace, vytvoření jar souboru a spuštění. Pro překlad programu je nutná přítomnost knihoven ve složce \texttt{lib}. Konkrétně jde o knihovny Log4J ve verzi 2.3., která je použita pro logování, a JUnit ve verzi 4.12, která zajišťuje zprostředkování jednotkových testů. Výsledek sestavení naleznete ve složce \texttt{out/ant}. Potřebné knihovny jsou ve složce \texttt{lib} připraveny.
 
 Po spuštění aplikace se otevře přihlašovací okno, kde je nutné vyplnit přihlašovací údaje k serveru. Po přihlášení se do již vytvořené lze připojit pomocí dvojkliku na zvolenou hru. Pokud nejsou žádné hry viditelné je třeba je vytvořit a nebo zobrazit již rozehrané.
 
 Po úspěšném přihlášení se otevře okno s hrou kde uživatel vidí celkový stav hry. Červený trojúhelník ukazuje na aktivního hráče. Pokud je třeba vybrat hráče a cíl efektu karty učiníme tak kliknutím na zadaného hráče. Pro nápovědu efektu karty je třeba najet myší na kartu o které chceme zobrazit nápovědu.
 
-Při výpadku spojení mezi klientem a serverem se klient po vypršení časovače jednou pokusí o opětovné připojení. Během opětovného připojení je uzavřeno okno hry. Klient se automaticky pokusí přihlásit posledního známého uživatele.
+Při výpadku spojení mezi klientem a serverem se klient po vypršení časovače jednou pokusí o opětovné připojení. Během opětovného připojení je uzavřeno okno hry. Klient se automaticky pokusí přihlásit posledního známého uživatele. Pokud bude pokus o přihlášení úspěšný, je možné se opět připojit do rozehrané hry. Pokud pokus selže (server odpovídá \uv{neznámý úživatel}) je záznam o předchozím přihlášení odstraněn.
 
 \subsection{Server}
 
 Soubor \texttt{Makefile} pro překlad serveru je umístěn ve složce build vedle složky MilostnyDopisServer, kde jsou umístěny zdrojové kódy aplikace. Výchozím cílem makefile je sestavení serveru, dále lze využít cíle clean a cleaAll pro vymazání souborů potřebných pro sestavení. Hlavním cílem a tedy spustitelným souborem je \texttt{MilostnyDopisServer}.
 
-Server při spuštění reaguje na parametry příkazové řádky, které lze zobrazit pomocí parametru -h. Za běhu serveru lze zjišťovat jeho stav napsáním \texttt{users} pro získání seznamu registrovaných uživatelů, \texttt{games} pro získání seznamu existujících her na serveru a \texttt{konec} pro ukončení serveru. Pro korektní ukončení serveru lze použít i kombinaci kláves Ctr+C, respektive signál SIGINT. 
+Server při spuštění reaguje na parametry příkazové řádky, které lze zobrazit pomocí parametru -h. Výchozí spuštění serveru provedete pomocí příkazu \texttt{./MilostnyDopisServer -r}. Takto spuštěný server naslouchá všechna příchozí spojení na portu 2525. Za běhu serveru lze zjišťovat stav serveru napsáním \texttt{users} pro získání seznamu registrovaných uživatelů, \texttt{games} pro získání seznamu existujících her na serveru a \texttt{konec} pro ukončení serveru. Pro korektní ukončení serveru lze použít i kombinaci kláves Ctr+C, respektive signál SIGINT. 
 
 %========================================
 %========================================
