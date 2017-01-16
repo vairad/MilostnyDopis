@@ -92,6 +92,12 @@ Princezna (8)& Při jejím odhalení jsem eliminován & 1\\
 \caption{Stručný popis karet v balíčku.}
 \end{table}
 
+\begin{figure}[ht]
+\centering
+\includegraphics[bb= 0 0 730 630 , width=10cm]{gameDiag.png}
+\caption{Diagram průběhu hry.}
+\label{fig:game}
+\end{figure}
 
 \subsection{Zpracování požadavků na serveru}
 
@@ -248,7 +254,7 @@ NAK & [libovolná ze zpráv klienta] & Nebylo možné provést operaci \\
 
 \subsection{Server}
 
-Server pro svůj běh inicializuje minimálně další tři vlákna aplikace. V hlavním toku aplikace se inicializují třídy \texttt{Sender} a \texttt{Reciever}, tyto třídy jsou spuštěny jako samostatná vlákna která zpracovávají příchozí data na soket serveru a zpracovávají frontu zpráv (odesílají data). Dalším inicializovanou částí je konzument příchozích zpráv MessageHandler, který obsahuje zásobník pracujících vláken minimálně 1 maximálně 9. Hlavní vlákno aplikace spravuje požadavky klienta na konzoli.
+Server pro svůj běh inicializuje minimálně další tři vlákna aplikace. V hlavním toku aplikace se inicializují třídy \texttt{Sender} a \texttt{Reciever}, tyto třídy jsou spuštěny jako samostatná vlákna která zpracovávají příchozí data na soket serveru a zpracovávají frontu zpráv (odesílají data). Dalším inicializovanou částí je konzument příchozích zpráv \texttt{MessageHandler}, který obsahuje zásobník pracujících vláken minimálně 1 maximálně 9. Hlavní vlákno aplikace spravuje požadavky klienta na konzoli.
 
 \begin{figure}[ht]
 \centering
@@ -257,7 +263,7 @@ Server pro svůj běh inicializuje minimálně další tři vlákna aplikace. V 
 \label{fig:game}
 \end{figure}
 
-Záznamy o přihlášených uživatelích jsou spravovány třídou \texttt{UserDatabase}. Po přihlášení je vytvořen záznam o uživateli (instance třídy \texttt{User}) Obdobně jako u uživatelů záznamy o vytvořených hrách spravuje třída \texttt{GameServices}. Umožňuje vytváření her (instancí třídy \texttt{Game}) a následné přihlašování hráčů. Po přihlášení (pomocí \texttt{GameServices}) do hry je založena obalová struktura \texttt{Player}, která slouží ke korektnímu spravování situací, kdy se odhlásil hráč (neexistuje instance \texttt{User}). Po odstartování hry není možné měnit počet hráčů ve hře.
+Záznamy o přihlášených uživatelích jsou spravovány třídou \texttt{UserDatabase}. Po přihlášení je vytvořen záznam o uživateli (instance třídy \texttt{User}) Obdobně jako u uživatelů záznamy o vytvořených hrách spravuje třída \texttt{GameServices}. Umožňuje vytváření her (instancí třídy \texttt{Game}) a následné přihlašování hráčů. Po přihlášení (pomocí \texttt{GameServices}) do hry je založena obalová struktura \texttt{Player}, která slouží ke korektnímu spravování situací, kdy se odhlásil hráč (neexistuje instance \texttt{User}). Po odstartování hry není možné měnit počet hráčů ve hře. Pro úpravu kolekcí uživatelů nebo her je třeba získat příslušný zámek. Zámek při rozehrané hře představuje token předávaný mezi hráči, pouze zpráva od hráče s tokenem může mít efekt na herní struktury.
 
 \subsubsection{Třída Message}
 Objekt pro reprezentaci síťové zprávy v aplikaci. Základními parametry jsou uživatelský soket odesílatele (příjemce), dva typy zpráv \texttt{Event} a \texttt{Message Type} a samotný obsah zprávy ve formátu řetězce.
@@ -276,7 +282,9 @@ Odpovědností pracujících vláken třídy \texttt{MessageHandler} je zpracov�
 
 Architektura klienta je obdobná serveru. Existují zde dvě základní vlákna pro komunikaci \texttt{Sender} a \texttt{Reciever} obalené třídou \texttt{NetStructure}, která je aplikačním jedináčkem. V této třídě je umístěna blokující fronta přijatých zpráv ke zpracování. Opět zde herní struktury ovlivňuje třída \texttt{MessageHandler}.
 
-Klient dodržuje základní prvky architektury MVC. Grafické uživatelské rozhraní je pouze obrazem datových struktur, které jsou plněny výsledky síťových operací. Při každé změně datových struktur je vyvolána aktualizace uživatelského rozhraní.
+Klient dodržuje základní prvky architektury MVC. Grafické uživatelské rozhraní je pouze obrazem datových struktur, které jsou plněny výsledky síťových operací. Při každé změně datových struktur je vyvolána aktualizace patřičné části uživatelského rozhraní. Pro logování klienta je použita knihovna Log4J a k testování základních funkcionalit generických objektů hry například hráč - \texttt{Player} nebo zpráva - \texttt{Message} je použita knihovna pro jednotkové testování JUnit.
+
+Definice struktury \texttt{.xml} zprávy určující stav hry je v souboru \texttt{gameStatus.xsd}. Obdobně pak definice \texttt{.xml} souboru pro záznamy o minulých přihlášeních je v souboru \texttt{userRecords.xsd}. 
 
 
 %========================================
@@ -298,6 +306,13 @@ Soubor \texttt{build.xml}, který slouží k sestavování a spouštění klient
 
 Po spuštění aplikace se otevře přihlašovací okno, kde je nutné vyplnit přihlašovací údaje k serveru. Po přihlášení se do již vytvořené lze připojit pomocí dvojkliku na zvolenou hru. Pokud nejsou žádné hry viditelné je třeba je vytvořit a nebo zobrazit již rozehrané.
 
+\begin{figure}[ht]
+\centering
+\includegraphics[bb= 0 0 510 550 , width=6cm]{gui.png}
+\caption{Ukázka přihlašovacího okna aplikace.}
+\label{fig:game}
+\end{figure}
+
 Po úspěšném přihlášení se otevře okno s hrou kde uživatel vidí celkový stav hry. Červený trojúhelník ukazuje na aktivního hráče. Pokud je třeba vybrat hráče a cíl efektu karty učiníme tak kliknutím na zadaného hráče. Pro nápovědu efektu karty je třeba najet myší na kartu o které chceme zobrazit nápovědu.
 
 Při výpadku spojení mezi klientem a serverem se klient po vypršení časovače jednou pokusí o opětovné připojení. Během opětovného připojení je uzavřeno okno hry. Klient se automaticky pokusí přihlásit posledního známého uživatele. Pokud bude pokus o přihlášení úspěšný, je možné se opět připojit do rozehrané hry. Pokud pokus selže (server odpovídá \uv{neznámý úživatel}) je záznam o předchozím přihlášení odstraněn.
@@ -315,6 +330,6 @@ Server při spuštění reaguje na parametry příkazové řádky, které lze zo
 %========================================
 \newpage
 \section{Závěr}  %======================================================================================================
-V rámci této jsem vytvořil dva programy pro simulaci karetní hry Milostný dopis. Prvním programem je server, který je napsán v programovacím jazyce C/C++. Server paralelně obsluhuje více her a hráčů a umožňuje opětovné připojení klienta. Druhým programem je grafický klient k vytvořenému serveru, který je zpracován v programovacím jazyce Java.
+V rámci této jsem vytvořil dva programy a komunikační protokol pro simulaci karetní hry Milostný dopis. Prvním programem je server, který je napsán v programovacím jazyce C/C++. Server paralelně obsluhuje více her a hráčů a umožňuje opětovné připojení klienta. Druhým programem je grafický klient k vytvořenému serveru, který je zpracován v programovacím jazyce Java. Aplikační komunikační protokol je navržen nad protokolem TCP.
 
 \end{document}
