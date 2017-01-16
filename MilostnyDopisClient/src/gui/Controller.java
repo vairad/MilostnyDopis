@@ -112,9 +112,11 @@ public class Controller implements Initializable {
     void fillTree(List<GameRecord> gameRecords){
         TreeItem<GameRecord> rootItem = new TreeItem<GameRecord> (new GameRecord(NetService.getServerName(), true));
         rootItem.setExpanded(true);
-        for (GameRecord gameRecord : gameRecords) {
-            TreeItem<GameRecord> item = new TreeItem<GameRecord> (gameRecord);
-            rootItem.getChildren().add(item);
+        if(gameRecords != null) {
+            for (GameRecord gameRecord : gameRecords) {
+                TreeItem<GameRecord> item = new TreeItem<GameRecord>(gameRecord);
+                rootItem.getChildren().add(item);
+            }
         }
         treeView.setRoot(rootItem);
         treeView.setDisable(false);
