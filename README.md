@@ -29,3 +29,12 @@ Sekvence příkazů (pro překlad a spuštění):
 
 ### Využívané knihovny
 
+Jednotkové testy (JUnit tests):
+
+* hamcrest-core-1.3.jar
+* junit-4-12.jar
+
+Logování:
+
+* log4j-api-2.3.jar
+* log4j-core-2.3.jar
